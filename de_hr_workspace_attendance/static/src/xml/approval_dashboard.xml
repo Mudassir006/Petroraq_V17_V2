@@ -26,11 +26,15 @@
                         <t t-foreach="state.tiles" t-as="tile" t-key="tile.key">
                             <div class="col-12 col-md-6 col-xl-4">
                                 <button t-att-class="tileClass(tile)"
-                                        t-att-style="tileStyle(tile)"
                                         t-att-data-action-id="tile.action_id"
                                         t-on-click="openTile">
+                                    <t t-if="tile.count &gt; 0">
+                                        <span class="de-dashboard-pending-dot" title="Pending approvals"/>
+                                    </t>
                                     <div class="de-dashboard-icon">
-                                        <i t-att-class="`fa ${tile.icon || 'fa-cubes'}`"/>
+                                        <div t-att-class="iconBoxClass(tile)">
+                                            <i t-att-class="`fa ${tile.icon || 'fa-cubes'}`"/>
+                                        </div>
                                     </div>
                                     <div class="de-dashboard-info">
                                         <div class="de-dashboard-count" t-esc="tile.count"/>

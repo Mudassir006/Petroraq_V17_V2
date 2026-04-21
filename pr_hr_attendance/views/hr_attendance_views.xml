@@ -8,6 +8,9 @@
             <xpath expr="//field[@name='overtime_hours']" position="replace">
                 <field name="overtime_for_approval" string="Over Time" widget="float_time" readonly="1"/>
             </xpath>
+            <xpath expr="//field[@name='overtime_for_approval']" position="after">
+                <field name="attachment_ids" widget="many2many_binary" optional="show"/>
+            </xpath>
 
             <xpath expr="//div[hasclass('oe_chatter')]" position="replace">
             </xpath>
