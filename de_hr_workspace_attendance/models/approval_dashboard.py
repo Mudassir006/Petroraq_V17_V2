@@ -13,6 +13,10 @@ class HrApprovalDashboardService(models.AbstractModel):
             "de_hr_workspace.menu_my_employee_approvals",
             raise_if_not_found=False,
         )
+        dashboard_menu = self.env.ref(
+            "de_hr_workspace_attendance.menu_hr_approval_dashboard",
+            raise_if_not_found=False,
+        )
         if not parent:
             return self.env["ir.ui.menu"]
 
@@ -30,7 +34,15 @@ class HrApprovalDashboardService(models.AbstractModel):
                 lambda m: not m.groups_id or bool(m.groups_id & user_groups)
             )
 
-        return menus.filtered(lambda m: bool(m.action))
+        return menus.filtered(
+            lambda m: bool(m.action)
+            and (not dashboard_menu or m.id != dashboard_menu.id)
+            and not (
+                m.action
+                and getattr(m.action, "_name", "") == "ir.actions.client"
+                and getattr(m.action, "tag", "") == "de_hr_workspace_attendance.approval_dashboard"
+            )
+        )
 
     @api.model
     def _domain_from_action(self, action):
@@ -48,13 +60,21 @@ class HrApprovalDashboardService(models.AbstractModel):
 
     @api.model
     def _shortage_pending_domain(self):
-        return [
-            "|", "|",
-            ("employee_manager_id.user_id", "=", self.env.uid),
-            ("hr_supervisor_ids", "in", self.env.uid),
-            ("hr_manager_ids", "in", self.env.uid),
-            ("approval_state", "in", ["draft", "manager_approve", "hr_supervisor"]),
+        user = self.env.user
+        role_domains = [
+            [("employee_manager_id.user_id", "=", self.env.uid), ("state", "=", "draft")],
         ]
+        if user.has_group("hr_attendance.group_hr_attendance_manager"):
+            role_domains.append([
+                ("state", "=", "hr_supervisor"),
+                ("hr_manager_ids", "in", self.env.uid),
+            ])
+        if user.has_group("pr_hr_attendance.custom_group_hr_attendance_supervisor"):
+            role_domains.append([
+                ("state", "=", "manager_approve"),
+                ("hr_supervisor_ids", "in", self.env.uid),
+            ])
+        return expression.OR(role_domains)
 
     @api.model
     def _leave_pending_domain(self):

@@ -2,37 +2,84 @@
 
 from odoo import http
 from odoo.http import request
+from odoo.exceptions import ValidationError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import base64
+import json
 import logging
 logger = logging.getLogger(__name__)
 
 
 class ShortageRequestTemplate(http.Controller):
+    def _prepare_attendance_values(self, employee_id, for_date):
+        day_start = datetime.combine(for_date, datetime.min.time())
+        day_end = day_start + relativedelta(days=1)
+        attendance = request.env["hr.attendance"].sudo().search([
+            ("employee_id", "=", employee_id),
+            ("check_in", ">=", day_start),
+            ("check_in", "<", day_end),
+        ], limit=1)
+        return {
+            "check_in": attendance.check_in if attendance else False,
+            "check_out": attendance.check_out if attendance else False,
+            "shortage_text": attendance.shortage_time if attendance else "",
+            "has_attendance": bool(attendance),
+        }
 
     @http.route('/shortage_request', auth='user', type='http')
     def display_shortage_request_form(self, **kw):
         current_user = request.env.user
         current_employee_id = request.env["hr.employee"].sudo().search([("user_id", "=", current_user.id)], limit=1)
         email = current_employee_id.work_email
-        shortage_text = ""
         check_in = kw.get("check_in")
         check_out = kw.get("check_out")
         shortage_text = kw.get("shortage_text")
-        if shortage_text:
-            shortage_text = shortage_text
+        date_value = kw.get("date")
+        shortage_date = datetime.strptime(date_value, "%Y-%m-%d").date() if date_value else False
+        if check_in:
+            check_in = datetime.strptime(check_in, "%Y-%m-%d %H:%M:%S")
+            shortage_date = check_in.date()
+        if check_out:
+            check_out = datetime.strptime(check_out, "%Y-%m-%d %H:%M:%S")
+        if not shortage_date:
+            shortage_date = datetime.today().date()
+        has_attendance = False
+        if not check_in or not check_out:
+            attendance_vals = self._prepare_attendance_values(current_employee_id.id, shortage_date)
+            has_attendance = attendance_vals["has_attendance"]
+            check_in = attendance_vals["check_in"] if has_attendance else False
+            check_out = attendance_vals["check_out"] if has_attendance else False
+            if not shortage_text:
+                shortage_text = attendance_vals["shortage_text"]
         else:
-            shortage_text = ""
-        shortage_date = datetime.strptime(check_in , "%Y-%m-%d %H:%M:%S").date()
+            has_attendance = True
         return http.request.render('de_hr_workspace_attendance.shortage_request_template', {
             "current_employee_id": current_employee_id,
             "employee_email": email,
-            "check_in": (datetime.strptime(check_in , "%Y-%m-%d %H:%M:%S")) + relativedelta(hours=3) if check_in else False,
-            "check_out": (datetime.strptime(check_out , "%Y-%m-%d %H:%M:%S")) + relativedelta(hours=3) if check_out else False,
-            "shortage_text": shortage_text,
+            "check_in": (check_in + relativedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S") if check_in else False,
+            "check_out": (check_out + relativedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S") if check_out else False,
+            "shortage_text": shortage_text or "",
             "shortage_date": shortage_date,
+            "has_attendance": has_attendance,
+            "error_message": False,
         })
+
+    @http.route('/shortage_request/attendance_info', auth='user', type='http', methods=['GET'])
+    def get_attendance_info(self, **kw):
+        employee_id = int(kw.get("employee_id"))
+        requested_date = datetime.strptime(kw.get("date"), "%Y-%m-%d").date()
+        attendance_vals = self._prepare_attendance_values(employee_id, requested_date)
+        response_data = {
+            "check_in": (attendance_vals["check_in"] + relativedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S") if attendance_vals["check_in"] else "",
+            "check_out": (attendance_vals["check_out"] + relativedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S") if attendance_vals["check_out"] else "",
+            "shortage_text": attendance_vals["shortage_text"] or "",
+            "has_attendance": attendance_vals["has_attendance"],
+        }
+        return request.make_response(
+            json.dumps(response_data),
+            headers=[('Content-Type', 'application/json')]
+        )
 
     @http.route('/shortage_request/create', type='http', auth="user")
     def contact_created(self, **kw):
@@ -43,18 +90,36 @@ class ShortageRequestTemplate(http.Controller):
         employee_id = int(kw.get('employee_id'))
         str_date = kw.get('date')
         str_check_in = kw.get('checkin')
+        str_check_out = kw.get('checkout')
+        date = datetime.strptime(str_date, "%Y-%m-%d").date()
+        employee_obj = request.env['hr.employee'].sudo().browse(employee_id)
+        attendance_vals = self._prepare_attendance_values(employee_id, date)
+
+        if not attendance_vals["has_attendance"]:
+            return http.request.render('de_hr_workspace_attendance.shortage_request_template', {
+                "current_employee_id": employee_obj,
+                "employee_email": employee_obj.work_email,
+                "check_in": False,
+                "check_out": False,
+                "shortage_text": "",
+                "shortage_date": date,
+                "has_attendance": False,
+                "error_message": "No attendance exists for the selected date, so shortage request cannot be created.",
+            })
+
+        if not str_check_in or not str_check_out:
+            str_check_in = (attendance_vals["check_in"] + relativedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S")
+            str_check_out = (attendance_vals["check_out"] + relativedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S")
+
         if len(str_check_in) == 16:  # If no seconds part is present
             str_check_in += ':00'
-        str_check_out = kw.get('checkout')
         if len(str_check_out) == 16:  # If no seconds part is present
             str_check_out += ':00'
         shortage_time = kw.get('shortage')
-        date = datetime.strptime(str_date, "%Y-%m-%d").date()
+        if not shortage_time:
+            raise ValidationError("Shortage can only be requested for days that have attendance shortage.")
         check_in = datetime.strptime(str_check_in, "%Y-%m-%dT%H:%M:%S")
-        # check_in = datetime.strptime(str_check_in, "%Y-%m-%dT%H:%M")
         check_out = datetime.strptime(str_check_out, "%Y-%m-%dT%H:%M:%S")
-        # check_out = datetime.strptime(str_check_out, "%Y-%m-%dT%H:%M")
-        employee_obj = request.env['hr.employee'].sudo().browse(employee_id)
         reason = kw.get('message') if kw.get('message') else False
         employee_manager_id = employee_obj.parent_id
         # hr_supervisor_group_ids = [request.env.ref('hr_attendance.group_hr_attendance_officer').id]
@@ -96,4 +161,3 @@ class ShortageRequestTemplate(http.Controller):
         else:
             print(kw, 'False')
             return False
-

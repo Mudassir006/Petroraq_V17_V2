@@ -1,16 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import OrderedDict
-from operator import itemgetter
-from markupsafe import Markup
+from datetime import timedelta
 
-from odoo import conf, http, _
-from odoo.exceptions import AccessError, MissingError
+from odoo import fields, http, _
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
-from odoo.tools import groupby as groupbyelem
-
-from odoo.osv.expression import OR, AND
 
 
 class EmployeeAttendancePortal(CustomerPortal):
@@ -30,8 +24,16 @@ class EmployeeAttendancePortal(CustomerPortal):
             'check_out': {'label': _('Oldest'), 'order': 'check_in asc'},
         }
 
+    def _prepare_my_attendance_searchbar_filters(self):
+        today = fields.Date.context_today(request.env.user)
+        tomorrow = today + timedelta(days=1)
+        return {
+            'today': {'label': _('Today'), 'domain': [('check_in', '>=', today), ('check_in', '<', tomorrow)]},
+            'all': {'label': _('All'), 'domain': []},
+        }
+
     @http.route(['/my/attendances', '/my/attendances/page/<int:page>'], type='http', auth="user", website=True)
-    def portal_my_attendances(self, page=1, date_begin=None, date_end=None, sortby=None, **kw):
+    def portal_my_attendances(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
         values = self._prepare_portal_layout_values()
         Attendance = request.env['hr.attendance'].sudo()
         domain = self._prepare_my_attendance_domain()
@@ -41,6 +43,11 @@ class EmployeeAttendancePortal(CustomerPortal):
             sortby = 'check_in'
         order = searchbar_sortings[sortby]['order']
 
+        searchbar_filters = self._prepare_my_attendance_searchbar_filters()
+        if not filterby:
+            filterby = 'today'
+        domain += searchbar_filters[filterby]['domain']
+
         if date_begin and date_end:
             domain += [('check_in', '>', date_begin), ('check_in', '<=', date_end)]
 
@@ -49,7 +56,7 @@ class EmployeeAttendancePortal(CustomerPortal):
         # pager
         pager = portal_pager(
             url="/my/attendances",
-            url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby},
+            url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby, 'filterby': filterby},
             total=attendance_count,
             page=page,
             step=self._items_per_page
@@ -67,6 +74,8 @@ class EmployeeAttendancePortal(CustomerPortal):
             'default_url': '/my/attendances',
             'pager': pager,
             'searchbar_sortings': searchbar_sortings,
-            'sortby': sortby
+            'sortby': sortby,
+            'searchbar_filters': searchbar_filters,
+            'filterby': filterby,
         })
         return request.render("de_hr_workspace_attendance.portal_my_attendances", values)
