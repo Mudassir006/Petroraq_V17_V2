@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    	<function name="_update_brand_icon" model="to.base" />
+    	<!-- # TODOs: remove this data in 18+ -->
+        <!-- https://github.com/odoo/odoo/commit/59d3762d4ce1e40ed42671c0e6e4f77d3d4fc830 -->
+        <function name="_set_default_user_rights_minimal" model="to.base" />
+        <!--END TODOs-->
+        <function name="_set_default_report_print_delay" model="to.base" />
+    </data>    
+</odoo>

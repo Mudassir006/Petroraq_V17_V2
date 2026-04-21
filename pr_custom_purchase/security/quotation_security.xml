@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="access_purchase_quotation_user" model="ir.model.access">
+            <field name="name">purchase.quotation user access</field>
+            <field name="model_id" ref="model_purchase_quotation"/>
+            <field name="group_id" ref="base.group_user"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+        <record id="access_purchase_quotation_line_user" model="ir.model.access">
+            <field name="name">purchase.quotation.line user access</field>
+            <field name="model_id" ref="model_purchase_quotation_line"/>
+            <field name="group_id" ref="base.group_user"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+                <!-- Access rights for Custom Purchase Order Line -->
+        <record id="access_custom_po_line_procurement_admin" model="ir.model.access">
+            <field name="name">access.custom.po.line.procurement.admin</field>
+            <field name="model_id" ref="model_purchase_order_custom_line"/>
+            <field name="group_id" ref="pr_custom_purchase.procurement_admin"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
+        <record id="access_custom_po_line_project_engineer" model="ir.model.access">
+            <field name="name">access.custom.po.line.project.engineer</field>
+            <field name="model_id" ref="model_purchase_order_custom_line"/>
+            <field name="group_id" ref="pr_custom_purchase.project_engineer"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
+        <record id="access_custom_po_line_project_manager" model="ir.model.access">
+            <field name="name">access.custom.po.line.project.manager</field>
+            <field name="model_id" ref="model_purchase_order_custom_line"/>
+            <field name="group_id" ref="pr_custom_purchase.project_manager"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
+        <record id="access_custom_po_line_operations_director" model="ir.model.access">
+            <field name="name">access.custom.po.line.operations.director</field>
+            <field name="model_id" ref="model_purchase_order_custom_line"/>
+            <field name="group_id" ref="pr_custom_purchase.operations_director"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
+        <record id="access_custom_po_line_managing_director" model="ir.model.access">
+            <field name="name">access.custom.po.line.managing.director</field>
+            <field name="model_id" ref="model_purchase_order_custom_line"/>
+            <field name="group_id" ref="pr_custom_purchase.managing_director"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+    </data>
+</odoo>

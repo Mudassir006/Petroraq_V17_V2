@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_leave_workspace_user,hr.leave.workspace.user,hr_holidays.model_hr_leave,de_hr_workspace.group_hr_employee_workspace,1,0,0,0
+access_hr_leave_request_workspace_user,hr.leave.request.workspace.user,pr_hr_holidays.model_pr_hr_leave_request,de_hr_workspace.group_hr_employee_workspace,1,1,0,0
+access_hr_leave_request_workspace_approvals,hr.leave.request.workspace.approvals,pr_hr_holidays.model_pr_hr_leave_request,de_hr_workspace.group_hr_employee_approvals,1,1,0,0
+access_hr_leave_request_workspace_holidays_manager,hr.leave.request.workspace.holidays.manager,pr_hr_holidays.model_pr_hr_leave_request,hr_holidays.group_hr_holidays_manager,1,1,0,0
+access_hr_leave_request_workspace_holidays_supervisor,hr.leave.request.workspace.holidays.supervisor,pr_hr_holidays.model_pr_hr_leave_request,pr_hr_holidays.custom_group_hr_holidays_supervisor,1,1,0,0
+
+access_hr_leave_portal_user,hr.leave.portal.user,hr_holidays.model_hr_leave,base.group_portal,1,0,0,0
+access_hr_leave_type_portal_user,hr.leave.type.portal.user,hr_holidays.model_hr_leave_type,base.group_portal,1,0,0,0
+access_hr_leave_allocation_portal_user,hr.leave.allocation.portal.user,hr_holidays.model_hr_leave_allocation,base.group_portal,1,0,0,0
+
+access_hr_leave_request_portal_user,pr.hr.leave.request.portal.user,pr_hr_holidays.model_pr_hr_leave_request,base.group_portal,1,0,0,0

@@ -1,0 +1,186 @@
+<odoo>
+
+    <record id="hr_leave_request_filter_view" model="ir.ui.view">
+        <field name="name">pr.hr.leave.request.filter.view</field>
+        <field name="model">pr.hr.leave.request</field>
+        <field name="arch" type="xml">
+            <search string="Leave Request">
+                <field name="name"/>
+                <filter domain="[('state','=','draft')]"
+                        string="To Manager Approve" name="manager_approve"/>
+                <filter domain="[('state','=','manager_approve')]"
+                        string="To HR Manager Approve" name="hr_manager_approve"/>
+                <filter string="Rejected"
+                        domain="[('state', '=', 'reject')]" name="rejected"/>
+                <separator/>
+                <separator/>
+                <field name="employee_id"/>
+                <field name="leave_type_id"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_employee" string="Employee"
+                            context="{'group_by':'employee_id'}"/>
+                    <filter name="group_leave_type" string="Leave Type"
+                            context="{'group_by':'leave_type_id'}"/>
+                    <separator/>
+                    <filter name="group_date_from" string="Date From"
+                            context="{'group_by':'date_from'}"/>
+                    <filter name="group_date_to" string="Date To"
+                            context="{'group_by':'date_to'}"/>
+                    <separator/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="hr_leave_request_form_view" model="ir.ui.view">
+        <field name="name">pr.hr.leave.request.form.view</field>
+        <field name="model">pr.hr.leave.request</field>
+        <field name="arch" type="xml">
+            <form string="Leave Request">
+                <field name="employee_manager_check" invisible="1"/>
+                <field name="employee_user_check" invisible="1"/>
+                <field name="hr_manager_check" invisible="1"/>
+                <field name="hr_supervisor_check" invisible="1"/>
+                <field name="approval_state" invisible="1"/>
+                <field name="leave_id" invisible="1"/>
+                <header>
+                    <button name="action_manager_approve" string="APPROVE" class="btn-success"
+                            invisible="state != 'draft' or employee_manager_check == False"
+                            type="object"/>
+                    <button name="action_manager_reject" string="REJECT" class="btn-danger"
+                            invisible="state != 'draft' or employee_manager_check == False"
+                            type="object"/>
+                    <button name="action_hr_supervisor_approve" string="APPROVE" class="btn-success"
+                            invisible="state != 'manager_approve' or hr_supervisor_check == False"
+                            type="object"/>
+                    <button name="action_hr_supervisor_reject" string="REJECT" class="btn-danger"
+                            invisible="state != 'manager_approve' or hr_supervisor_check == False"
+                            type="object"/>
+                    <button name="action_hr_manager_approve" string="APPROVE" class="btn-success"
+                            invisible="state != 'hr_supervisor' or hr_manager_check == False"
+                            type="object"/>
+                    <button name="action_hr_manager_reject" string="REJECT" class="btn-danger"
+                            invisible="state != 'hr_supervisor' or hr_manager_check == False"
+                            type="object"/>
+                    <button name="action_employee_cancel_request" string="REQUEST CANCELLATION" class="btn-warning"
+                            invisible="state != 'hr_approve' or employee_user_check == False" type="object"/>
+                    <button name="action_hr_manager_cancel_approve" string="APPROVE CANCELLATION" class="btn-success"
+                            invisible="state != 'cancel_request' or hr_manager_check == False" type="object"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,manager_approve,hr_supervisor,hr_approve,cancel_request,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="action_open_leave"
+                                string="Employee Leave" type="object"
+                                icon="fa-calendar" invisible="leave_id == False"/>
+                    </div>
+                    <div class="alert alert-danger"
+                         role="alert"
+                         invisible="not allocation_override_applied and not allocation_bypassed">
+                        <i class="fa fa-exclamation-triangle me-1"/>
+                        <strong>Advance Allocation: There is no Leave Allocation to Cover this request.</strong>
+                        <field name="allocation_override_note" readonly="1" nolabel="1"
+                               placeholder="Requested days exceed allocation. Approval will use advance allocation override."/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name"
+                                   readonly="1" force_save="1"
+                            />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="state  != 'draft'" string="Employee"
+                                   options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="leave_type_id" readonly="state  != 'draft'" string="Leave Type"
+                                   options="{'no_create': True, 'no_edit': True}"/>
+                            <label for="date_from" string="Period"/>
+                            <div class="o_row">
+                                <field name="date_from" width="40%" readonly="state  != 'draft'"
+                                       class="oe_inline"/>
+                                <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon"
+                                   title="Arrow"/>
+                                <span>
+                                    <strong>-</strong>
+                                </span>
+                                <field name="date_to" width="40%"
+                                       class="oe_inline" readonly="state  != 'draft'"/>
+                            </div>
+                            <field name="requested_days" readonly="1"/>
+                            <field name="allocation_override_applied" invisible="1"/>
+                            <field name="allocation_bypassed" invisible="1"/>
+                            <field name="allocation_override_note" invisible="1"/>
+
+                        </group>
+                        <group>
+                            <field name="company_id" readonly="state  != 'draft'" string="Company"
+                                   options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="employee_manager_id" options="{'no_create': True, 'no_edit': True}"
+                                   invisible="1"/>
+                            <field name="hr_supervisor_ids" options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags" invisible="1"/>
+                            <field name="hr_manager_ids" options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags" invisible="1"/>
+                            <field name="note" readonly="state  != 'draft'"/>
+                            <field name="reject_reason" invisible="state  != 'reject'"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="hr_leave_request_tree_view" model="ir.ui.view">
+        <field name="name">pr.hr.leave.request.tree.view</field>
+        <field name="model">pr.hr.leave.request</field>
+        <field name="arch" type="xml">
+            <tree string="Leave Request">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="leave_type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="company_id"/>
+                <field name="employee_manager_id" column_invisible="1"/>
+                <field name="hr_supervisor_ids" widget="many2many_tags" column_invisible="1"/>
+                <field name="hr_manager_ids" widget="many2many_tags" column_invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state == 'reject'"
+                       decoration-warning="state == 'weekend'"
+                       decoration-success="state == 'hr_approve'"
+                       decoration-info="state == 'hr_supervisor'"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_hr_leave_request_action" model="ir.actions.act_window">
+        <field name="name">Leave Requests</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pr.hr.leave.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pr_hr_holidays.hr_leave_request_tree_view')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('pr_hr_holidays.hr_leave_request_form_view')})]"/>
+        <field name="search_view_id" ref="hr_leave_request_filter_view"/>
+    </record>
+
+
+    <menuitem id="menu_hr_hr_leave_request"
+              name="Leave Requests"
+              parent="hr_holidays.menu_hr_holidays_management"
+              sequence="2"
+              action="action_hr_leave_request_action"/>
+
+
+</odoo>

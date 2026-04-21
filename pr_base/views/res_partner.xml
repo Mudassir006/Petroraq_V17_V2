@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <record id="pr_base_res_partner_view_form_inherit" model="ir.ui.view">
+        <field name="name">pr.base.res.partner.view.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//span[@name='address_name']" position="before">
+                <field name="partner_code"/>
+            </xpath>
+            <!--            <xpath expr="//field[@name='vat']" position="attributes">-->
+            <!--                <attribute name="required">is_company</attribute>-->
+            <!--            </xpath>-->
+            <!--            <xpath expr="//field[@name='company_registry']" position="attributes">-->
+            <!--                <attribute name="required">is_company</attribute>-->
+            <!--            </xpath>-->
+
+
+            <xpath expr="//span[@name='address_name']" position="before">
+                <field name="arabic_name"/>
+            </xpath>
+
+            <xpath expr="//div[hasclass('o_address_format')]" position="after">
+                <label for="arabic_street" string="Arabic Address"/>
+                <div class="o_address_format">
+                    <field name="arabic_street" placeholder="Street..." class="o_address_street"/>
+                    <field name="arabic_street2" placeholder="Street 2..." class="o_address_street"/>
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_payroll_view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.payroll.view.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='o_work_employee_main']" position="inside">
+                <group name="payroll_attendance_options" string="Payroll Attendance">
+                    <field name="exclude_transportation_from_attendance_gross" widget="boolean_toggle"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

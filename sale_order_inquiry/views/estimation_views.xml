@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_petroraq_estimation_form_inquiry" model="ir.ui.view">
+        <field name="name">petroraq.estimation.form.inquiry</field>
+        <field name="model">petroraq.estimation</field>
+        <field name="inherit_id" ref="petroraq_sale_workflow.view_petroraq_estimation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group/field[@name='sale_order_id']" position="after">
+                <field name="order_inquiry_id" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

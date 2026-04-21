@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_payslip_workspace_user,hr.payslip.workspace.user,hr_payroll.model_hr_payslip,de_hr_workspace.group_hr_employee_workspace,1,0,0,0
+access_hr_payslip_line_workspace_user,hr.payslip.line.workspace.user,hr_payroll.model_hr_payslip_line,de_hr_workspace.group_hr_employee_workspace,1,0,0,0
+
+access_hr_payslip_portal_user,hr.payslip.portal.user,hr_payroll.model_hr_payslip,base.group_portal,1,0,0,0
+access_hr_payslip_line_portal_user,hr.payslip.line.portal.user,hr_payroll.model_hr_payslip_line,base.group_portal,1,0,0,0
+access_hr_salary_rule_category_portal_user,hr.salary.rule.category.portal.user,hr_payroll.model_hr_salary_rule_category,base.group_portal,1,0,0,0
+access_hr_salary_rule_portal_user,hr.salary.rule.portal.user,hr_payroll.model_hr_salary_rule,base.group_portal,1,0,0,0

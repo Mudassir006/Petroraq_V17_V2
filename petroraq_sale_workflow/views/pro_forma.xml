@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="sale_report_invoice_style_body"
+              inherit_id="sale.report_saleorder_document"
+              priority="60">
+
+        <!--        <xpath expr="//t[starts-with(@t-call,'web.external_layout')]" position="attributes">-->
+        <!--            <attribute name="t-call">pr_tax_Invoice_report_custom.custom_invoice_bridge_layout</attribute>-->
+        <!--        </xpath>-->
+
+        <xpath expr="//h2" position="replace">
+            <div class="mt-2">
+                <div>
+                    <h2 class="mt-4">
+                        <span t-if="env.context.get('proforma', False) or is_pro_forma">Pro-Forma Invoice</span>
+                        <span t-elif="doc.approval_state == 'approved' and doc.state in ['draft','sent']">Quotation #
+                        </span>
+                        <span t-elif="doc.approval_state != 'approved' and doc.state in ['draft','sent']">Draft
+                            Quotation
+                            #
+                        </span>
+                        <span t-else="">Order #</span>
+                        <span t-field="doc.name">SO0000</span>
+                    </h2>
+                </div>
+                <table class="table table-borderless" width="100%"
+                       style="line-height:0.9;font-family:'DroidArabicNaskh';font-size:17px !important;">
+                    <tr>
+                        <td style="text-align:left; width:15%;">Customer:</td>
+                        <td style="text-align:left; width:35%;">
+                            <span t-esc="doc.partner_id.name or ''"/>
+                        </td>
+                        <td style="text-align:right; width:35%;">
+                            <span t-esc="doc.partner_id.arabic_name or ''"/>
+                        </td>
+                        <td style="text-align:right; width:15%;">: العميل</td>
+                    </tr>
+                    <!--                    <tr>-->
+                    <!--                        <td style="text-align:left;">Customer VAT #:</td>-->
+                    <!--                        <td style="text-align:left;">-->
+                    <!--                            <span t-esc="doc.partner_id.vat or ''"/>-->
+                    <!--                        </td>-->
+                    <!--                        <td style="text-align:right;">-->
+                    <!--                            <span t-esc="doc.convert_phone_to_eastern_arabic_numerals(doc.partner_id.vat or '')"/>-->
+                    <!--                        </td>-->
+                    <!--                        <td style="text-align:right;">: الرقم الضريبي للعميل</td>-->
+                    <!--                    </tr>-->
+
+
+                    <tr>
+                        <td style="text-align:left;">Order No.</td>
+                        <td style="text-align:left;">
+                            <span t-esc="doc.name"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <span t-esc="doc.translate_sale_name(doc.name)"/>
+                        </td>
+                        <td style="text-align:right;">: رقم الطلب</td>
+                    </tr>
+
+
+                    <tr>
+                        <td style="text-align:left;">Order Date:</td>
+                        <td style="text-align:left;">
+                            <span t-esc="doc.date_order and doc.date_order.date() or ''"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <span t-esc="doc.date_order and doc.convert_phone_to_eastern_arabic_numerals(doc.date_order.date().strftime('%Y-%m-%d')) or ''"/>
+                        </td>
+                        <td style="text-align:right;">: تاريخ الطلب</td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align:left;">Contact Person</td>
+                        <td style="text-align:left;">
+                            <span t-esc="doc.inquiry_contact_person"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <span t-esc="doc.inquiry_contact_person"/>
+                        </td>
+                        <td style="text-align:right;">: المورد</td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align:left;">Designation</td>
+                        <td style="text-align:left;">
+                            <span t-esc="doc.inquiry_contact_person_designation"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <span t-esc="doc.inquiry_contact_person_designation"/>
+                        </td>
+                        <td style="text-align:right;">: المسمى الوظيفي</td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align:left;">Phone#</td>
+                        <td style="text-align:left;">
+                            <span t-esc="doc.inquiry_contact_person_phone"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <span t-esc="doc.convert_phone_to_eastern_arabic_numerals(doc.inquiry_contact_person_phone)"/>
+                        </td>
+                        <td style="text-align:right;">: رقم الهاتف</td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align:left;">Email</td>
+                        <td style="text-align:left;">
+                            <span t-esc="doc.inquiry_contact_person_email"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <span t-esc="doc.inquiry_contact_person_email"/>
+                        </td>
+                        <td style="text-align:right;">: البريد الإلكتروني</td>
+                    </tr>
+
+
+                </table>
+                <hr class="mt-2 mb-2" style="border-top:1px solid #cfcfcf;"/>
+            </div>
+        </xpath>
+
+        <!--        <xpath expr="//div[@id='informations']" position="replace">-->
+        <!--            <div class="row mt-2 mb-2" id="informations" style="font-family:'DroidArabicNaskh';">-->
+        <!--                <div class="col-6">-->
+        <!--                    <div class="mb-1">-->
+        <!--                        <strong>Bill To</strong>-->
+        <!--                        <span class="text-muted">/</span>-->
+        <!--                        <span style="direction:rtl;">إلى</span>-->
+        <!--                    </div>-->
+        <!--                    <div t-field="doc.partner_invoice_id"-->
+        <!--                         t-options='{"widget":"contact","fields":["name","address","phone"],"no_marker":True,"phone_icons":True}'/>-->
+        <!--                </div>-->
+
+        <!--                <div class="col-6">-->
+        <!--                    <div class="mb-1">-->
+        <!--                        <strong>Ship To</strong>-->
+        <!--                        <span class="text-muted">/</span>-->
+        <!--                        <span style="direction:rtl;">عنوان الشحن</span>-->
+        <!--                    </div>-->
+        <!--                    <div t-field="doc.partner_shipping_id"-->
+        <!--                         t-options='{"widget":"contact","fields":["name","address","phone"],"no_marker":True,"phone_icons":True}'/>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </xpath>-->
+
+        <xpath expr="//th[@name='th_description']" position="replace">
+            <th name="th_description" class="text-start">
+                Description
+                <span class="text-muted">/</span>
+                <span style="direction:rtl;">الوصف</span>
+            </th>
+        </xpath>
+
+        <xpath expr="//th[@name='th_quantity']" position="replace">
+            <th name="th_quantity" class="text-end">
+                Qty
+                <span class="text-muted">/</span>
+                <span style="direction:rtl;">الكمية</span>
+            </th>
+        </xpath>
+        <xpath expr="//th[@name='th_quantity']" position="after">
+            <th name="th_unit" class="text-start">
+                Unit
+                <span class="text-muted">/</span>
+                <span style="direction:rtl;">الوحدة</span>
+            </th>
+        </xpath>
+
+        <xpath expr="//td[@name='td_quantity']" position="replace">
+            <td name="td_quantity" class="text-end">
+                <span t-field="line.product_uom_qty">2.00</span>
+            </td>
+        </xpath>
+
+        <xpath expr="//td[@name='td_quantity']" position="after">
+            <td name="td_unit" class="text-start">
+                <span t-field="line.product_uom">Units</span>
+            </td>
+        </xpath>
+
+        <xpath expr="//th[@name='th_priceunit']" position="replace">
+            <th name="th_priceunit" class="text-end">
+                Unit Price
+                <span class="text-muted">/</span>
+                <span style="direction:rtl;">سعر الوحدة</span>
+            </th>
+        </xpath>
+
+        <xpath expr="//th[@name='th_subtotal']" position="replace">
+            <th name="th_subtotal" class="text-end">
+                Total
+                <span class="text-muted">/</span>
+                <span style="direction:rtl;">الإجمالي</span>
+            </th>
+        </xpath>
+
+        <xpath expr="//div[contains(concat(' ', normalize-space(@class), ' '), ' page ')]" position="inside">
+            <style>
+                /* Make SO main table look like a bordered invoice table */
+                .o_main_table {
+                border: 1px solid #000 !important;
+                border-collapse: collapse !important;
+                }
+                .o_main_table th,
+                .o_main_table td {
+                border: 1px solid #000 !important;
+                padding-top: 6px !important;
+                padding-bottom: 6px !important;
+                }
+                .o_main_table thead th {
+                background: #dbdbd9 !important; /* like your invoice header */
+                }
+                .o_main_table tbody tr.section td {
+                background: #f1f1f1 !important;
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//div[@id='total']//table" position="attributes">
+            <attribute name="class">table table-sm table-bordered o_petroraq_totals_table</attribute>
+        </xpath>
+
+
+        <!--        <xpath expr="//div[contains(concat(' ', normalize-space(@class), ' '), ' page ')]" position="inside">-->
+
+        <!--            <div t-if="env.context.get('proforma', False) or is_pro_forma"-->
+        <!--                 style="margin-top:20px; font-family:'DroidArabicNaskh'; font-size:17px;">-->
+        <!--                <table class="table table-borderless" style="line-height:0.9;">-->
+        <!--                    <tr>-->
+        <!--                        <td width="45%" style="text-align:left;">-->
+        <!--                            <b>Make all cheques payable to:</b>-->
+        <!--                        </td>-->
+        <!--                        <td width="55%" style="text-align:right;">-->
+        <!--                            <b>تصدر جميع الشيكات الى الحساب الآتي :</b>-->
+        <!--                        </td>-->
+        <!--                    </tr>-->
+        <!--                </table>-->
+
+        <!--                <table class="table table-borderless" style="margin-top:-10px; line-height:0.9;">-->
+        <!--                    <tr>-->
+        <!--                        <td width="15%" style="text-align:left;">Account Title:</td>-->
+        <!--                        <td width="25%" style="text-align:left;">Petroraq Engineering Co. Ltd.</td>-->
+        <!--                        <td width="55%" style="text-align:right;">شركة بيتروراق انجنيرنج-->
+        <!--                            المحدودة-->
+        <!--                        </td>-->
+        <!--                        <td width="55%" style="text-align:right;">عنوان الحساب :-->
+        <!--                        </td>-->
+
+        <!--                    </tr>-->
+        <!--                    <tr>-->
+        <!--                        <td style="text-align:left;">Bank:</td>-->
+        <!--                        <td style="text-align:left;">Arab National Bank</td>-->
+        <!--                        <td style="text-align:right;">البنك العربي الوطني</td>-->
+        <!--                        <td style="text-align:right;">البنك:</td>-->
+        <!--                    </tr>-->
+        <!--                    <tr>-->
+        <!--                        <td style="text-align:left;">A/C No:</td>-->
+        <!--                        <td style="text-align:left;">108095635470015</td>-->
+        <!--                        <td style="text-align:right;">١٠٨٠٩٥٦٣٥٤٧٠٠١٥-->
+        <!--                        </td>-->
+        <!--                        <td style="text-align:right;">رقم الحساب:</td>-->
+        <!--                    </tr>-->
+        <!--                    <tr>-->
+        <!--                        <td style="text-align:left;">IBAN No:</td>-->
+        <!--                        <td style="text-align:left;">SA1930400108095635470015</td>-->
+        <!--                        <td style="text-align:right;">SA١٩٣٠٤٠٠١٠٨٠٩٥٦٣٥٤٧٠٠١٥</td>-->
+        <!--                        <td style="text-align:right;">رقم الآيبان:</td>-->
+        <!--                    </tr>-->
+        <!--                    <tr>-->
+        <!--                        <td style="text-align:left;">Branch:</td>-->
+        <!--                        <td style="text-align:left;">Al-Jubail</td>-->
+        <!--                        <td style="text-align:right;">الجبيل</td>-->
+        <!--                        <td style="text-align:right;">فرع:</td>-->
+        <!--                    </tr>-->
+        <!--                    <tr>-->
+        <!--                        <td style="text-align:left;">SWIFT Code:</td>-->
+        <!--                        <td style="text-align:left;">ARNBSARI</td>-->
+        <!--                        <td style="text-align:right;">ARNBSARI</td>-->
+        <!--                        <td style="text-align:right;">رمز السويفت:</td>-->
+        <!--                    </tr>-->
+        <!--                </table>-->
+        <!--            </div>-->
+
+        <!--        </xpath>-->
+
+    </template>
+</odoo>

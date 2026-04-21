@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="pr_custom_purchase.QuotationFormTemplate">
+                     <form class="quotation-form" style="padding: 30px 100px;">
+                        <!-- RFQ Identifier (left empty intentionally) -->
+                        <div class="row">
+                            <div class="col-6">
+                                <label>RFQ Origin:</label>
+                                <input type="text" name="rfq_origin" class="form-control" list="rfq_origin_list"/>
+                                <datalist id="rfq_origin_list">
+                                    <t t-foreach="state.rfqs" t-as="r" t-key="r.id">
+                                        <option t-att-value="r.name"> </option>
+                                    </t>
+                                </datalist>
+                            </div>
+                            <div class="col-6">
+                                <label>Vendor Reference:</label>
+                                <input type="text" name="vendor_ref" class="form-control"/>
+                            </div>
+                        </div>
+                        <br/>
+
+                        <!-- Supplier Info -->
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Supplier Name:</label>
+                                <input type="text" name="supplier_name" class="form-control" list="vendor_list" required="required"/>
+                                <datalist id="vendor_list">
+                                    <t t-foreach="state.vendors" t-as="v" t-key="v.id">
+                                        <option t-att-value="v.name"> </option>
+                                    </t>
+                                </datalist>
+                                <br/>
+
+                                <label>Company Address:</label>
+                                <input type="text" name="company_address" class="form-control"/><br/>
+
+                                <label>Email Address:</label>
+                                <input type="email" name="email_address" class="form-control" required="required"/><br/>
+
+                                <label>Quotation Ref No:</label>
+                                <input type="text" name="quotation_ref" class="form-control" required="required"/><br/>
+
+                                <label>Quotation Valid Till:</label>
+                                <input type="date" name="quotation_valid_till" class="form-control" required="required"/>
+                            </div>
+
+                            <div class="col-6">
+                                <label>Contact Person:</label>
+                                <input type="text" name="contact_person" class="form-control"/><br/>
+
+                                <label>Phone Number:</label>
+                                <input type="text" name="phone_number" class="form-control"/><br/>
+
+                                <label>Supplier VAT ID:</label>
+                                <input type="text" name="supplier_id" class="form-control"/><br/>
+
+                                <label>Quotation Date:</label>
+                                <input type="date" name="expected_arrival" class="form-control" required="required"/>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <!-- Quotation Lines -->
+                        <h4>Quotation Lines</h4>
+                        <table class="table table-bordered" id="quotation_lines_table">
+                            <thead>
+                                <tr>
+                                    <th>Item Description</th>
+                                    <th>Quantity</th>
+                                    <th>Type</th>
+                                    <th>Unit</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Price</th>
+                                    <th>Cost Center</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="quotation_lines_body">
+                                <tr>
+                                    <td><input type="text" name="product_description_1" class="form-control"/></td>
+                                    <td><input type="number" step="0.01" name="product_quantity_1" class="form-control"/></td>
+                                    <td><input type="text" name="product_type_1" class="form-control"/></td>
+                                    <td><input type="text" name="product_unit_1" class="form-control"/></td>
+                                    <td><input type="number" step="0.01" name="product_price_1" class="form-control"/></td>
+                                    <td><input type="number" step="0.01" name="product_total_1" class="form-control" readonly="readonly"/></td>
+                                    <td><input type="text" name="product_cost_center_1" class="form-control" readonly="readonly"/></td>
+                                    <td><button type="button" class="btn btn-danger btn-sm p-1" onclick="this.closest('tr').remove(); updateTotalAmount();" title="Remove" aria-label="Remove">&#215;</button></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6"></td>
+                                    <td><strong>Total Amount</strong></td>
+                                    <td><input type="number" step="0.01" id="total_amount" class="form-control" readonly="readonly"/></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <button type="button" class="btn btn-secondary" onclick="addLine()">Add Line</button>
+
+                        <br/><br/>
+
+                        <!-- Terms -->
+                        <h4>Terms and Conditions</h4>
+                        <style>
+                            .terms-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+                            .terms-inline-input { display: inline-block; width: 180px; max-width: 220px; }
+                        </style>
+                        <!-- Payment Terms -->
+                        <div class="mb-3">
+                            <div><strong>Payment Terms</strong></div>
+                            <div class="terms-row">
+                                <label><input type="checkbox" name="terms_net"/> Net</label>
+                                <label class="ms-3"><input type="checkbox" name="terms_30days"/> 30 days</label>
+                                <label class="ms-3"><input type="checkbox" name="terms_advance"/> % Advance</label>
+                                <input type="text" name="terms_advance_specify" placeholder="Specify..." class="form-control terms-inline-input"/>
+                                <label class="ms-3"><input type="checkbox" name="terms_delivery"/> On Delivery</label>
+                                <label class="ms-3"><input type="checkbox" name="terms_other"/> Others</label>
+                                <input type="text" name="terms_others_specify" placeholder="Specify..." class="form-control terms-inline-input"/>
+                            </div>
+                        </div>
+
+                        <!-- Production/Material Availability -->
+                        <div class="mb-3">
+                            <div><strong>Production/Material Availability</strong></div>
+                            <div class="terms-row">
+                                <label><input type="checkbox" name="ex_stock"/> Ex-Stock</label>
+                                <label class="ms-3"><input type="checkbox" name="required_days"/> Required Days for Production/Import</label>
+                                <input type="text" name="production_days" placeholder="Specify..." class="form-control terms-inline-input"/>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Terms -->
+                        <div class="mb-3">
+                            <div><strong>Delivery Terms</strong></div>
+                            <div class="terms-row">
+                                <label><input type="checkbox" name="ex_work"/> Ex-Work</label>
+                                <label class="ms-3"><input type="checkbox" name="delivery_site"/> Delivery at Site (Petroraq / Project Site)</label>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Date Expected -->
+                        <div class="mb-3">
+                            <div><strong>Delivery Date Expected</strong></div>
+                            <input type="date" name="delivery_date" class="form-control" style="max-width: 260px;" required="required"/>
+                        </div>
+
+                        <!-- Delivery Method -->
+                        <div class="mb-3">
+                            <div><strong>Delivery Method</strong></div>
+                            <div class="terms-row">
+                                <label><input type="checkbox" name="courier"/> Courier</label>
+                                <label class="ms-3"><input type="checkbox" name="pickup"/> Pickup</label>
+                                <label class="ms-3"><input type="checkbox" name="freight"/> Freight</label>
+                                <label class="ms-3"><input type="checkbox" name="delivery_others"/> Others</label>
+                                <input type="text" name="delivery_others_specify" placeholder="Specify..." class="form-control terms-inline-input"/>
+                            </div>
+                        </div>
+
+                        <!-- Partial Order Acceptable -->
+                        <div class="mb-3">
+                            <div><strong>Parital Order Acceptable</strong></div>
+                            <label><input type="checkbox" name="partial_yes"/> Yes</label>
+                            <label class="ms-3"><input type="checkbox" name="partial_no"/> No</label>
+                        </div>
+
+                        <!-- Notes -->
+                        <h4>Additional Information / Notes (if applicable)</h4>
+                        <textarea name="description" class="form-control"></textarea>
+
+                        <br/>
+                        <button type="button" class="btn btn-success" t-on-click="save">Submit Quotation</button>
+                    </form>
+    </t>
+</templates>

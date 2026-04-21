@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="account_ledger_multi_xlsx_report_view_xlsx" model="ir.actions.report">
+        <field name="name">Account Ledger (Multi) Excel</field>
+        <field name="model">account.ledger.multi</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">account_ledger.account_ledger_multi_xlsx_report</field>
+        <field name="report_file">account_ledger.account_ledger_multi_xlsx_report</field>
+    </record>
+
+</odoo>

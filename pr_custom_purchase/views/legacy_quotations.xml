@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Actions for Quotation -->
+    <record id="action_custom_pr_quotation" model="ir.actions.act_window">
+        <field name="name">Quotations</field>
+        <field name="res_model">custom.pr.quotation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <!-- Quotation Menus -->
+    <menuitem id="menu_quotation"
+              name="Quotation"
+              parent="menu_custom_purchase_root"
+              sequence="20"/>
+    <menuitem id="menu_pr_quotation"
+              name="Purchase Requisition Quotations"
+              parent="menu_quotation"
+              action="action_custom_pr_quotation"
+              sequence="10"/>
+    <!-- Tree View for Quotations -->
+    <record id="view_custom_pr_quotation_tree" model="ir.ui.view">
+        <field name="name">custom.pr.quotation.tree</field>
+        <field name="model">custom.pr.quotation</field>
+        <field name="arch" type="xml">
+            <tree string="Quotations">
+                <field name="vendor_id"/>
+                <field name="rfq_origin"/>
+                <field name="order_deadline"/>
+                <field name="expected_arrival"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Form View for Quotations -->
+    <record id="view_custom_pr_quotation_form" model="ir.ui.view">
+        <field name="name">custom.pr.quotation.form</field>
+        <field name="model">custom.pr.quotation</field>
+        <field name="arch" type="xml">
+            <form string="Quotation">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="vendor_id" readonly="1"/>
+                            <field name="rfq_origin" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="vendor_ref" readonly="1"/>
+                            <field name="order_deadline" readonly="1"/>
+                            <field name="expected_arrival" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Products">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="unit"/>
+                                    <field name="unit_price"/>
+                                    <field name="price_subtotal" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Supplier Information">
+                            <group>
+                                <group>
+                                    <field name="supplier_name" readonly="1"/>
+                                    <field name="supplier_id" readonly="1"/>
+                                    <field name='quotation_ref' readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="contact_person" readonly="1"/>
+                                    <field name="company_address" readonly="1"/>
+                                    <field name="phone_number" readonly="1"/>
+                                    <field name="email_address" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Terms and Conditions">
+                            <group>
+                                <!-- Payment Terms -->
+                                <group string="Payment Terms" col="2">
+                                    <field name="terms_net" />
+                                    <field name="terms_30days" />
+                                    <field name="terms_advance" />
+                                    <field name="terms_advance_specify" invisible="not terms_advance" />
+                                    <field name="terms_delivery" />
+                                    <field name="terms_other" />
+                                    <field name="terms_others_specify" invisible="not terms_other" />
+                                </group>
+                                <!-- Production / Material Availability -->
+                                <group string="Production Details" col="2">
+                                    <field name="ex_stock" />
+                                    <field name="required_days" />
+                                    <field name="production_days" invisible="not required_days" />
+                                </group>
+                                <!-- Delivery Terms -->
+                                <group string="Delivery Terms" col="2">
+                                    <field name="ex_work" />
+                                    <field name="delivery_site" />
+                                    <field name="delivery_date" />
+                                </group>
+                                <!-- Delivery Method -->
+                                <group string="Delivery Method" col="2">
+                                    <field name="delivery_courier" />
+                                    <field name="delivery_pickup" />
+                                    <field name="delivery_freight" />
+                                    <field name="delivery_others" />
+                                    <field name="delivery_others_specify" invisible="not delivery_others" />
+                                </group>
+                                <!-- Partial Order Acceptance -->
+                                <group string="Partial Order Acceptance" col="2">
+                                    <field name="partial_yes" />
+                                    <field name="partial_no" />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+        <record id="cron_hr_work_permit_iqama_check_alerts" model="ir.cron">
+            <field name="name">Hr Work Permit And Iqama Check Alerts</field>
+            <field name="interval_number">1</field>
+            <field eval="True" name="active"/>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="state">code</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="False" name="doall"/>
+            <field name="nextcall"
+                   eval="datetime.now().replace(hour=0, minute=0, second=0).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="doall" eval="False"/>
+            <field name="model_id" ref="pr_hr_recruitment.model_hr_work_permit"/>
+            <field name="code">model._cron_check_alerts()</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="account_ledger_xlsx_report_view_xlsx" model="ir.actions.report">
+        <field name="name">Excel Report</field>
+        <field name="model">account.ledger</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">account_ledger.account_ledger_xlsx_report</field>
+        <field name="report_file">account_ledger.account_ledger_xlsx_report</field>
+    </record>
+    <record model="report.paperformat" id="paperformat_custom_dynamic_ledger_report">
+        <field name="name">paperformat.custom_dynamic_ledger_report</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">20</field>
+        <field name="margin_right">5</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">20</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="custom_dynamic_ledger_report_pdf" model="ir.actions.report">
+        <field name="name">Dynamic Balance Report</field>
+        <field name="model">custom.dynamic.ledger.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">account_ledger.custom_dynamic_ledger_rep</field>
+        <field name="report_file">account_ledger.custom_dynamic_ledger_rep</field>
+        <field name="paperformat_id" ref="paperformat_custom_dynamic_ledger_report"/>
+    </record>
+    <template id="custom_dynamic_ledger_rep">
+        <t t-call="web.html_container">
+            <div class="header" style="padding:0; margin:0;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="background:#173b76; color:#ffffff; font-size:20px; font-weight:bold; text-align:center; padding:3px; border:1px solid #000;">
+                            <span t-esc="company_name"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background:#173b76; color:#ffffff; font-size:18px; font-weight:bold; text-align:center; padding:3px; border:1px solid #000;">
+                            Dynamic Balance Report -
+                            <span t-esc="main_head and main_head.title() or ''"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background:#173b76; color:#ffffff; font-size:18px; font-weight:bold; text-align:center; padding:3px; border:1px solid #000;">
+                            Period:
+                            <span t-esc="date_start"/>
+                            to
+                            <span t-esc="date_end"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <page style="margin-top:40mm;">
+                <div class="article">
+                    <t t-if="department_name or section_name or project_name or employee_name or asset_name">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                            <tr>
+                                <td style="padding:4px; border:1px solid #ddd;" t-if="department_name">
+                                    <strong>Department:</strong>
+                                    <span t-esc="department_name"/>
+                                </td>
+                                <td style="padding:4px; border:1px solid #ddd;" t-if="section_name">
+                                    <strong>Section:</strong>
+                                    <span t-esc="section_name"/>
+                                </td>
+                                <td style="padding:4px; border:1px solid #ddd;" t-if="project_name">
+                                    <strong>Project:</strong>
+                                    <span t-esc="project_name"/>
+                                </td>
+                                <tr t-if="employee_name or asset_name">
+                                    <td style="padding:4px; border:1px solid #ddd;" t-if="employee_name">
+                                        <strong>Employee:</strong>
+                                        <span t-esc="employee_name"/>
+                                    </td>
+                                    <td style="padding:4px; border:1px solid #ddd;" t-if="asset_name">
+                                        <strong>Asset:</strong>
+                                        <span t-esc="asset_name"/>
+                                    </td>
+                                    <td style="padding:4px; border:1px solid #ddd;"/>
+                                </tr>
+                            </tr>
+                        </table>
+                    </t>
+
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+                        <thead>
+                            <tr>
+                                <th style="background:#173b76; color:#ffffff; font-size:14px; padding:4px; text-align:center; border:1px solid #000;">
+                                    Account
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:14px; padding:4px; text-align:center; border:1px solid #000;">
+                                    Initial Debit
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:14px; padding:4px; text-align:center; border:1px solid #000;">
+                                    Initial Credit
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:14px; padding:4px; text-align:center; border:1px solid #000;">
+                                    Period Debit
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:14px; padding:4px; text-align:center; border:1px solid #000;">
+                                    Period Credit
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:14px; padding:4px; text-align:center; border:1px solid #000;">
+                                    Ending Debit
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:14px; padding:4px; text-align:center; border:1px solid #000;">
+                                    Ending Credit
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="doc">
+                                <tr>
+                                    <td style="text-align:left; border-bottom:1px solid #ddd; white-space: pre;">
+                                        <span t-esc="doc['level']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['initial_debit']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['initial_credit']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['period_debit']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['period_credit']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['ending_debit']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['ending_credit']"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </page>
+
+            <div class="footer">
+                <div class="row text-center" style="border-top: 1px solid black;">
+                    <div>Report Date:
+                        <span t-esc="report_date"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_pr_form_template" name="PR Create Form">
+        <t t-call="portal.portal_layout">
+            <div class="container my-5">
+                <h3 class="text-center mb-4">Purchase Requisition (PR)</h3>
+                <form method="POST" action="/my/purchase-request/submit" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="pr_type" t-att-value="request.params.get('type', 'pr')" />
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p>
+                                <strong>PR Number:</strong>
+                                <span class="text-danger" t-esc="pr_number_preview"></span>
+                            </p>
+                            <div class="mb-2">
+                                <label>Requested By:</label>
+                                <input type="text" name="requested_by" class="form-control" t-att-value="requested_by" readonly="1"/>
+                            </div>
+                            <div class="mb-2">
+                                <label>Department:</label>
+                                <input type="text" name="department" class="form-control" t-att-value="department" readonly="1"/>
+                            </div>
+                            <div class="mb-2">
+                                <label>Priority:</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="priority" value="low"/>
+                                    <label class="form-check-label">Low</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="priority" value="medium"/>
+                                    <label class="form-check-label">Medium</label>
+                                </div>
+                                <div class="form-check form-check-inline mt-2">
+                                    <input class="form-check-input" type="checkbox" name="priority" value="high"/>
+                                    <label class="form-check-label">High</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="priority" value="urgent"/>
+                                    <label class="form-check-label">Urgent</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Date of Request:</strong>
+                                <span id="request_date"></span>
+                            </p>
+                            <div class="mb-2">
+                                <label>Supervisor/Manager:</label>
+                                <input type="text" name="supervisor" class="form-control" t-att-value="supervisor" readonly="1"/>
+                            </div>
+                            <div class="mb-2 d-none" >
+                                <label>Supervisor/Manager ID:</label>
+                                <input type="text" name="supervisor_partner_id" class="form-control" t-att-value="supervisor_partner_id" readonly="1"/>
+                            </div>
+                            <div class="mb-2">
+                                <label>Required Date:</label>
+                                <input type="date" name="required_date" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table for Items -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <td colspan="7" class="text-start">
+                                        <label class="me-2 fw-bold">Cost Center:</label>
+                                        <select class="form-select d-inline w-auto" id="cost_center_selector" name="cost_center_id">
+                                            <option value="">Select Cost Center</option>
+                                            <t t-foreach="cost_centers" t-as="cc">
+                                                <option t-att-value="cc.id" t-att-data-budget-type="cc.budget_type" t-att-data-budget-code="cc.budget_code" t-att-data-cc-name="cc.name">
+                                                    <t t-esc="('%s - %s (%s)' % ((cc.budget_code or ''), (cc.name or ''), (cc.budget_type or '').upper()))"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                        <input type="hidden" id="budget_type_selector" name="budget_type_selector"/>
+                                        <input type="hidden" id="budget_input_field" name="budget_input_field"/>
+                                        <input type="hidden" id="cost_center_name" name="cost_center_name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Sr. No.</th>
+                                    <th>Item Description</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product_lines">
+                            
+                                
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6" class="text-end">
+                                        <strong>Total Amount</strong>
+                                    </td>
+                                    <td>
+                                        <span id="subtotal">0.00</span>
+                                    </td>
+                                </tr>
+                                <tr class="d-none">
+                                    <td colspan="6" class="text-end">
+                                        <strong>VAT Amount @ 15%</strong>
+                                    </td>
+                                    <td>
+                                        <span id="vat">0.00</span>
+                                    </td>
+                                </tr>
+                                <tr class="d-none">
+                                    <td colspan="6" class="text-end">
+                                        <strong>Total Amount Including VAT</strong>
+                                    </td>
+                                    <td>
+                                        <span id="total">0.00</span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                            <!-- Add Product Button -->
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-primary" id="add_product_btn" style="background-color: #122AA0 !important; border-color: #122AA0 !important; ">Add Product</button>
+                            </div>
+                        </table>
+                    </div>
+                    <div class="mb-4">
+                        <label for="notes">
+                            <strong>Additional Information / Notes (if applicable):</strong>
+                        </label>
+                        <textarea name="notes" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary" style="background-color: #122AA0 !important; border-color: #122AA0 !important; ">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <script type="text/javascript">
+                    document.addEventListener("DOMContentLoaded", function () {
+                    // Debug: Log the values passed from controller
+                    console.log('Debug - Values from controller:');
+                    console.log('Requested By:', document.querySelector('input[name="requested_by"]')?.value);
+                    console.log('Department:', document.querySelector('input[name="department"]')?.value);
+                    console.log('Supervisor:', document.querySelector('input[name="supervisor"]')?.value);
+                    
+                    const costCenterSelector = document.getElementById("cost_center_selector");
+                    const budgetTypeField = document.getElementById("budget_type_selector");
+                    const budgetCodeField = document.getElementById("budget_input_field");
+                    const costCenterNameField = document.getElementById("cost_center_name");
+                    const addProductBtn = document.getElementById("add_product_btn");
+                    const tableBody = document.getElementById("product_lines");
+                    const subtotalSpan = document.getElementById("subtotal");
+                    const vatSpan = document.getElementById("vat");
+                    const totalSpan = document.getElementById("total");
+                    
+                    let rowIndex = 0;
+                    let products = [];
+
+                    // Cost center selector logic
+                    if (costCenterSelector) {
+                        costCenterSelector.addEventListener("change", function () {
+                            const opt = this.options[this.selectedIndex];
+                            budgetTypeField.value = opt?.dataset?.budgetType || "";
+                            budgetCodeField.value = opt?.dataset?.budgetCode || "";
+                            costCenterNameField.value = opt?.dataset?.ccName || "";
+                        });
+                    }
+
+                    // Fetch products from backend
+                    async function fetchProducts() {
+                        try {
+                            const response = await fetch('/products', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({})
+                            });
+                            const result = await response.json();
+                            products = result.result?.products || [];
+                        } catch (error) {
+                            console.error("Error fetching products:", error);
+                            products = [];
+                        }
+                    }
+
+                    // Recalculate totals (subtotal, VAT, total)
+                    function recalculateTotals() {
+                        let subtotal = 0.0;
+                        tableBody.querySelectorAll("tr").forEach(row => {
+                            const quantityInput = row.querySelector('input[name^="quantity_"]');
+                            const unitPriceInput = row.querySelector('input[name^="unit_price_"]');
+                            const totalField = row.querySelector('input.form-control-plaintext');
+
+                            const quantity = parseFloat(quantityInput?.value) || 0;
+                            const unitPrice = parseFloat(unitPriceInput?.value) || 0;
+                            const lineTotal = quantity * unitPrice;
+
+                            totalField.value = lineTotal.toFixed(2);
+                            subtotal += lineTotal;
+                        });
+
+                        const vat = subtotal * 0.15;
+                        const total = subtotal + vat;
+
+                        subtotalSpan.textContent = subtotal.toFixed(2);
+                        vatSpan.textContent = vat.toFixed(2);
+                        totalSpan.textContent = total.toFixed(2);
+                    }
+
+                    // Add a product row to the table
+                    function addProductRow() {
+                        rowIndex++;
+                        const row = document.createElement("tr");
+                        const unitOptions = products.map(p => `
+                <option value="${p.name}" data-price="${p.price}" data-type="${p.type}">${p.name}</option>`).join("");
+
+                        row.innerHTML = `
+                <td>${rowIndex}</td>
+                <td>
+                    <input type="text" name="item_description_${rowIndex}" class="form-control" />
+                </td>
+                <td>
+                    <!-- <input type="text" name="item_type_${rowIndex}" class="form-control"/> -->
+                    <select name="item_type_${rowIndex}" class="form-select">
+                        <option value="Select Type">Select Type</option>
+                        <option value="material">Material</option>
+                        <option value="service">Service</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="quantity_${rowIndex}" class="form-control quantity-field" />
+                </td>
+                <td>
+                    <!-- <input type="text" name="unit_${rowIndex}" class="form-control product-selector"/> -->
+                    <select name="unit_${rowIndex}" class="form-select product-selector">
+                        <option value="Select Unit">Select Unit</option>
+                        <option value="kg">Kilogram (kg)</option>
+                        <option value="g">Gram (g)</option>
+                        <option value="l">Litre (L)</option>
+                        <option value="ml">Millilitre (ml)</option>
+                        <option value="m">Metre (m)</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="unit_price_${rowIndex}" class="form-control unit-price-field" />
+                </td>
+                <td>
+                    <input type="text" class="form-control-plaintext" value="0.00" readonly='1' />
+                </td>
+                        `;
+
+                        tableBody.appendChild(row);
+
+                        const productSelector = row.querySelector('.product-selector');
+                        const typeField = row.querySelector(`select[name="item_type_${rowIndex}"]`);
+                        const priceField = row.querySelector('.unit-price-field');
+                        const quantityField = row.querySelector('.quantity-field');
+
+                        productSelector.addEventListener('change', function () {
+                            recalculateTotals();
+                        });
+
+                        priceField.addEventListener('input', recalculateTotals);
+                        quantityField.addEventListener('input', recalculateTotals);
+                        row.querySelector(`input[name="item_description_${rowIndex}"]`).focus();
+                    }
+
+                    let budgetLeft = 0;
+                    addProductBtn.addEventListener("click", async function () {
+                    const selectedOption = costCenterSelector.options[costCenterSelector.selectedIndex];
+                    const selectedCostCenterId = costCenterSelector.value;
+
+                    if (!selectedCostCenterId) {
+                        alert("Please select a cost center first.");
+                        return;
+                    }
+                        // Check if last row (if exists) is fully filled before adding new one
+                    const lastRow = tableBody.querySelector("tr:last-child");
+                    if (lastRow) {
+                        const inputs = lastRow.querySelectorAll('input, select');
+                        for (let input of inputs) {
+                            if (input.type !== "text" &amp;&amp; input.type !== "number" &amp;&amp; input.tagName !== "SELECT") continue;
+                            if (!input.value.trim()) {
+                                alert("Please fill all fields in the current row before adding a new product.");
+                                return;
+                            }
+                        }
+                    }
+
+                    try {
+                        const response = await fetch('/check_budget', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                cost_center_id: selectedCostCenterId
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (!data.success) {
+                            alert(data.message);
+                            return;
+                        }
+                           // ✅ Show budget_left in console
+                        budgetLeft = parseFloat(data.budget_left) || 0;
+                        console.log("Budget Left:", data.budget_left);
+                        budgetTypeField.value = data.budget_type || selectedOption?.dataset.budgetType || "";
+                        budgetCodeField.value = data.budget_code || selectedOption?.dataset.budgetCode || "";
+                        costCenterNameField.value = selectedOption?.dataset.ccName || "";
+
+                        addProductRow();
+
+                    } catch (error) {
+                        console.error("Error checking budget:", error);
+                        alert("Error checking budget. Please try again.");
+                    }
+                });
+                function checkBudgetBeforeSubmit() {
+                    const subtotal = parseFloat(subtotalSpan.textContent) || 0;
+                    if (subtotal > budgetLeft) {
+                        alert(`Cannot submit. Subtotal (${subtotal}) exceeds budget left (${budgetLeft}).`);
+                        return false;
+                    }
+                    return true;
+                }
+                document.querySelector("form").addEventListener("submit", function (event) {
+                    if (!checkBudgetBeforeSubmit()) {
+                        event.preventDefault(); // stop submit
+                    }
+                });
+
+                    setTimeout(() => {
+                        fetchProducts();
+                    }, 500);
+                });
+                document.addEventListener('DOMContentLoaded', function() {
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('request_date').textContent = today;
+                    });
+            </script>
+        </t>
+    </template>
+</odoo>

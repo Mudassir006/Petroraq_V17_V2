@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Action -->
+    <record id="action_hr_recruitment_request" model="ir.actions.act_window">
+        <field name="name">Recruitment Requests</field>
+        <field name="res_model">hr.recruitment.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create recruitment requests for new or existing job positions.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_hr_recruitment_request_root"
+              name="Recruitment Requests"
+              parent="hr_recruitment.menu_hr_recruitment_root"
+              sequence="40"/>
+
+    <menuitem id="menu_hr_recruitment_request"
+              name="Requests"
+              parent="menu_hr_recruitment_request_root"
+              action="action_hr_recruitment_request"
+              sequence="10"/>
+
+    <!-- Tree view -->
+    <record id="view_hr_recruitment_request_tree" model="ir.ui.view">
+        <field name="name">hr.recruitment.request.tree</field>
+        <field name="model">hr.recruitment.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="is_new_position"/>
+                <field name="job_id"/>
+                <field name="new_job_name"/>
+                <field name="requested_employees"/>
+                <field name="applicant_count"/>
+                <field name="hired_count"/>
+                <field name="hired_ratio"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search -->
+    <record id="view_hr_recruitment_request_search" model="ir.ui.view">
+        <field name="name">hr.recruitment.request.search</field>
+        <field name="model">hr.recruitment.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="state"/>
+
+                <filter string="New Positions" name="new_positions"
+                        domain="[('is_new_position', '=', True)]"/>
+                <filter string="Approved" name="approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter string="Department Approval" name="dept_approval"
+                        domain="[('state', '=', 'dept_approval')]"/>
+                <filter string="HR Approval" name="hr_approval"
+                        domain="[('state', '=', 'hr_approval')]"/>
+                <filter string="MD Approval" name="md_approval"
+                        domain="[('state', '=', 'md_approval')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Form view -->
+    <record id="view_hr_recruitment_request_form" model="ir.ui.view">
+        <field name="name">hr.recruitment.request.form</field>
+        <field name="model">hr.recruitment.request</field>
+        <field name="arch" type="xml">
+            <form string="Recruitment Request">
+
+                <!-- HEADER BUTTONS -->
+                <header>
+                    <field name="is_department_manager_approver" invisible="1"/>
+                    <field name="is_hr_supervisor_approver"  invisible="1"/>
+                    <field name="is_md_approver"  invisible="1"/>
+                    <button name="action_submit" string="Submit"
+                            type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_approve_department" string="Approve (Department Manager)"
+                            type="object" class="btn-primary"
+                            invisible="state != 'dept_approval' or not is_department_manager_approver"/>
+
+                    <button name="action_approve_hr_supervisor" string="Approve (HR Supervisor)"
+                            type="object" class="btn-primary"
+                            invisible="state != 'hr_approval' or not is_hr_supervisor_approver"/>
+
+                    <button name="action_approve_md" string="Approve (MD)"
+                            type="object" class="btn-primary"
+                            invisible="state != 'md_approval' or not is_md_approver"/>
+
+                    <button name="action_reject" string="Reject"
+                            type="object" class="btn-secondary"
+                            invisible="state not in ('dept_approval','hr_approval','md_approval')"/>
+
+                    <button name="action_set_done" string="Mark Done"
+                            type="object" class="btn-success"
+                            invisible="state != 'approved'"/>
+
+                    <button name="action_cancel" string="Cancel"
+                            type="object" class="btn-secondary"
+                            invisible="state not in ('draft','dept_approval','hr_approval','md_approval','approved')"/>
+
+                    <button name="action_reset_to_draft" string="Reset to Draft"
+                            type="object" class="btn-secondary"
+                            invisible="state not in ('rejected','cancelled','done')"/>
+
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,dept_approval,hr_approval,md_approval,approved,rejected,done,cancelled"/>
+                </header>
+
+                <sheet>
+
+                    <!-- SMART BUTTONS -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_open_job" icon="fa-briefcase"
+                                invisible="not job_id and not created_job_id">
+                            <span class="o_stat_text">Job Position</span>
+                        </button>
+
+                        <button class="oe_stat_button" type="object"
+                                name="action_open_applicants" icon="fa-users"
+                                invisible="not applicant_count">
+                            <field name="applicant_count" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <!-- TITLE -->
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <!-- FORM BODY -->
+                    <group col="2">
+
+                        <!-- LEFT SIDE: Request Info -->
+                        <group string="Request Info">
+                            <field name="requested_by_id" readonly="1"/>
+                            <field name="employee_id"/>
+                            <field name="department_id" required="1"/>
+                            <field name="department_manager_user_id" readonly="1"/>
+                            <field name="expected_start_date"/>
+                        </group>
+
+                        <!-- RIGHT SIDE: Position Details -->
+                        <group string="Position Details">
+                            <field name="is_new_position"/>
+                            <field name="job_id" invisible="is_new_position"/>
+                            <field name="new_job_name" invisible="not is_new_position"/>
+                            <field name="requested_employees"/>
+                        </group>
+
+                    </group>
+
+                    <!-- NEW JOB DETAILS — Full Row Under Both Columns -->
+                    <group string="New Job Details" colspan="2"
+                           invisible="not is_new_position">
+
+                        <group col="4">
+                            <field name="contract_type_id"/>
+                            <field name="job_salary"/>
+                            <field name="experience_years"/>
+                        </group>
+
+                        <group>
+                            <field name="job_summary"
+                                   placeholder="Describe the job requirements, responsibilities, and expectations..."
+                                   colspan="4"/>
+                        </group>
+
+                    </group>
+
+                    <!-- TABS -->
+                    <notebook>
+                        <page string="Justification">
+                            <field name="justification"/>
+                        </page>
+
+                        <page string="KPIs">
+                            <group>
+                                <field name="applicant_count" readonly="1"/>
+                                <field name="hired_count" readonly="1"/>
+                                <field name="hired_ratio" readonly="1"/>
+                                <field name="created_job_id" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Approvals">
+                            <group>
+                                <group string="Department">
+                                    <field name="department_approved_by_id" readonly="1"/>
+                                    <field name="department_approved_date" readonly="1"/>
+                                </group>
+                                <group string="HR Supervisor">
+                                    <field name="hr_approved_by_id" readonly="1"/>
+                                    <field name="hr_approved_date" readonly="1"/>
+                                </group>
+                                <group string="MD">
+                                    <field name="md_approved_by_id" readonly="1"/>
+                                    <field name="md_approved_date" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

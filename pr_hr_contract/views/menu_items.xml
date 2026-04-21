@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_hr_employee_contract_separator"
+                  parent="hr.menu_hr_employee_payroll"
+                  name="Contract"
+                  groups="hr_contract.group_hr_contract_manager"
+                  sequence="2"/>
+
+        <menuitem
+                id="menu_hr_contract_analysis_separator"
+                name="Contract Analysis"
+                parent="pr_hr.menu_hr_employee_analysis"
+                groups="hr_contract.group_hr_contract_manager"
+                sequence="1"/>
+    </data>
+</odoo>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="custom_group_hr_attendance_supervisor" model="res.groups">
+            <field name="name">HR Attendance Supervisor</field>
+            <field name="implied_ids" eval="[(4, ref('hr_attendance.group_hr_attendance_officer'))]"/>
+        </record>
+    </data>
+</odoo>

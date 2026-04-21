@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="hr_leave_workspace_rule_employee" model="ir.rule">
+            <field name="name">Time Off Workspace</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+            <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4,ref('de_hr_workspace.group_hr_employee_workspace'))]"/>
+        </record>
+
+        <record id="hr_leave_request_workspace_rule_approvers" model="ir.rule">
+            <field name="name">Leave Request Workspace Approvers</field>
+            <field name="model_id" ref="pr_hr_holidays.model_pr_hr_leave_request"/>
+            <field name="domain_force">['|', '|', '|', ('employee_id.user_id', '=', user.id), ('employee_manager_id.user_id', '=', user.id), ('hr_supervisor_ids', 'in', user.id), ('hr_manager_ids', 'in', user.id)]</field>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4,ref('de_hr_workspace.group_hr_employee_workspace')), (4,ref('de_hr_workspace.group_hr_employee_approvals')), (4,ref('pr_hr_holidays.custom_group_hr_holidays_supervisor'))]"/>
+        </record>
+
+        <record id="hr_leave_request_workspace_rule_holidays_manager" model="ir.rule">
+            <field name="name">Leave Request Workspace Holidays Manager</field>
+            <field name="model_id" ref="pr_hr_holidays.model_pr_hr_leave_request"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4,ref('hr_holidays.group_hr_holidays_manager'))]"/>
+        </record>
+
+    </data>
+
+</odoo>

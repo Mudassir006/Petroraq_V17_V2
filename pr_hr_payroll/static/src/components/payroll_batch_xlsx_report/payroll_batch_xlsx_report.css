@@ -1,0 +1,68 @@
+.pr_xlsx_wrap { margin-top: 8px; }
+
+.pr_xlsx_title,
+.pr_xlsx_subtitle {
+    background: #0B2A8F;
+    color: #fff;
+    text-align: center;
+    font-weight: 700;
+    border: 1px solid #0B2A8F;
+}
+.pr_xlsx_title { padding: 10px 12px; font-size: 26px; }
+.pr_xlsx_subtitle { padding: 6px 12px; font-size: 17px; border-top: none; }
+
+.pr_table_wrap {
+    margin-top: 10px;
+    border: 1px solid #d0d7e2;
+    border-radius: 6px;
+    overflow: auto;
+}
+
+.pr_table { width: 100%; border-collapse: collapse; }
+
+.pr_th {
+    background: #0B2A8F;
+    color: #fff;
+    font-weight: 700;
+    padding: 8px;
+    border: 1px solid #0B2A8F;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.pr_sortable_th {
+    cursor: pointer;
+    user-select: none;
+}
+
+.pr_sort_icon {
+    margin-left: 4px;
+    font-size: 12px;
+}
+
+.pr_td {
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+    white-space: nowrap;
+}
+.pr_left { text-align: left; }
+
+.pr_tr:nth-child(even) .pr_td { background: #F3F6FA; }
+
+.pr_total_tr .pr_total_td {
+    background: #0B2A8F;
+    color: #fff;
+    font-weight: 700;
+    padding: 8px;
+    border: 1px solid #0B2A8F;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.pr_money_neg { color: #b42318; }
+.pr_money_pos { color: inherit; }
+
+.pr_hidden_col { display: none; }
+
+.pr_loading { margin: 12px 0; }

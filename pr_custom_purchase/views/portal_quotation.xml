@@ -1,0 +1,448 @@
+<odoo>
+    <template id="portal_my_rqf_card" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[@id='portal_common_category']" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/purchase_request_custom/static/src/img/rqf-icon.svg'"/>
+                <t t-set="title">My RQFs</t>
+                <t t-set="text">View all your RQFs</t>
+                <t t-set="url" t-value="'/my/rqf'"/>
+        </t>
+        </xpath>
+    </template>
+    <!-- RQF List Template -->
+    <template id="portal_rfq_template" inherit_id="purchase.portal_my_purchase_rfqs">
+        <xpath expr="//thead/tr" position="inside">
+            <th class="text-end">Action</th>
+        </xpath>
+        <xpath expr="//t[@t-foreach='rfqs']/tr" position="inside">
+            <td class="text-end">
+                <t t-set="has_quotation"
+       t-value="request.env['purchase.quotation'].sudo().search_count([
+            ('custom_rfq_id', '=', rfq.id),
+            ('email_address', '=', request.env.user.email)
+       ]) > 0"/>
+                <t t-if="not has_quotation">
+                    <a t-att-href="'/my/rfq/%s/quotation' % rfq.id"
+           class="btn btn-sm btn-primary"
+           style="background-color: #122AA0 !important; border-color: #122AA0 !important;">
+            Create Quotation
+        </a>
+                </t>
+                <t t-else="">
+                    <button class="btn btn-sm btn-secondary" disabled="true">
+            Quotation Submitted
+        </button>
+                </t>
+            </td>
+        </xpath>
+    </template>
+    <template id="portal_my_purchase_rfqs_inherit_subtotal" inherit_id="purchase.portal_my_purchase_rfqs" name="Replace Total with Subtotal">
+        <xpath expr="//span[@t-field='rfq.amount_total']" position="replace">
+            <span t-field="rfq.subtotal" t-options="{'widget': 'monetary', 'display_currency': rfq.currency_id}"/>
+        </xpath>
+    </template>
+    <!-- templates.xml -->
+    <template id="portal_create_rfq_quotation_form" name="Create Quotation">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-4">
+                <h3>Create Quotation for:
+                    <t t-esc="rfq.name"/>
+                </h3>
+                <form t-att-action="'/my/rfq/%s/quotation/submit' % rfq.id" method="POST">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <!-- Vendor Reference -->
+                    <div class="form-group mb-3">
+                        <label>Vendor Reference</label>
+                        <input type="text" name="pr_name" class="form-control d-none" t-att-value="rfq.pr_name" readonly="readonly"/>
+                        <input type="text" name="requested_by" class="form-control d-none" t-att-value="rfq.requested_by" readonly="readonly"/>
+                        <input type="text" name="department" class="form-control d-none" t-att-value="rfq.department" readonly="readonly"/>
+                        <input type="text" name="supervisor" class="form-control d-none" t-att-value="rfq.supervisor" readonly="readonly"/>
+                        <input type="text" name="supervisor_partner_id" class="form-control d-none" t-att-value="rfq.supervisor_partner_id" readonly="readonly"/>
+                        <input type="text" name="vendor_reference" class="form-control" t-att-value="rfq.origin" readonly="readonly"/>
+                    </div>
+                    <!-- New Fields -->
+                    <div class='d-flex w-100 gap-4 flex-wrap'>
+                        <div class="form-group mb-3" style='width: 49%;'>
+                            <label>Supplier Name</label>
+                            <input type="text" name="supplier_name" class="form-control" required="required" placeholder="Supplier Name"   t-att-value="request.env.user.partner_id.name" readonly='1'/>
+                        </div>
+                        <div class="form-group mb-3" style='width: 49%;'>
+                            <label>Contact Person</label>
+                            <input type="text" name="contact_person" class="form-control" placeholder="Person Name" t-att-value="request.env.user.partner_id.name" readonly='1'/>
+                        </div>
+                    </div>
+                    <div class='d-flex w-100 gap-4 flex-wrap'>
+                        <div class="form-group mb-3" style='width: 49%;'>
+                            <label>Company Address</label>
+                            <input type="text" name="company_address" class="form-control" placeholder="Acme Corp." t-att-value="request.env.user.partner_id.contact_address" readonly='1'/>
+                        </div>
+                        <div class="form-group mb-3" style='width: 49%;'>
+                            <label>Phone Number</label>
+                            <input type="text" name="phone_number" class="form-control" placeholder='+966 5X XXX XXXX' t-att-value="request.env.user.partner_id.phone" readonly='1'/>
+                        </div>
+                    </div>
+                    <!-- Email Address -->
+                    <div class='d-flex w-100 gap-4 flex-wrap'>
+                        <div class="form-group mb-3" style='width: 49%;'>
+                            <label>Email Address</label>
+                            <input type="email" name="email_address" class="form-control" placeholder="johndoe@example.com" t-att-value="request.env.user.partner_id.email" readonly='1'/>
+                        </div>
+                        <!-- Supplier VAT ID -->
+                        <div class="form-group mb-3" style='width: 49%;'>
+                            <label>Supplier VAT ID</label>
+                            <input type="text" name="supplier_id" class="form-control" placeholder="VAT" t-att-value="request.env.user.partner_id.vat" readonly='1'/>
+                        </div>
+                    </div>
+                    <!-- Quotation Ref No. -->
+                    <div class='d-flex w-100 gap-4 flex-wrap'>
+                        <div class="form-group mb-3" style='width: 49%;'>
+                            <label>Quotation Ref No.</label>
+                            <input type="text" name="quotation_ref" class="form-control" placeholder="Quotation Reference No"  t-att-value="(request.env.user.partner_id.company_registry or '') + ' - ' + (rfq.name or '')" readonly="1"/>
+                        </div>
+                        <div class="form-group mb-3" style='width: 49%;'>
+                            <label>Quotation Date</label>
+                            <input type="date" class="form-control"
+                                t-att-value="rfq.date_planned and rfq.date_planned.strftime('%Y-%m-%d')"
+                                readonly="1"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3" style='width: 49%;'>
+                        <label>Quotation Valid till</label>
+                        <input type="date" name="quotation_valid_till" class="form-control"/>
+                    </div>
+                    <table class="table table-bordered mt-4 text-center align-middle" id="quotation_table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sr. No.</th>
+                                <th>Item Description</th>
+                                <th>Quantity</th>
+                                <th>Type</th>
+                                <th>Unit</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quotation_lines">
+                            <t t-set="idx" t-value="0"/>
+                            <t t-foreach="rfq.line_ids" t-as="line">
+                                <tr>
+                                    <td>
+                                        <t t-esc="idx + 1"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" t-att-name="'product_description_%s' % idx"
+                       t-att-value="line.name"
+                       class="form-control border-0 text-center" readonly="1"/>
+                                    </td>
+                                    <td>
+                                        <input type="number" t-att-name="'product_quantity_%s' % idx"
+                       class="form-control border-0 text-center qty-input"
+                       t-att-value="line.quantity" step="0.01" readonly="1"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" t-att-name="'product_type_%s' % idx"
+                       class="form-control border-0 text-center type-input"
+                       t-att-value="line.type" step="0.01" readonly="1"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" t-att-name="'product_unit_%s' % idx"
+                       t-att-value="line.unit"
+                       readonly="1" class="form-control border-0 text-center"/>
+                                    </td>
+                                    <td>
+                                        <input type="number" t-att-name="'product_price_%s' % idx"
+                       t-att-value="line.price_unit"
+                       class="form-control border-0 text-center price-input" step="0.01"/>
+                                    </td>
+                                    <td>
+                                        <input type="number" t-att-name="'product_total_%s' % idx"
+                       t-att-value="line.subtotal"
+                       class="form-control border-0 text-center total-input" step="0.01" readonly="1"/>
+                                    </td>
+                                </tr>
+                                <t t-set="idx" t-value="idx + 1"/>
+    </t>
+                            <input type="hidden" name="product_count" t-att-value="idx"/>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="6" class="text-end fw-bold">Total Amount</td>
+                                <td>
+                                    <input type="number" name="total_excl_vat" id="total_excl_vat" class="form-control border-0" readonly='1'/>
+                                </td>
+                            </tr>
+                            <tr class="d-none">
+                                <td colspan="6" class="text-start fw-bold">VAT Amount @ 15%</td>
+                                <td>
+                                    <input type="number" name="vat_amount" id="vat_amount" class="form-control border-0" readonly='1'/>
+                                </td>
+                            </tr>
+                            <tr class="d-none">
+                                <td colspan="6" class="text-start fw-bold">Total Amount Including VAT</td>
+                                <td>
+                                    <input type="number" name="total_incl_vat" id="total_incl_vat" class="form-control border-0" readonly='1'/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <!-- <div class='d-flex justify-content-end'>
+                        <button type="button" class="mt-2 btn" style='color: white; padding: 8px; background-color: #122AA0; border: none; border-radius: 6px;' 
+                            onclick="addQuotationRow()">Add Product</button>
+                    </div> -->
+                    <h5 class="mt-4">Terms and Conditions</h5>
+                    <div class="form-group mb-3">
+                        <label class="fw-bold d-block mb-2">Payment Terms</label>
+                        <div class="d-flex align-items-center flex-wrap gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="terms_net" id="terms_net" />
+                                <label class="form-check-label" for="terms_net">Net</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="terms_30days" id="terms_30days" />
+                                <label class="form-check-label" for="terms_30days">30 days</label>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" name="terms_advance" id="terms_advance" class="form-check-input" />
+                                <label for="terms_advance" class="form-check-label mb-0">% Advance</label>
+                                <input type="text" name="terms_advance_specify" class="form-control form-control-sm w-auto" placeholder="Specify..." />
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="terms_delivery" id="terms_delivery" />
+                                <label class="form-check-label" for="terms_delivery">On Delivery</label>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" name="terms_others" id="terms_others" class="form-check-input" />
+                                <label for="terms_others" class="form-check-label mb-0">Others</label>
+                                <input type="text" name="terms_others_specify" class="form-control form-control-sm w-auto" placeholder="Specify..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="fw-bold d-block mb-2">Production/Material Availability</label>
+                        <div class="d-flex align-items-center gap-4 flex-wrap">
+                            <!-- Ex-Stock -->
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="ex_stock" id="ex_stock" />
+                                <label class="form-check-label" for="ex_stock">Ex-Stock</label>
+                            </div>
+                            <!-- Required + Days -->
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" name="required_days" id="required_days" class="form-check-input" />
+                                <label for="required_days" class="form-check-label mb-0">Required</label>
+                                <span class="me-2">Days for Production/Import</span>
+                                <input type="text" name="production_days" class="form-control form-control-sm w-auto" placeholder="Specify..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="fw-bold d-block mb-2">Delivery Terms</label>
+                        <div class="d-flex align-items-center flex-wrap gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="ex_work" id="ex_work" />
+                                <label class="form-check-label" for="ex_work">Ex-Work</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="delivery_site" id="delivery_site" />
+                                <label class="form-check-label" for="delivery_site">Delivery at Site (Petroraq / Project Site)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="fw-bold d-block mb-2" for="delivery_date">Delivery Date Expected</label>
+                        <input class="form-control" type="date" name="delivery_date" id="delivery_date"  style='width: 16%;'/>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="fw-bold d-block mb-2">Delivery Method</label>
+                        <div class="d-flex align-items-center flex-wrap gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="courier" id="courier" />
+                                <label class="form-check-label" for="courier">Courier</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pickup" id="pickup" />
+                                <label class="form-check-label" for="pickup">Pickup</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="freight" id="freight" />
+                                <label class="form-check-label" for="freight">Freight</label>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" name="delivery_others" id="delivery_others" class="form-check-input" />
+                                <label for="delivery_others" class="form-check-label mb-0">Others</label>
+                                <input type="text" name="delivery_others_specify" class="form-control form-control-sm w-auto" placeholder="Specify..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="fw-bold d-block mb-2">Parital Order Acceptable</label>
+                        <div class="d-flex align-items-center flex-wrap gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="partial_yes" id="partial_yes" />
+                                <label class="form-check-label" for="partial_yes">Yes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="partial_no" id="partial_no" />
+                                <label class="form-check-label" for="partial_no">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Notes -->
+                    <div class="form-group mb-3">
+                        <label>Additional Information / Notes  (if applicable)</label>
+                        <textarea name="description" class="form-control"></textarea>
+                    </div>
+                    <input type="hidden" name="product_count" t-att-value="len(rfq.line_ids)"/>
+                    <button type="submit" class="btn" style='background-color: #122AA0; color: white;'>Submit Quotation</button>
+                    <script type="text/javascript">
+                            var tableBody = document.getElementById('quotation_lines');
+                            var quotationRowIndex = tableBody ? tableBody.rows.length : 0;
+
+                            function addQuotationRow() {
+                                // Increment row index to keep it correct
+                                quotationRowIndex++;
+
+                                var row = document.createElement('tr');
+                                row.innerHTML = `
+                        <td>${quotationRowIndex}</td>
+                        <td>
+                            <input type="text" name="product_description_${quotationRowIndex}" class="form-control border-0 text-center"/>
+                        </td>
+                        <td>
+                            <input type="number" name="product_quantity_${quotationRowIndex}" class="form-control border-0 text-center qty-input" step="0.01" />
+                        </td>
+                        <td>
+                            <input type="number" name="product_type_${quotationRowIndex}" class="form-control border-0 text-center type-input" />
+                        </td>
+                        <td>
+                            <input type="hidden" name="product_id_${quotationRowIndex}" value="0"/>
+                            <input type="text" name="product_name_${quotationRowIndex}" class="form-control border-0 text-center"/>
+                        </td>
+                        <td>
+                            <input type="number" name="product_price_${quotationRowIndex}" class="form-control border-0 text-center price-input" step="0.01"/>
+                        </td>
+                        <td>
+                            <input type="number" name="product_total_${quotationRowIndex}" class="form-control border-0 text-center total-input" step="0.01" />
+                        </td>
+                                `;
+                                tableBody.appendChild(row);
+                                document.querySelector('input[name="product_count"]').value = quotationRowIndex;
+                                console.log('Updated product_count to:', quotationRowIndex);
+                                attachInputListeners(); // if needed
+                            }
+
+                        function calculateTotals() {
+                            var totalExclVat = 0;
+                            var rows = document.querySelectorAll('#quotation_lines tr');
+                            rows.forEach(function(row, idx) {
+                                var qtyInput = row.querySelector('.qty-input');
+                                var priceInput = row.querySelector('.price-input');
+                                var totalInput = row.querySelector('.total-input');
+                                var qty = parseFloat(qtyInput ? qtyInput.value : 0) || 0;
+                                var price = parseFloat(priceInput ? priceInput.value : 0) || 0;
+                                var total = qty * price;
+                                if (totalInput) {
+                                    totalInput.value = total ? total.toFixed(2) : '';
+                                }
+                                totalExclVat += total;
+                            });
+                            document.getElementById('total_excl_vat').value = totalExclVat.toFixed(2);
+                            var vatAmount = totalExclVat * 0.15;
+                            document.getElementById('vat_amount').value = vatAmount.toFixed(2);
+                            document.getElementById('total_incl_vat').value = (totalExclVat + vatAmount).toFixed(2);
+                        }
+
+                        function attachInputListeners() {
+                            var qtyInputs = document.querySelectorAll('.qty-input');
+                            var priceInputs = document.querySelectorAll('.price-input');
+                            qtyInputs.forEach(function(input) {
+                                input.removeEventListener('input', calculateTotals);
+                                input.addEventListener('input', calculateTotals);
+                            });
+                            priceInputs.forEach(function(input) {
+                                input.removeEventListener('input', calculateTotals);
+                                input.addEventListener('input', calculateTotals);
+                            });
+                        }
+
+                        document.addEventListener('DOMContentLoaded', function() {
+                            attachInputListeners();
+                            calculateTotals();
+                        });
+
+                        document.addEventListener("DOMContentLoaded", function () {
+                        const form = document.querySelector("form"); // Adjust if needed
+
+                        form.addEventListener("submit", function (e) {
+                            // Define groups of checkbox IDs per section
+                            const sections = [
+                                {
+                                    name: "Payment Terms",
+                                    checkboxes: ["terms_net", "terms_30days", "terms_advance", "terms_delivery", "terms_others"]
+                                },
+                                {
+                                    name: "Production/Material Availability",
+                                    checkboxes: ["ex_stock", "required_days"]
+                                },
+                                {
+                                    name: "Delivery Terms",
+                                    checkboxes: ["ex_work", "delivery_site"]
+                                },
+                                {
+                                    name: "Delivery Method",
+                                    checkboxes: ["courier", "pickup", "freight", "delivery_others"]
+                                },
+                                {
+                                    name: "Partial Order Acceptable",
+                                    checkboxes: ["partial_yes", "partial_no"]
+                                }
+                            ];
+
+                            // Validate each section
+                            for (const section of sections) {
+                                const isChecked = section.checkboxes.some(id => {
+                                    const checkbox = document.getElementById(id);
+                                    return checkbox &amp;&amp; checkbox.checked;
+                                });
+
+                                if (!isChecked) {
+                                    e.preventDefault();
+                                    alert(`Please select at least one option in "${section.name}" section.`);
+                                    return;
+                                }
+                            }
+
+                            // Optional: Validate 'Specify' fields if corresponding checkbox is checked
+                            const advanceChecked = document.getElementById("terms_advance").checked;
+                            const advanceSpecify = document.querySelector("[name='terms_advance_specify']").value.trim();
+
+                            if (advanceChecked &amp;&amp; !advanceSpecify) {
+                                e.preventDefault();
+                                alert("Please specify advance payment terms.");
+                                return;
+                            }
+
+                            const othersChecked = document.getElementById("terms_others").checked;
+                            const othersSpecify = document.querySelector("[name='terms_others_specify']").value.trim();
+
+                            if (othersChecked &amp;&amp; !othersSpecify) {
+                                e.preventDefault();
+                                alert("Please specify the 'Other' payment term.");
+                                return;
+                            }
+
+                            const deliveryOthersChecked = document.getElementById("delivery_others").checked;
+                            const deliveryOthersSpecify = document.querySelector("[name='delivery_others_specify']").value.trim();
+
+                            if (deliveryOthersChecked &amp;&amp; !deliveryOthersSpecify) {
+                                e.preventDefault();
+                                alert("Please specify the 'Other' delivery method.");
+                                return;
+                            }
+                        });
+                    });
+                    </script>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>

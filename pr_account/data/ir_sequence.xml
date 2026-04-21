@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="account_payment_receipt_seq" model="ir.sequence">
+            <field name="name">Account Payment Receipt Sequence</field>
+            <field name="code">account.payment.receipt.seq.code</field>
+            <field name="padding">5</field>
+            <field name="prefix">RA-%(year)s-</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="account_transaction_payment_seq" model="ir.sequence">
+            <field name="name">Account Transaction Payment Sequence</field>
+            <field name="code">account.transaction.payment.seq.code</field>
+            <field name="padding">5</field>
+            <field name="prefix">PA-%(year)s-</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="account_cash_receipt_seq" model="ir.sequence">
+            <field name="name">Account Cash Receipt Sequence</field>
+            <field name="code">account.cash.receipt.seq.code</field>
+            <field name="padding">5</field>
+            <field name="prefix">CRV-%(range_year)s-</field>
+            <field name="use_date_range">True</field>
+
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="pr_account_cash_payment_seq" model="ir.sequence">
+            <field name="name">PR Account Cash Payment Sequence</field>
+            <field name="code">pr.account.cash.payment.seq.code</field>
+            <field name="padding">5</field>
+            <field name="prefix">CPV-%(range_year)s-</field>
+            <field name="use_date_range">True</field>
+
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="pr_account_bank_receipt_seq" model="ir.sequence">
+            <field name="name">PR Account Bank Receipt Sequence</field>
+            <field name="code">pr.account.bank.receipt.seq.code</field>
+            <field name="padding">5</field>
+            <field name="prefix">BRV-%(range_year)s-</field>
+            <field name="use_date_range">True</field>
+
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="pr_account_bank_payment_seq" model="ir.sequence">
+            <field name="name">PR Account Bank Payment Sequence</field>
+            <field name="code">pr.account.bank.payment.seq.code</field>
+            <field name="use_date_range">True</field>
+            <field name="prefix">BPV-%(range_year)s-</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+        <record id="pr_account_project_cost_center_seq" model="ir.sequence">
+            <field name="name">Project Cost Center Sequence</field>
+            <field name="code">pr.account.project.cost.center.seq.code</field>
+            <field name="padding">4</field>
+            <field name="prefix"></field>
+            <field name="number_next">1004</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_pr_account_journal_voucher" model="ir.sequence">
+            <field name="name">Journal Voucher</field>
+            <field name="code">pr.account.journal.voucher.seq.code</field>
+            <field name="prefix">JJV/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!--        <record id="seq_journal_voucher_jjv" model="ir.sequence">-->
+        <!--            <field name="name">Journal Voucher Sequence</field>-->
+        <!--            <field name="code">account.move.journal.jjv</field>-->
+        <!--            <field name="prefix">JJVs/%(year)s/</field>-->
+        <!--            <field name="padding">5</field>-->
+        <!--            <field name="number_next">1</field>-->
+        <!--            <field name="company_id" eval="False"/>-->
+        <!--        </record>-->
+        <odoo>
+            <data noupdate="1">
+
+                <record id="journal_journal_voucher" model="account.journal">
+                    <field name="name">Journal Vouchers</field>
+                    <field name="type">general</field>
+                    <field name="code">JJV</field>
+                    <field name="company_id" eval="False"/>
+                    <field name="secure_sequence_id" ref="seq_journal_voucher_jjv"/>
+                </record>
+
+            </data>
+        </odoo>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_saleorder_document_petroraq_costing"
+              inherit_id="sale.report_saleorder_document">
+
+        <!-- Remove Taxes column -->
+        <xpath expr="//th[@name='th_taxes']" position="replace"/>
+        <xpath expr="//td[@name='td_taxes']" position="replace"/>
+
+        <!-- Rename Amount header -->
+        <xpath expr="//th[@name='th_subtotal']/span" position="replace">
+            <span>Total</span>
+        </xpath>
+
+        <!-- HEADER: Before Discount AFTER Unit Price -->
+        <xpath expr="//th[@name='th_priceunit']" position="after">
+            <th name="th_before_discount" class="text-end">
+                <span>Before Discount</span>
+            </th>
+        </xpath>
+
+        <!-- BODY: Before Discount AFTER Unit Price -->
+        <xpath expr="//td[@name='td_priceunit']" position="after">
+            <td name="td_before_discount" class="text-end">
+                <t t-if="not line.display_type">
+                    <t t-set="currency" t-value="doc.currency_id"/>
+                    <t t-set="qty" t-value="line.product_uom_qty or 0.0"/>
+                    <t t-set="before_disc"
+                       t-value="currency.round((line.price_unit or 0.0) * qty)"/>
+                    <span t-out="before_disc"
+                          t-options="{'widget':'monetary','display_currency':currency}"/>
+                </t>
+            </td>
+        </xpath>
+
+        <!-- Replace totals block -->
+        <xpath expr="//t[@t-call='sale.document_tax_totals']" position="replace">
+
+            <t t-set="currency" t-value="doc.currency_id"/>
+            <t t-set="rounding_method"
+               t-value="doc.company_id.tax_calculation_rounding_method"/>
+
+            <t t-set="normal_lines"
+               t-value="[l for l in lines_to_report if (not l.display_type) and (not l.is_downpayment)]"/>
+
+            <t t-set="gross_total" t-value="0.0"/>
+            <t t-set="net_total" t-value="0.0"/>
+            <t t-set="vat_sum" t-value="0.0"/>
+
+            <t t-foreach="normal_lines" t-as="l">
+                <t t-set="qty" t-value="l.product_uom_qty or 0.0"/>
+
+                <t t-set="line_gross"
+                   t-value="currency.round((l.price_unit or 0.0) * qty)"/>
+                <t t-set="gross_total"
+                   t-value="gross_total + line_gross"/>
+
+                <t t-set="line_net"
+                   t-value="currency.round(l.price_subtotal or 0.0)"/>
+                <t t-set="net_total"
+                   t-value="net_total + line_net"/>
+
+                <t t-if="rounding_method == 'round_per_line'">
+                    <t t-set="vat_sum"
+                       t-value="vat_sum + currency.round(line_net * 0.15)"/>
+                </t>
+            </t>
+
+            <t t-if="rounding_method != 'round_per_line'">
+                <t t-set="vat_sum"
+                   t-value="currency.round(net_total * 0.15)"/>
+            </t>
+
+            <t t-set="discount_sum"
+               t-value="currency.round(gross_total - net_total)"/>
+            <t t-set="grand_total_with_vat"
+               t-value="currency.round(net_total + vat_sum)"/>
+
+            <tbody>
+
+                <!-- Total / Before Discount -->
+                <tr t-if="discount_sum">
+                    <td>
+                        <strong>
+                            Total (Before Discount)
+                        </strong>
+                    </td>
+                    <td class="text-end">
+                        <span t-out="gross_total"
+                              t-options="{'widget':'monetary','display_currency':currency}"/>
+                    </td>
+                </tr>
+
+                <!-- Discount -->
+                <tr t-if="discount_sum">
+                    <td>
+                        <strong>Discount</strong>
+                    </td>
+                    <td class="text-end">
+                        <span>-</span>
+                        <span t-out="discount_sum"
+                              t-options="{'widget':'monetary','display_currency':currency}"/>
+                    </td>
+                </tr>
+
+                <!-- Total after discount -->
+                <tr>
+                    <td>
+                        <strong>Total Price</strong>
+                    </td>
+                    <td class="text-end">
+                        <span t-out="net_total"
+                              t-options="{'widget':'monetary','display_currency':currency}"/>
+                    </td>
+                </tr>
+
+                <!-- Proforma Advance -->
+                <tr t-if="is_pro_forma">
+                    <td>
+                        <strong t-out="doc.proforma_dp"/>%
+                        <strong>Advance</strong>
+                    </td>
+                    <td class="text-end">
+                        <t t-set="adv_amt"
+                           t-value="currency.round((net_total or 0.0) * (doc.proforma_dp or 0.0) / 100.0)"/>
+                        <span t-out="adv_amt"
+                              t-options="{'widget':'monetary','display_currency':currency}"/>
+                    </td>
+                </tr>
+
+                <!-- VAT -->
+                <tr t-if="not is_pro_forma">
+                    <td>
+                        <strong>15% VAT Amount</strong>
+                    </td>
+                    <td class="text-end">
+                        <span t-out="vat_sum"
+                              t-options="{'widget':'monetary','display_currency':currency}"/>
+                    </td>
+                </tr>
+
+                <!-- Net Total -->
+                <tr t-if="not is_pro_forma">
+                    <td>
+                        <strong>Net Total</strong>
+                    </td>
+                    <td class="text-end">
+                        <span t-out="grand_total_with_vat"
+                              t-options="{'widget':'monetary','display_currency':currency}"/>
+                    </td>
+                </tr>
+
+            </tbody>
+        </xpath>
+
+    </template>
+</odoo>

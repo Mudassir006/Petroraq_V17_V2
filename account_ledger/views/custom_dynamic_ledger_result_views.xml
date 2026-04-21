@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_custom_dynamic_ledger_result_form" model="ir.ui.view">
+        <field name="name">custom.dynamic.ledger.result.form</field>
+        <field name="model">custom.dynamic.ledger.result</field>
+        <field name="arch" type="xml">
+            <form string="Dynamic Balance Report">
+                <header>
+                    <button name="action_export_pdf" type="object"
+                            string="Print PDF" class="btn btn-primary"/>
+                    <button name="action_export_xlsx" type="object"
+                            string="Export Excel" class="btn btn-secondary"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title"/>
+
+                    <div class="oe_full">
+                        <field name="line_ids" widget="ledger_hierarchy"/>
+
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_custom_dynamic_ledger_result" model="ir.actions.act_window">
+        <field name="name">Dynamic Balance Report</field>
+        <field name="res_model">custom.dynamic.ledger.result</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

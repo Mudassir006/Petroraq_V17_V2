@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="hr_work_permit_approvals_view_action" model="ir.actions.act_window">
+        <field name="name">Work Permits</field>
+        <field name="res_model">hr.work.permit</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'submit')]</field>
+        <field name="context">{'create': False,'edit': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                There Is No Work Permits To Approve
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="hr_work_permit_approvals_view_menu"
+              parent="de_hr_workspace.hr_approvals_menu_root"
+              name="Work Permits"
+              action="hr_work_permit_approvals_view_action"
+              sequence="3"
+              groups="de_hr_workspace.group_hr_employee_approvals,hr_recruitment.group_hr_recruitment_manager"
+    />
+
+</odoo>

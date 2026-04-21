@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custom_pr_user,access_custom_pr_user,model_custom_pr,pr_custom_purchase.group_custom_pr_end_user,1,1,1,1
+access_custom_pr_line_user,access_custom_pr_line_user,model_custom_pr_line,pr_custom_purchase.group_custom_pr_end_user,1,1,1,1
+access_custom_pr_quotation_user,access_custom_pr_quotation_user,model_custom_pr_quotation,pr_custom_purchase.group_custom_pr_end_user,1,1,1,1
+access_custom_pr_quotation_line_user,access_custom_pr_quotation_line_user,model_custom_pr_quotation_line,pr_custom_purchase.group_custom_pr_end_user,1,1,1,1
+access_grn_ses_user,access.grn.ses.user,model_grn_ses,stock.group_stock_user,1,1,1,1
+access_grn_ses_line_user,access.grn.ses.line.user,model_grn_ses_line,stock.group_stock_user,1,1,1,1
+access_grn_ses_wizard,access.grn.ses.wizard,model_grn_ses_wizard,stock.group_stock_user,1,1,1,1

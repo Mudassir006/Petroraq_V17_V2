@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hr_leave_report">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="oe_structure">
+                        <div class="text-center"><h1>Leave Report</h1></div>
+                        <div class="text-center" t-if="duration=='today'"><h5>Absentees Today</h5></div>
+                        <div class="text-center" t-if="duration=='this_week'"><h5>Absentees this week</h5></div>
+                        <div class="text-center" t-if="duration=='this_month'"><h5>Absentees this month</h5></div>
+                        <div class="text-center" t-if="duration=='this_year'"><h5>Absentees this year</h5></div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><strong>Employee ID</strong></th>
+                                    <th><strong>Employee Name</strong></th>
+                                    <th><strong>Leave Type</strong></th>
+                                    <th><strong>Allocated Balance</strong></th>
+                                    <th><strong>Taken Leaves</strong></th>
+                                    <th><strong>Remaining Balance</strong></th>
+                                </tr>
+                            </thead>
+                            <t t-foreach="filtered_list" t-as="leave_data">
+                                <tr>
+                                    <td><span t-esc="leave_data['emp_id']"/></td>
+                                    <td><span t-esc="leave_data['emp_name']"/></td>
+                                    <td><span t-esc="leave_data['leave_type']"/></td>
+                                    <td><span t-esc="leave_data['allocated_days']"/></td>
+                                    <td><span t-esc="leave_data['taken_days']"/></td>
+                                    <td><span t-esc="leave_data['balance_days']"/></td>
+                                </tr>
+                            </t>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="leave_analytics_pdf">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="wizard">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Leave Analytics Summary</h2>
+                        <p>
+                            <strong>Period:</strong>
+                            <span t-esc="wizard.date_from"/> - <span t-esc="wizard.date_to"/>
+                        </p>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                    <th>Manager</th>
+                                    <th>Annual</th>
+                                    <th>Sick</th>
+                                    <th>Other</th>
+                                    <th>Total Leave</th>
+                                    <th>Absence</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="wizard.line_ids" t-as="line">
+                                    <td><span t-esc="line.employee_code"/></td>
+                                    <td><span t-esc="line.employee_name"/></td>
+                                    <td><span t-esc="line.department_name"/></td>
+                                    <td><span t-esc="line.manager_name"/></td>
+                                    <td class="text-end"><span t-esc="line.annual_days"/></td>
+                                    <td class="text-end"><span t-esc="line.sick_days"/></td>
+                                    <td class="text-end"><span t-esc="line.other_days"/></td>
+                                    <td class="text-end"><span t-esc="line.total_leave_days"/></td>
+                                    <td class="text-end"><span t-esc="line.absence_days"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

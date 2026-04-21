@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_payslip_run_employee,hr.payslip.run.employee,model_hr_payslip_run_employee,hr_payroll.group_hr_payroll_user,1,1,1,1
+access_hr_payslip_run_summary,hr.payslip.run.summary,model_hr_payslip_run_summary,hr_payroll.group_hr_payroll_user,1,1,1,1
+access_hr_salary_attachment_pay_wizard,hr_salary_attachment_pay_wizard,model_hr_salary_attachment_pay_wizard,account.group_account_manager,1,1,1,1
+access_payslip_run_reject_wizard,payslip.run.reject.wizard,model_payslip_run_reject_wizard,base.group_user,1,1,1,1

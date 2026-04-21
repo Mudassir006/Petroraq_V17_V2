@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_purchase_quotation_list" model="ir.ui.view">
+        <field name="name">purchase.quotation.list</field>
+        <field name="model">purchase.quotation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="vendor_id"/>
+                <field name="rfq_origin"/>
+                <field name="requisition_id"/>
+                <field name="vendor_ref"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'po'"
+                       decoration-info="status == 'quote'"/>
+                <field name="linked_rfq_state" widget="badge"
+                       decoration-success="linked_rfq_state == 'done'"
+                       decoration-danger="linked_rfq_state == 'cancel'"
+                       decoration-warning="linked_rfq_state == 'sent'"
+                       decoration-muted="linked_rfq_state in ('draft','missing')"/>
+                <field name="linked_pr_state" widget="badge"
+                       decoration-success="linked_pr_state == 'purchase'"
+                       decoration-danger="linked_pr_state == 'cancel'"
+                       decoration-warning="linked_pr_state in ('rfq_sent','pending')"
+                       decoration-muted="linked_pr_state in ('draft','missing')"/>
+                <field name="linked_po_state" widget="badge"
+                       decoration-success="linked_po_state in ('purchase','done')"
+                       decoration-danger="linked_po_state == 'cancel'"
+                       decoration-warning="linked_po_state == 'pending'"
+                       decoration-info="linked_po_state in ('draft','sent')"
+                       decoration-muted="linked_po_state == 'missing'"/>
+                <field name="is_best_badge" widget="badge" decoration-success="is_best_badge" readonly="1"/>
+                <field name="order_deadline"/>
+                <field name="expected_arrival"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_purchase_quotation_form" model="ir.ui.view">
+        <field name="name">purchase.quotation.form</field>
+        <field name="model">purchase.quotation</field>
+        <field name="arch" type="xml">
+            <form string="Quotation">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="quote,po"/>
+                    <button name="action_create_purchase_order"
+                            type="object"
+                            string="Create Purchase Order (Use RFQ Comparison)"
+                            class="btn-secondary"
+                            groups="pr_custom_purchase.procurement_admin"
+                            invisible="1"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="show_create_po_button" invisible="1"/>
+                            <field name="vendor_id" readonly="1"/>
+                            <field name="custom_rfq_id" readonly="1"/>
+                            <field name="rfq_origin" readonly="1"/>
+                            <field name="status" invisible="1"/>
+                            <field name="linked_rfq_state" invisible="1"/>
+                            <field name="linked_pr_state" invisible="1"/>
+                            <field name="linked_po_state" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="vendor_ref" readonly="1"/>
+                            <field name="order_deadline" readonly="1"/>
+                            <field name="expected_arrival" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Products">
+                            <field name="line_ids" mode="tree" editable="bottom" readonly="1">
+                                <tree>
+                                    <field name="name" string="Item Description" readonly="1"/>
+                                    <field name="type" readonly="1"/>
+                                    <field name="cost_center_id" readonly="1"/>
+                                    <field name="quantity" readonly="1"/>
+                                    <field name="price_unit" readonly="1"/>
+                                    <field name="subtotal" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Supplier Information">
+                            <group>
+                                <group>
+                                    <field name="supplier_name" readonly="1"/>
+                                    <field name="supplier_id" readonly="1"/>
+                                    <field name='quotation_ref' readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="contact_person" readonly="1"/>
+                                    <field name="company_address" readonly="1"/>
+                                    <field name="phone_number" readonly="1"/>
+                                    <field name="email_address" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Terms and Conditions">
+                            <group>
+                                <!-- Payment Terms -->
+                                <group string="Payment Terms" col="2">
+                                    <field name="terms_net" readonly="1"/>
+                                    <field name="terms_30days" readonly="1"/>
+                                    <field name="terms_advance" readonly="1"/>
+                                    <field name="terms_advance_specify" invisible="not terms_advance" readonly="1"/>
+                                    <field name="terms_delivery" readonly="1"/>
+                                    <field name="terms_other" readonly="1"/>
+                                    <field name="terms_others_specify" invisible="not terms_other" readonly="1"/>
+                                </group>
+                                <!-- Production / Material Availability -->
+                                <group string="Production Details" col="2">
+                                    <field name="ex_stock" readonly="1"/>
+                                    <field name="required_days" readonly="1"/>
+                                    <field name="production_days" invisible="not required_days" readonly="1"/>
+                                </group>
+                                <!-- Delivery Terms -->
+                                <group string="Delivery Terms" col="2">
+                                    <field name="ex_work" readonly="1"/>
+                                    <field name="delivery_site" readonly="1"/>
+                                    <field name="delivery_date" readonly="1"/>
+                                </group>
+                                <!-- Delivery Method -->
+                                <group string="Delivery Method" col="2">
+                                    <field name="delivery_courier" readonly="1"/>
+                                    <field name="delivery_pickup" readonly="1"/>
+                                    <field name="delivery_freight" readonly="1"/>
+                                    <field name="delivery_others" readonly="1"/>
+                                    <field name="delivery_others_specify" invisible="not delivery_others" readonly="1"/>
+                                </group>
+                                <!-- Partial Order Acceptance -->
+                                <group string="Partial Order Acceptance" col="2">
+                                    <field name="partial_yes" readonly="1"/>
+                                    <field name="partial_no" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Budget Info" name="budget_info">
+                            <group>
+                                <group>
+                                    <!--                                    <field name="project_id" readonly="1"/>-->
+                                    <field name="budget_type" readonly="1"/>
+                                    <field name="budget_code" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="project_budget_allowance" readonly="1"/>
+                                    <field name="budget_left" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <group>
+                                <field name="notes" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Linked Status">
+                            <group>
+                                <group>
+                                    <field name="linked_rfq_state" widget="badge"
+                                           decoration-success="linked_rfq_state == 'done'"
+                                           decoration-danger="linked_rfq_state == 'cancel'"
+                                           decoration-warning="linked_rfq_state == 'sent'"
+                                           decoration-muted="linked_rfq_state in ('draft','missing')"/>
+                                    <field name="linked_pr_state" widget="badge"
+                                           decoration-success="linked_pr_state == 'purchase'"
+                                           decoration-danger="linked_pr_state == 'cancel'"
+                                           decoration-warning="linked_pr_state in ('rfq_sent','pending')"
+                                           decoration-muted="linked_pr_state in ('draft','missing')"/>
+                                </group>
+                                <group>
+                                    <field name="linked_po_state" widget="badge"
+                                           decoration-success="linked_po_state in ('purchase','done')"
+                                           decoration-danger="linked_po_state == 'cancel'"
+                                           decoration-warning="linked_po_state == 'pending'"
+                                           decoration-info="linked_po_state in ('draft','sent')"
+                                           decoration-muted="linked_po_state == 'missing'"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- <page string="Reason">
+                            <group>
+                                <field name="rejection_reason"
+                                       placeholder="Enter Reason for Rejection"
+                                       groups="pr_custom_purchase.procurement_admin" readonly="1"/>
+                                <field name="rejection_reason"
+                                       placeholder="Enter Reason for Rejection"
+                                       groups="pr_custom_purchase.project_engineer,pr_custom_purchase.project_manager,pr_custom_purchase.operations_director,pr_custom_purchase.managing_director"/>
+                            </group>
+                        </page> -->
+                    </notebook>
+                    <div class="total_amount_main">
+                        <div class="total_amount_quotation">
+                            <div class="total_padding total-amount-highlight">
+                                <label for="total_excl_vat" style="padding: 0px 8px;">Total Amount:</label>
+                                <field name="total_excl_vat" readonly="1" class="oe_inline"/>
+                            </div>
+                            <!-- <div class="total_padding total-amount-highlight">
+                                <label for="vat_amount" style="padding: 0px 8px;">VAT (15%):</label>
+                                <field name="vat_amount" readonly="1" class="oe_inline"/>
+                            </div>
+                            <div class="total_padding total-amount-highlight">
+                                <label for="total_incl_vat" style="padding: 0px 8px;">Total Incl. VAT:</label>
+                                <field name="total_incl_vat" readonly="1" class="oe_inline"/>
+                            </div> -->
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- <record id="action_purchase_quotation_list" model="ir.actions.act_window">
+        <field name="name">Quotations</field>
+        <field name="res_model">purchase.quotation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="context">{'group_by': 'requisition_id'}</field>
+    </record>
+    <menuitem id="menu_purchase_quotation_main"
+              name="Quotations"
+              parent="purchase.menu_purchase_root"
+              action="action_purchase_quotation_list"
+              sequence="140"/> -->
+    <!-- Main Menu: Quotations -->
+    <menuitem id="menu_purchase_quotation_main"
+              name="Quotations"
+              parent="purchase.menu_purchase_root"
+              sequence="140"/>
+    <!-- Action for Submitted Quotations (list + form) -->
+    <record id="action_purchase_quotation_list" model="ir.actions.act_window">
+        <field name="name">Submitted Quotations</field>
+        <field name="res_model">purchase.quotation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="context">{'group_by': 'requisition_id'}</field>
+    </record>
+    <!-- Submenu: Submitted Quotations -->
+    <menuitem id="menu_purchase_quotation_submitted"
+              name="Submitted Quotations"
+              parent="menu_purchase_quotation_main"
+              action="action_purchase_quotation_list"
+              sequence="10"/>
+    <!-- action -->
+    <record id="action_purchase_quotation_form_page" model="ir.actions.client">
+        <field name="name">Create Quotation</field>
+        <field name="tag">quotation_form_page</field>
+    </record>
+    <!-- menu -->
+    <menuitem id="menu_purchase_quotation_create"
+              name="Create Quotation"
+              parent="menu_purchase_quotation_main"
+              action="action_purchase_quotation_form_page"
+              sequence="20"
+              groups="pr_custom_purchase.procurement_admin"/>
+</odoo>

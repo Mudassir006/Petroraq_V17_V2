@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_quotation_tree_inherit_petroraq_great_total" model="ir.ui.view">
+        <field name="name">sale.order.tree.petroraq.great.total</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='state']" position="before">
+                <field name="approval_state"
+                       widget="badge"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-danger="approval_state == 'rejected'"
+                       decoration-warning="approval_state =='to_manager'"
+                       decoration-primary="approval_state =='to_md'"
+
+                       decoration-info="approval_state in ('draft', 'confirmed')"/>
+            </xpath>
+            <!--            <xpath expr="//tree/field[@name='amount_total']" position="after">-->
+            <!--                <field name="profit_grand_total"/>-->
+            <!--            </xpath>-->
+        </field>
+    </record>
+    <record id="view_order_tree_inherit_petroraq_great_total" model="ir.ui.view">
+        <field name="name">sale.order.quote.tree.petroraq.great.total</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='state']" position="before">
+                <field name="approval_state" widget="badge"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-danger="approval_state == 'rejected'"
+                       decoration-warning="approval_state =='to_manager'"
+                       decoration-primary="approval_state =='to_md'"
+                       decoration-info="approval_state in ('draft', 'confirmed')"/>
+            </xpath>
+            <!--            <xpath expr="//tree/field[@name='amount_total']" position="after">-->
+            <!--                <field name="profit_grand_total"/>-->
+            <!--            </xpath>-->
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_petroraq_invoice_report_sheet" model="report.paperformat">
+        <field name="name">Petroraq Purchase Order Report</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">370</field>
+        <field name="page_width">250</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">55</field>
+        <field name="margin_bottom">47</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">55</field>
+        <field name="dpi">100</field>
+    </record>
+
+    <record id="petroraq_purchase_order_action_id" model="ir.actions.report">
+            <field name="name">Petroraq Purchase Order Report</field>
+            <field name="model">purchase.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pr_custom_purchase.petroraq_purchase_order_temp_id</field>
+            <field name="report_file">pr_custom_purchase.petroraq_purchase_order_temp_id</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="pr_custom_purchase.paperformat_petroraq_invoice_report_sheet"/>
+        </record>
+
+
+    <!--Template for VAT invoice report-->
+    <template id="pr_custom_purchase.petroraq_purchase_order_temp_id">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="pr_custom_purchase.custom_invoice_bridge_layout" style="margin: 0 !important;padding: 0 !important;width: 100% !important;">
+<!--                <t t-call="web.internal_layout">-->
+                    <link href='https://fonts.googleapis.com/css?family=Arabic sans serif Fonts'
+                              rel="stylesheet"/>
+                    <style>
+                            @font-face {
+                            font-family: 'DroidArabicNaskh';
+                            src: url('tax_Invoice_report/static/src/font/droid-arabic-naskh-regular/Droid Arabic Naskh Regular/Droid Arabic Naskh Regular.ttf');
+                            }
+                            html {
+                                margin: 0;
+                                padding: 0;
+                            }
+                            body {
+                                font-family: 'DroidArabicNaskh', sans-serif;
+                                margin: 0;
+                                padding: 0;
+                                font-size: 20px !important;
+                            html, body, .page, .content, main, div#wrapwrap {
+                                margin: 0 !important;
+                                padding: 0 !important;
+                                width: 100% !important;
+                                font-size: 20px !important;
+                            }
+                            body {
+                                font-family: 'DroidArabicNaskh', sans-serif;
+                                font-size: 20px !important;
+                                margin: 0 !important;
+                                padding: 0 !important;
+                            }
+                            .container-fluid {
+                                    width: 100%;
+                                    padding-right: 0px !important;
+                                    padding-left: 0px !important;
+                                    margin-right: 0px !important;
+                                    margin-left: 0px !important;
+                        }
+                        </style>
+                    <div class="page" style="font-family: 'DroidArabicNaskh', sans-serif; padding: 0px 25px !important;">
+                        <div class="oe_structure"/>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <p style="font-size:20px;text-align:left;color:#000000;">
+<!--                                    <p style="font-size:20px;text-align:left;color:#000000;">Order Date: <span t-field="o.date_order"/></p>-->
+                                    <p style="font-size:20px;text-align:left;color:#000000;">Order Date: <span t-field="o.date_order_custom"/></p>
+                                </p>
+                            </div>
+                        </div>
+<!--                        <br/>-->
+                        <div class="row">
+                            <div class="col-12">
+
+                                <p style="font-size:25px;text-align:center;color:#000000;">
+                                    <strong style="font-weight: bold;">
+                                        <h2 style="font-size:25px;text-align:center;color:#000000;font-size: 32px !important;" t-if="o.state in ['draft', 'sent', 'to approve','done']">Request for Quotation #<span t-field="o.name"/></h2>
+                                        <h2 style="font-size:25px;text-align:center;color:#000000;font-size: 32px !important;" t-if="o.state in ['purchase']">Purchase Order #<span t-field="o.name"/></h2>
+                                        <h2 style="font-size:25px;text-align:center;color:#000000;font-size: 32px !important;" t-if="o.state == 'cancel'">Cancelled Purchase Order #<span t-field="o.name"/></h2>
+                                    </strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <table class="table-borderless" width="100%"
+                               style="border:1px solid white;font-family: 'DroidArabicNaskh';">
+                            <tr>
+                                <td style="text-align:left">Vendor:</td>
+                                <td style="text-align:left">
+                                    <span t-esc="o.partner_id.name"/>
+                                </td>
+                                <td style="text-align:right">
+<!--                                            <span t-esc="o.translate_to_arabic(o.partner_id.arabic_name)"/>-->
+                                    <span t-esc="o.partner_id.arabic_name"/>
+                                </td>
+                                <td style="text-align:right;">
+                                    : المورد
+                                </td>
+                            </tr>
+                            <tr>
+
+                            </tr>
+                            <tr t-if="o.partner_ref">
+                                <td style="text-align:left;">Your Order Reference:</td>
+                                <td style="text-align:left">
+                                    <span t-esc="o.partner_ref"/>
+                                </td>
+                                <td style="text-align:right">
+                                    <span t-esc="o.translate_invoice_name(o.partner_ref)"/>
+                                </td>
+                                <td style="text-align:right;">
+                                    : رقم أمر الشراء المرجعي
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left">Address:</td>
+                                <td style="text-align:left">
+                                    <span t-esc="o.partner_id.street"/><br/>
+                                    <span t-esc="o.partner_id.street2"/>
+                                </td>
+                                <td style="text-align:right">
+                                    <span t-esc="o.partner_id.arabic_street"/><br/>
+                                    <span t-esc="o.partner_id.arabic_street2"/>
+                                </td>
+                                <td style="text-align:right;">
+                                    : العنوان
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left;">Tel #:</td>
+                                <td style="text-align:left">
+                                    <span t-esc="o.partner_id.phone"/>
+                                </td>
+                                <td style="text-align:right">
+                                    <span t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.phone)"/>
+                                </td>
+                                <td style="text-align:right;">
+                                    : الهاتف
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left;">Email:</td>
+                                <td style="text-align:left">
+                                    <span t-esc="o.partner_id.email"/>
+                                </td>
+                                <td style="text-align:right">
+                                    <span t-esc="o.partner_id.email"/>
+                                </td>
+                                <td style="text-align:right;">
+                                    : البريد الإلكتروني
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left;">Vendor VAT #:</td>
+                                <td style="text-align:left">
+                                    <span t-esc="o.partner_id.vat"/>
+                                </td>
+                                <td style="text-align:right">
+                                    <span t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.vat)"/>
+                                </td>
+                                <td style="text-align:right;">
+                                    : الرقم الضريبي للمورد
+                                </td>
+                            </tr>
+<!--                            <tr>-->
+<!--                                <td style="text-align:left;">Vendor CR #:</td>-->
+<!--                                <td style="text-align:left">-->
+<!--                                    <span t-esc="o.partner_id.l10n_sa_additional_identification_number"/>-->
+<!--                                </td>-->
+<!--                                <td style="text-align:right">-->
+<!--                                    <span t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.l10n_sa_additional_identification_number)"/>-->
+<!--                                </td>-->
+<!--                                <td style="text-align:right;">-->
+<!--                                    : سجل التجاري للمورد-->
+<!--                                </td>-->
+<!--                            </tr>-->
+                        </table>
+                        <br/>
+                        <br/>
+                        <table class="table table-bordered"
+                                       style="border:1px solid black;text-align:center;margin-top:-15px;font-family: 'DroidArabicNaskh';">
+                                    <tr style="background-color:#dbdbd9">
+                                        <td>
+                                            <b>ر.م
+                                                <br/>
+                                                # SL
+                                            </b>
+                                        </td>
+                                        <td width="50%">
+                                            <b>                                                    البند أو الوصف
+                                                <br/>
+                                                Description
+                                            </b>
+                                        </td>
+                                        <td width="10%">
+                                            <b>الكمية
+                                                <br/>
+
+                                                Qty
+                                            </b>
+
+                                        </td>
+                                        <td width="10%">
+                                            <b>الوحدة
+                                                <br/>
+
+                                                UOM
+                                            </b>
+
+                                        </td>
+                                        <td width="10%">
+                                            <b>وحدة السعر
+                                                <br/>
+                                                UNIT PRICE
+                                            </b>
+                                        </td>
+                                        <td width="10%">
+                                            <b>                                                    معدل الضريبة
+                                                <br/>
+                                                TAX RATE (15%)
+                                            </b>
+                                        </td>
+                                        <td width="10%">
+                                            <b>                                                    المبلغ الإجمالي
+                                                <br/>
+                                                TOTAL AMOUNT
+                                            </b>
+                                        </td>
+                                    </tr>
+                                    <t t-set="sr_number" t-value="0"/>
+                                    <t t-set="taxable_amount" t-value="0"/>
+                                    <t t-set="total_qty" t-value="0"/>
+                                    <t t-set="total_unit_price" t-value="0"/>
+                                    <t t-esc="excluding_vat" t-value="0"/>
+                                    <t t-esc="total_vat_tax" t-value="0"/>
+                                    <tr t-foreach="o.order_line" t-as="l" t-if="l.display_type not in ('line_section', 'line_note')">
+                                        <t t-set="sr_number" t-value="sr_number+1"/>
+                                        <t t-set="taxable_amount" t-value="(l.product_qty * l.price_unit/100)*15"/>
+                                        <t t-set="total_qty" t-value="total_qty + l.product_qty"/>
+                                        <t t-set="total_unit_price" t-value="total_unit_price + l.price_unit"/>
+                                        <t t-set="excluding_vat" t-value="total_qty * total_unit_price"/>
+
+                                        <td>
+                                            <span t-esc="sr_number"/>
+                                        </td>
+                                        <td style="text-align: left;">
+                                            <span t-esc="l.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="l.product_qty"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="l.product_uom.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-if="not o.is_rfq_record">
+                                                <span t-esc="l.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <t t-if="not o.is_rfq_record">
+                                                <span t-esc="', '.join(l.taxes_id.mapped('name'))"/>
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <t t-if="not o.is_rfq_record">
+                                                <span t-esc="l.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </table>
+                        <table class="table table-border"
+                                       style="border:1px solid #000000;margin-top:-10px;font-family: 'DroidArabicNaskh';">
+
+                                    <tr>
+                                        <td width="35%" style="border:1px solid #000000;">
+                                            Amount Excluding VAT
+                                        </td>
+                                        <td width="23%" style="text-align:center;border:1px solid #000000">
+<!--                                                <span t-esc="'{0:,.2f}'.format(o.amount_untaxed)"-->
+                                            <t t-if="not o.is_rfq_record">
+                                                <span t-esc="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </t>
+                                        </td>
+                                        <td width="42%" style="text-align:right;border:1px solid #000000">
+                                            الإجمالي بإستثناء ضريبة القيمة المضافة
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="35%" style="border:1px solid #000000;">
+                                            Total VAT Amount (15%)
+                                        </td>
+                                        <td width="23%" style="text-align:center;border:1px solid #000000">
+                                            <t t-if="not o.is_rfq_record">
+                                                <span t-esc="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </t>
+                                        </td>
+                                        <td width="42%" style="text-align:right;border:1px solid #000000">
+                                            مجموع ضريبة القيمة المضاف
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="35%" style="border:1px solid #000000;">
+                                            Total Amount Including VAT
+                                        </td>
+                                        <td width="23%" style="text-align:center;border:1px solid #000000">
+<!--                                                <span t-esc="'{0:,.2f}'.format(o.amount_residual)"-->
+                                            <t t-if="not o.is_rfq_record">
+                                                <span t-esc="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </t>
+                                        </td>
+                                        <td width="42%" style="text-align:right;border:1px solid #000000">
+                                             إجمالي المبلغ
+                                        </td>
+                                    </tr>
+                                </table>
+                        <t t-if="not o.is_rfq_record" t-set="total_word"
+                                   t-value="o.amount_to_text(o.amount_total)"
+                                />
+                        <t t-if="not o.is_rfq_record" t-set="total_words"
+                           t-value="o.amount_to_world(o.amount_total)"/>
+                        <table class="table table-border"
+                                       style="border:1px solid #000000;margin-top:-10px;font-size:15px;font-family: 'Noto Sans Arabic';">
+                                    <tr>
+                                        <td style="border-left:1px solid black;text-align:left !important;">
+                                            <t t-if="not o.is_rfq_record">
+                                                <span t-esc="total_word"/>
+                                            </t>
+                                        </td>
+                                        <td style="border-right:1px solid black;text-align:right !important;">
+                                            <t t-if="not o.is_rfq_record">
+                                                <span t-esc="total_words"/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </table>
+                        <p t-field="o.notes" class="mt-4"/>
+                        <br/>
+<!--                        <table class="table table-borderless" style="line-height:0.5;font-family: 'DroidArabicNaskh';position: absolute; bottom: 50px !important;">-->
+<!--                            <tr>-->
+<!--                                <td width="50%" style="text-align:left;font-size: 18px !important;">-->
+<!--                                    <p>This is computer generated document, no signature and stamp required</p>-->
+<!--                                </td>-->
+<!--                                <td width="50%" style="text-align:right;font-size: 18px !important;">-->
+<!--                                    <p>هذه وثيقة تم إنشاؤها بواسطة الكمبيوتر، ولا تتطلب توقيعًا أو ختمًا</p>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                        </table>-->
+<!--                        <table class="table table-borderless"-->
+<!--                                       style="line-height:0.5;font-family: 'DroidArabicNaskh';">-->
+
+<!--                                    <tr>-->
+<!--                                        <td width="45%" style="text-align:left;">-->
+<!--                                            <b>Make all cheques payable to:</b>-->
+<!--                                        </td>-->
+<!--                                        <td width="55%" style="text-align:right;">-->
+<!--                                            <b>: تصدر جميع الشيكات الى الحساب الآتي-->
+<!--                                            </b>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
+<!--                                    <table class="table table-borderless" style="margin-top:-10px;line-height:0.5">-->
+<!--                                        <tr>-->
+<!--                                            <td width="15%" style="text-align:left;">-->
+<!--                                                Account Title:-->
+<!--                                            </td>-->
+<!--                                            <td width="25%" style="text-align:left;">-->
+<!--                                                Petroraq Engineering Co. Ltd.-->
+<!--                                            </td>-->
+<!--                                            <td width="55%" style="text-align:right;">-->
+<!--                                                شركة بيتروراق انجنيرنج المحدودة-->
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td width="15%" style="text-align:left;">-->
+<!--                                                Bank :-->
+<!--                                            </td>-->
+<!--                                            <td width="25%" style="text-align:left;">-->
+<!--                                                Alinma Bank-->
+<!--                                            </td>-->
+<!--                                                                                            <td width="55%" style="text-align:right;">-->
+<!--                                                                                                بنك : البنك الانماء-->
+<!--                                                                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td width="15%" style="text-align:left;">-->
+<!--                                                A/C No:-->
+<!--                                            </td>-->
+<!--                                            <td width="25%" style="text-align:left;">-->
+<!--                                                68204260514000-->
+<!--                                            </td>-->
+<!--                                                                                            <td width="55%" style="text-align:right;">-->
+<!--                                                                                                <span>رقم الحساب: ٦٨٢٠٤٢٦٠٥١٤٠٠٠</span>-->
+<!--                                                                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td width="15%" style="text-align:left;">-->
+<!--                                                IBAN No:-->
+<!--                                            </td>-->
+<!--                                            <td width="25%" style="text-align:left;">-->
+<!--                                                SA0205000068204260514000-->
+<!--                                            </td>-->
+<!--                                                                                            <td width="55%" style="text-align:right;">-->
+<!--&lt;!&ndash;                                                                                                    <span>رقم الأيبان: SA<span t-esc="o.convert_phone_to_eastern_arabic_numerals('0205000068204260514000')"/> </span>&ndash;&gt;-->
+<!--&lt;!&ndash;                                                                                                    <span>SA<span t-esc="o.convert_phone_to_eastern_arabic_numerals('0205000068204260514000')"/> رقم الأيبان: </span>&ndash;&gt;-->
+<!--                                                                                                <span>SA0205000068204260514000 :رقم الأيبان</span>-->
+<!--                                                                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td width="15%" style="text-align:left;">-->
+<!--                                                Branch:-->
+<!--                                            </td>-->
+<!--                                            <td width="25%" style="text-align:left;">-->
+<!--                                                Al-Jubail-->
+<!--                                            </td>-->
+<!--                                                                                            <td width="55%" style="text-align:right;">-->
+<!--                                                                                                فرع - الجبيل-->
+<!--                                                                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td width="15%" style="text-align:left;">-->
+<!--                                                SWIFT Code:-->
+<!--                                            </td>-->
+<!--                                            <td width="25%" style="text-align:left;">-->
+<!--                                                INMASARI-->
+<!--                                            </td>-->
+<!--                                                                                            <td width="55%" style="text-align:right;">INMASARI :رقم السويفت-->
+<!--                                                                                            </td>-->
+<!--                                        </tr>-->
+<!--                                    </table>-->
+<!--                                </table>-->
+<!--                        </t>-->
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

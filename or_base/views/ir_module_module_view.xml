@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="ir_module_module_view_search" model="ir.ui.view">
+        <field name="name">ir.module.module.search</field>
+        <field name="model">ir.module.module</field>
+        <field name="inherit_id" ref="base.view_module_filter" />
+        <field name="arch" type="xml">
+            <filter name="installed" position="after">
+                <filter name="ftr_should_installed_but_not_installed" string="Should Have Been Installed"
+                    domain="[('should_installed_but_not_installed', '=', True)]" />
+            </filter>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="de_hr_workspace_hr_employee_iqama_approvals_view_action" model="ir.actions.act_window">
+        <field name="name">Employee Accommodations</field>
+        <field name="res_model">hr.employee.iqama</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'pending_approval')]</field>
+        <field name="context">{'create': False,'edit': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Employee Accommodations
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="de_hr_workspace_hr_employee_iqama_approvals_menu"
+              parent="de_hr_workspace.hr_approvals_menu_root"
+              name="Employee Accommodations"
+              action="de_hr_workspace_hr_employee_iqama_approvals_view_action"
+              sequence="1"
+              groups="hr.group_hr_manager"
+        />
+</odoo>

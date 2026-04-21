@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="pr_hr_payroll_hr_salary_attachment_type_view_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.payroll.hr.salary.attachment.type.view.form.inherit</field>
+        <field name="model">hr.salary.attachment.type</field>
+        <field name="inherit_id" ref="hr_payroll.hr_salary_attachment_type_view_form"/>
+        <field name="arch" type="xml">
+
+            <field name="country_id" position="after">
+                <label for="account_id" string="Account Code"/>
+                <div class="o_row">
+                    <field name="account_id"  width="40%"
+                           class="oe_inline"
+                           options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                           style="font-size:16;font-weight:bold;color:green;" string="Code"/>
+                    <span><strong>Account Name</strong></span>
+                    <field name="account_name" width="40%"
+                           class="oe_inline" string="Account Name" style="font-size:16;font-weight:bold;color:green;"/>
+                </div>
+            </field>
+
+        </field>
+    </record>
+
+</odoo>

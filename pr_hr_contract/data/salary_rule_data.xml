@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="default_accommodation_salary_rule" model="hr.salary.rule">
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="name">Accommodation</field>
+            <field name="sequence">49</field>
+            <field name="code">ACCOMMODATION</field>
+<!--            <field name="condition_select">python</field>-->
+            <field name="condition_select">none</field>
+            <field name="condition_python">result = 'ACCOMMODATION' in inputs</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = inputs['ACCOMMODATION'].amount
+result_name = inputs['ACCOMMODATION'].name
+            </field>
+            <field name="struct_id" ref="hr_payroll.default_structure"/>
+        </record>
+
+        <record id="default_transportation_salary_rule" model="hr.salary.rule">
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="name">Transportation</field>
+            <field name="sequence">58</field>
+            <field name="code">TRANSPORTATION</field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = 'TRANSPORTATION' in inputs</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = inputs['TRANSPORTATION'].amount
+result_name = inputs['TRANSPORTATION'].name
+            </field>
+            <field name="struct_id" ref="hr_payroll.default_structure"/>
+        </record>
+
+        <record id="default_food_salary_rule" model="hr.salary.rule">
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="name">Food</field>
+            <field name="sequence">69</field>
+            <field name="code">FOOD</field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = 'FOOD' in inputs</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = inputs['FOOD'].amount
+result_name = inputs['FOOD'].name
+            </field>
+            <field name="struct_id" ref="hr_payroll.default_structure"/>
+        </record>
+    </data>
+</odoo>

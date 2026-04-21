@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="vat_summary_xlsx_report" model="ir.actions.report">
+        <field name="name">VAT Summary XLSX</field>
+        <field name="model">vat.summary.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">pr_vat_summary.vat_summary_xlsx</field>
+        <field name="report_file">pr_vat_summary.vat_summary_xlsx</field>
+        <field name="print_report_name">
+            "VAT Summary - %s to %s" % (object.date_start, object.date_end)
+        </field>
+    </record>
+
+</odoo>

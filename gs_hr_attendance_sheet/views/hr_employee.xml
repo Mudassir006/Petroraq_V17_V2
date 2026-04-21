@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="gs_hr_attendance_view_employee_form_inherit" model="ir.ui.view">
+            <field name="name">gs.hr.attendance.view.employee.form.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//div[@id='o_work_employee_main']" position="inside">
+                    <group name="employee_attendance" string="Attendance">
+                        <field name="compute_attendance" widget="boolean_toggle"/>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+</odoo>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="portal_employee_shortage_requests_approvals" name="Employee Shortage Requests Approvals"
+              customize_show="True"
+              inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/de_hr_workspace_attendance/static/src/img/shortage_request_approval.png'"/>
+                <t t-set="title">Shortage Requests Approvals</t>
+                <t t-set="url" t-value="'/my/shortage_requests_approval'"/>
+                <t t-set="text">Follow your employee's shortage requests</t>
+                <t t-set="placeholder_count" t-value="'my_shortage_request_approval_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_my_shortage_requests_approvals" name="Employees Shortage Requests Approvals">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Shortage Requests Approvals</t>
+            </t>
+            <t t-if="not shortage_requests_approvals">
+                <div class="alert alert-warning" role="alert">
+                    There are no shortage requests needing approval.
+                </div>
+            </t>
+            <t t-if="shortage_requests_approvals">
+                <t t-call="portal.portal_table">
+                    <t t-set="loop_cycle_number" t-value="0"/>
+                    <thead>
+                        <tr class="active" style="background-color: #009879;color: #ffffff;">
+                            <th>Employee</th>
+                            <th>Date</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Shortage Time</th>
+                            <th>Employee Reason</th>
+                            <th colspan="2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="shortage_requests_approvals" t-as="shortage_request"
+                            t-att-style="'background-color: #ffffff' if loop_cycle_number % 2 == 0 else 'background-color: #f2f2f2;color: #009879;'">
+                            <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1"/>
+                            <td>
+                                <span t-esc="shortage_request.employee_id.name"/>
+                            </td>
+                            <td>
+                                <span t-esc="shortage_request.date"/>
+                            </td>
+                            <td>
+                                <span t-field="shortage_request.check_in"/>
+                            </td>
+                            <td>
+                                <span t-field="shortage_request.check_out"/>
+                            </td>
+                            <td>
+                                <span t-field="shortage_request.shortage_time"/>
+                            </td>
+                            <td>
+                                <span t-field="shortage_request.employee_reason"/>
+                            </td>
+                            <td>
+                                <span t-field="shortage_request.approval_state"
+                                      style="color: #fff !important;background-color: #008080 !important;border-color: #008080 !important;border-radius: 8px !important;padding: 6px !important;"/>
+                            </td>
+                            <td>
+                                <button class="btn-info" icon="fa-eye">
+                                    <a t-attf-href="/my/shortage_requests_approval/#{shortage_request.id}">Action</a>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="employee_shortage_request_approval_info_portal" inherit_id="portal.portal_sidebar">
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <section class="w-100 px-4 py-5" style="background-color: #9de2ff; border-radius: .5rem .5rem 0 0;">
+                <div class="row d-flex justify-content-center">
+                    <div class="col col-md-9 col-lg-9 col-xl-9">
+                        <div class="card" style="border-radius: 15px;">
+                            <div class="card-body p-4">
+                                <div class="d-flex">
+                                    <t class="flex-shrink-0" t-if="shortage_request_id.employee_id.image_1920">
+                                        <img t-att-src="image_data_uri(shortage_request_id.employee_id.image_1920)"
+                                             alt="Employee Image" class="img-fluid"
+                                             style="width: 180px; border-radius: 10px;"/>
+                                    </t>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h5 class="mb-1">
+                                            <span t-esc="shortage_request_id.employee_id.name"/>
+                                        </h5>
+                                        <p class="mb-2 pb-1">
+                                            <span t-esc="shortage_request_id.employee_id.job_id.name"/>
+                                        </p>
+                                        <div class="d-flex justify-content-start rounded-3 p-2 mb-2 bg-body-tertiary">
+                                            <div style="width: 10% !important;">
+                                                <p class="small text-muted mb-1">Date</p>
+                                                <p class="mb-0">
+                                                    <span t-esc="shortage_request_id.date"/>
+                                                </p>
+                                            </div>
+                                            <div class="px-3" style="width: 25% !important;">
+                                                <p class="small text-muted mb-1">Check-In</p>
+                                                <p class="mb-0">
+                                                    <span t-esc="shortage_request_id.check_in + relativedelta(hours=3)"/>
+                                                </p>
+                                            </div>
+                                            <div style="width: 20% !important;">
+                                                <p class="small text-muted mb-1">Check-Out</p>
+                                                <p class="mb-0">
+                                                    <span t-esc="shortage_request_id.check_out + relativedelta(hours=3)"/>
+                                                </p>
+                                            </div>
+                                            <div style="width: 20% !important;">
+                                                <p class="small text-muted mb-1">Shortage Time</p>
+                                                <p class="mb-0">
+                                                    <span t-esc="shortage_request_id.shortage_time"/>
+                                                </p>
+                                            </div>
+                                            <div style="width: 25% !important;">
+                                                <p class="small text-muted mb-1">Employee Reason</p>
+                                                <p class="mb-0">
+                                                    <span t-esc="shortage_request_id.employee_reason"/>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex pt-1">
+                                            <table style="width: 100%;">
+                                                <tr>
+                                                    <td style="width: 50%;text-align: right;">
+                                                        <button class="btn-info" icon="fa-check-circle" style="width: 50%;border-radius: 8px;">
+                                                            <a t-attf-href="/my/shortage_requests_approved/#{shortage_request_id.id}">
+                                                                Approve
+                                                            </a>
+                                                        </button>
+                                                    </td>
+                                                    <td style="width: 50%;text-align: left;">
+                                                        <button class="btn-outline-danger" icon="fa-times" style="width: 50%;border-radius: 8px;">
+                                                            <a t-attf-href="/my/shortage_requests_rejected/#{shortage_request_id.id}">
+                                                                Reject
+                                                            </a>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="container py-5">
+                <h1>Chatter feature</h1>
+                <t t-call="portal.message_thread">
+                    <t t-set="object" t-value="shortage_request_id"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+</odoo>

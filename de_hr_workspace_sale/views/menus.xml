@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_my_sales_approvals"
+              name="Sales Approvals"
+              parent="de_hr_workspace.menu_my_employee_approvals"
+              sequence="50"
+              groups="petroraq_sale_workflow.group_sale_approval_manager,petroraq_sale_workflow.group_sale_approval_md,pr_work_order.custom_group_work_order_operations,pr_work_order.custom_group_work_order_accounts,pr_work_order.custom_group_work_order_management"/>
+    <menuitem id="menu_my_purchase_approvals"
+              name="Purchase Approvals"
+              parent="de_hr_workspace.menu_my_employee_approvals"
+              sequence="60"
+              groups="base.group_user"/>
+
+</odoo>

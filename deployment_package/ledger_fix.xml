@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Custom General Ledger View - Groups by Journal Entry instead of showing individual move lines -->
+        <record id="view_move_line_tree_grouped_by_journal" model="ir.ui.view">
+            <field name="name">account.move.line.tree.grouped.by.journal</field>
+            <field name="model">account.move.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="General Ledger" default_group_by="move_id" decoration-info="display_type == 'line_section'" decoration-muted="display_type == 'line_note'">
+                    <field name="date" string="Date"/>
+                    <field name="move_id" string="Journal Entry" groups="account.group_account_readonly"/>
+                    <field name="ref" string="Reference"/>
+                    <field name="partner_id" string="Partner"/>
+                    <field name="account_id" string="Account"/>
+                    <field name="name" string="Description"/>
+                    <field name="debit" string="Debit" sum="Total Debit"/>
+                    <field name="credit" string="Credit" sum="Total Credit"/>
+                    <field name="balance" string="Balance" sum="Total Balance"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="amount_currency" string="Amount Currency" optional="hide" groups="base.group_multi_currency"/>
+                    <field name="display_type" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Custom Partner Ledger View - Groups by Journal Entry instead of showing individual move lines -->
+        <record id="view_move_line_tree_grouped_by_journal_partner" model="ir.ui.view">
+            <field name="name">account.move.line.tree.grouped.by.journal.partner</field>
+            <field name="model">account.move.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Partner Ledger" default_group_by="move_id" decoration-info="display_type == 'line_section'" decoration-muted="display_type == 'line_note'">
+                    <field name="date" string="Date"/>
+                    <field name="move_id" string="Journal Entry" groups="account.group_account_readonly"/>
+                    <field name="ref" string="Reference"/>
+                    <field name="partner_id" string="Partner"/>
+                    <field name="account_id" string="Account"/>
+                    <field name="name" string="Description"/>
+                    <field name="debit" string="Debit" sum="Total Debit"/>
+                    <field name="credit" string="Credit" sum="Total Credit"/>
+                    <field name="balance" string="Balance" sum="Total Balance"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="amount_currency" string="Amount Currency" optional="hide" groups="base.group_multi_currency"/>
+                    <field name="display_type" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Updated General Ledger Action - Uses custom view that groups by journal entry -->
+        <record id="action_account_moves_ledger_general_fixed" model="ir.actions.act_window">
+            <field name="context">{'journal_type':'general', 'search_default_group_by_move_id': 1, 'search_default_posted':1}</field>
+            <field name="name">General Ledger (Fixed)</field>
+            <field name="res_model">account.move.line</field>
+            <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
+            <field name="view_id" ref="view_move_line_tree_grouped_by_journal"/>
+            <field name="search_view_id" ref="account.view_account_move_line_filter"/>
+            <field name="view_mode">tree,pivot,graph</field>
+        </record>
+
+        <!-- Updated Partner Ledger Action - Uses custom view that groups by journal entry -->
+        <record id="action_account_moves_ledger_partner_fixed" model="ir.actions.act_window">
+            <field name="context">{'journal_type':'general', 'search_default_group_by_move_id': 1, 'search_default_posted':1, 'search_default_payable':1, 'search_default_receivable':1, 'search_default_unreconciled':1}</field>
+            <field name="name">Partner Ledger (Fixed)</field>
+            <field name="res_model">account.move.line</field>
+            <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
+            <field name="view_id" ref="view_move_line_tree_grouped_by_journal_partner"/>
+            <field name="search_view_id" ref="account.view_account_move_line_filter"/>
+            <field name="view_mode">tree,pivot,graph</field>
+        </record>
+
+    </data>
+</odoo>

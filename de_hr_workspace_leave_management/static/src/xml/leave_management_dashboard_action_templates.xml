@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="de_hr_workspace_leave_management.LeaveManagementDashboardAction" owl="1">
+        <div class="o_timeoff_dashboard de_leave_mgmt_dashboard p-2">
+            <div class="w-100 d-flex flex-column gap-2">
+                <div class="w-100 d-flex flex-wrap gap-2">
+                    <TimeOffEmpCard name="currentEmployee.data.name"
+                                    id="currentEmployee.data.id"
+                                    employee_code="currentEmployee.data.employee_code"
+                                    joining_date="currentEmployee.data.joining_date"
+                                    work_email="currentEmployee.data.work_email"
+                                    work_phone="currentEmployee.data.work_phone"
+                                    image_1920="currentEmployee.data.image_1920"
+                                    department_id="currentEmployee.data.department_id"
+                                    resource_calendar_id="currentEmployee.data.resource_calendar_id"
+                                    company="currentEmployee.data.company"
+                                    job_position="currentEmployee.data.job_position"
+                                    children="currentEmployee.data.children"/>
+                    <EmpDepartmentCard name="currentEmployee.data.name"
+                                       id="currentEmployee.data.id"
+                                       child_all_count="currentEmployee.data.child_all_count"
+                                       children="currentEmployee.data.children"
+                                       department_id="currentEmployee.data.department_id"
+                                       absentees="currentAbsentees.data"
+                                       current_shift="currentShift.data"
+                                       upcoming_holidays="upcomingHolidays.data"/>
+                </div>
+                <div class="w-100 d-flex flex-wrap gap-2">
+                    <SimpleLeaveSummaryCard id="currentEmployee.data.id"
+                                            employees="currentEmployee.data.children"/>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

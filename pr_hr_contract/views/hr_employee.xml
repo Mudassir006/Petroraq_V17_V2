@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="pr_hr_contract_view_employee_view_form3_inherit" model="ir.ui.view">
+            <field name="name">pr.hr.contract.hr.employee.view.form3.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr_contract.hr_hr_employee_view_form3"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='public']//div[@id='o_work_employee_main']" position="inside">
+                    <group name="contract_details" groups="hr_contract.group_hr_contract_manager" string="Contract Details" invisible="contracts_count == 0">
+                        <field name="first_contract_date"/>
+                        <field name="joining_date"/>
+                        <field name="contract_employment_type"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="pr_hr_contract_hr_hr_employee_view_form2_inherit" model="ir.ui.view">
+            <field name="name">pr.hr.contract.hr.hr.employee.view.form2.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr_contract.hr_hr_employee_view_form2"/>
+            <field name="arch" type="xml">
+                <field name="resource_calendar_id" position="attributes">
+                    <attribute name="readonly">state != 'new'</attribute>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

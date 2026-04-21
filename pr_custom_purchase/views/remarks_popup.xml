@@ -1,0 +1,17 @@
+<odoo>
+<record id="view_grn_ses_wizard_form" model="ir.ui.view">
+    <field name="name">grn.ses.wizard.form</field>
+    <field name="model">grn.ses.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Add Remarks">
+            <group>
+                <field name="remarks"/>
+            </group>
+            <footer>
+                <button string="Confirm" type="object" name="action_create_grn_ses" class="btn-primary"/>
+                <button string="Cancel" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+</odoo>

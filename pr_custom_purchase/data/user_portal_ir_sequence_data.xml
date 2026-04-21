@@ -1,0 +1,45 @@
+<odoo>
+    <data noupdate="0">
+        <!-- Purchase Requisition -->
+        <record id="seq_purchase_requisition" model="ir.sequence">
+            <field name="name">Purchase Requisition</field>
+            <field name="code">purchase.requisition</field>
+            <field name="prefix">NPR</field>
+            <field name="padding">4</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+
+        </record>
+        <!-- Cash PR Sequence -->
+        <record id="seq_cash_purchase_requisition" model="ir.sequence">
+            <field name="name">Cash Purchase Requisition</field>
+            <field name="code">cash.purchase.requisition</field>
+            <field name="prefix">NCPR</field>
+            <field name="padding">4</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+
+        </record>
+        <!-- RFQ Sequence -->
+        <record id="seq_purchase_rfq" model="ir.sequence">
+            <field name="name">Request for Quotation</field>
+            <field name="code">purchase.order.rfq</field>
+            <!-- <field name="prefix">RFQ</field> -->
+            <field name="prefix">PEC-RFQ-%(year)s-</field>
+            <field name="padding">4</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+
+        </record>
+        <!-- Purchase Order Sequence -->
+        <record id="seq_purchase_order" model="ir.sequence">
+            <field name="name">Purchase Order</field>
+            <field name="code">purchase.order</field>
+            <field name="prefix">PEC-PO-%(year)s-</field>
+            <field name="padding">4</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+
+        </record>
+    </data>
+</odoo>

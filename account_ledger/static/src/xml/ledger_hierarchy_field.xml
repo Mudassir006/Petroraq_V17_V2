@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="account_ledger.LedgerHierarchyField">
+    <div class="o_ledger_hierarchy">
+      <t t-if="!state.loaded">
+        <div class="p-2">Loading...</div>
+      </t>
+
+        <t t-else="">
+        <t t-if="state.error">
+          <div class="alert alert-danger m-2">
+            <t t-esc="state.error"/>
+          </div>
+        </t>
+
+            <table class="table table-sm table-hover o_list_table">
+          <thead class="position-sticky top-0 bg-white" style="z-index: 1;">
+            <tr>
+              <th>Account</th>
+                <th class="text-end">Init Dr</th>
+                <th class="text-end">Init Cr</th>
+                <th class="text-end">Period Dr</th>
+                <th class="text-end">Period Cr</th>
+                <th class="text-end">End Dr</th>
+                <th class="text-end">End Cr</th>
+                <th class="text-end">Balance</th>
+                <th>Type</th>
+            </tr>
+          </thead>
+
+                <tbody>
+            <t t-foreach="state.rows" t-as="r" t-key="r.id">
+              <t t-if="isVisible(r)">
+                <tr t-att-class="r.is_heading ? 'fw-bold table-light' : ''">
+                  <td>
+                    <div t-att-style="indentStyle(r)" class="d-flex align-items-center gap-1">
+                      <a href="#"
+                         t-on-click.prevent="() => toggle(r)"
+                         t-att-class="r._children and r._children.length and 'text-decoration-none' or 'invisible'">
+  <t t-esc="state.expanded[r.id] ? '▾' : '▸'"/>
+</a>
+                        <span t-esc="r.label"/>
+                    </div>
+                  </td>
+
+                    <td class="text-end"><t t-esc="fmt(r.initial_debit)"/></td>
+                    <td class="text-end"><t t-esc="fmt(r.initial_credit)"/></td>
+                    <td class="text-end"><t t-esc="fmt(r.period_debit)"/></td>
+                    <td class="text-end"><t t-esc="fmt(r.period_credit)"/></td>
+                    <td class="text-end"><t t-esc="fmt(r.ending_debit)"/></td>
+                    <td class="text-end"><t t-esc="fmt(r.ending_credit)"/></td>
+                    <td class="text-end"><t t-esc="fmt(r.balance)"/></td>
+                    <td>
+                    <span t-att-class="r.balance_type === 'Credit' ? 'text-danger' : (r.balance_type === 'Debit' ? 'text-primary' : '')">
+                      <t t-esc="r.balance_type || '-'"/>
+                    </span>
+                  </td>
+                </tr>
+              </t>
+            </t>
+          </tbody>
+        </table>
+      </t>
+    </div>
+  </t>
+</templates>

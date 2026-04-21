@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="de_hr_workspace_account_cash_payment_view_tree" model="ir.ui.view">
+        <field name="name">de.hr.workspace.account.cash.payment.view.tree</field>
+        <field name="model">pr.account.cash.payment</field>
+        <field name="arch" type="xml">
+            <tree string="Cash Payments">
+                <field name="name" decoration-warning="1" string="Payment Number #"/>
+                <field name="account_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                <field name="account_name"/>
+                <field name="description"/>
+                <field name="accounting_date"/>
+                <field name="company_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                <field name="currency_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}" column_invisible="True"/>
+                <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="accounting_manager_state" widget="badge" string="Status"
+                       decoration-warning="accounting_manager_state == 'draft'"
+                       decoration-info="accounting_manager_state == 'submit'"
+                       decoration-success="accounting_manager_state == 'posted'"
+                       decoration-danger="accounting_manager_state == 'cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="pr_account_cash_payment_approvals_view_action" model="ir.actions.act_window">
+        <field name="name">Cash Payments</field>
+        <field name="res_model">pr.account.cash.payment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('de_hr_workspace_account_cash_payment_view_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('pr_account.pr_account_cash_payment_view_form')})]"/>
+        <field name="domain">['|', ('state', '=', 'submit'), ('accounting_manager_state', '=', 'submit')]</field>
+        <field name="context">{'create': False,'edit': False}</field>
+        <field name="search_view_id" ref="pr_account.pr_account_cash_payment_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create A New Cash Payment
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="pr_account_cash_payment_approvals_view_menu"
+                  parent="menu_my_financial_accounting_approvals"
+                  name="Cash Payments"
+                action="pr_account_cash_payment_approvals_view_action"
+                  sequence="2"/>
+</odoo>

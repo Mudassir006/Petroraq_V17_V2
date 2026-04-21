@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="report.paperformat" id="paperformat_vat_leg_report">
+        <field name="name">paperformat.paperformat_vat_leg_report</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">20</field>
+        <field name="margin_right">5</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">20</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="vat_leg_report" model="ir.actions.report">
+        <field name="name">VAT Report</field>
+        <field name="model">vat.ledger.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">account_ledger.vat_ledger_rep</field>
+        <field name="report_file">account_ledger.vat_ledger_rep</field>
+        <field name="paperformat_id" ref="paperformat_vat_leg_report"/>
+    </record>
+
+    <template id="vat_ledger_rep">
+        <t t-call="web.html_container">
+
+            <!-- HEADER (Copied exactly from account ledger) -->
+            <div class="header" style="padding:0; margin:0;">
+                <table style="width:100%; border-collapse:collapse;">
+
+                    <!-- ROW 1 -->
+                    <tr>
+                        <td style="
+                        background:#173b76;
+                        color:#ffffff;
+                        font-size:20px;
+                        font-weight:bold;
+                        text-align:center;
+                        padding:3px;
+                        border:1px solid #000;">
+                            Petroraq Engineering &amp; Construction - VAT Number 311428741500003
+                        </td>
+                    </tr>
+
+                    <!-- ROW 2 -->
+                    <tr>
+                        <td style="
+                        background:#173b76;
+                        color:#ffffff;
+                        font-size:18px;
+                        font-weight:bold;
+                        text-align:center;
+                        padding:3px;
+                        border:1px solid #000;">
+                            <t t-if="',' not in account">
+                                <span t-esc="account"/>
+                            </t>
+                            <t t-if="',' in account">
+                                Multiple Accounts
+                            </t>
+
+                        </td>
+                    </tr>
+
+                    <!-- ROW 3 -->
+                    <tr>
+                        <td style="
+                        background:#173b76;
+                        color:#ffffff;
+                        font-size:18px;
+                        font-weight:bold;
+                        text-align:center;
+                        padding:3px;
+                        border:1px solid #000;">
+                            Period:
+                            <span t-esc="valuation_date"/>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <!-- BODY (same margin-top as account ledger) -->
+            <page style="margin-top:40mm;">
+                <div class="article">
+
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+                        <thead>
+                            <tr>
+                                <th style="background:#173b76; color:#ffffff; font-size:16px;
+                                padding:4px; text-align:center; border:1px solid #000;">
+                                    Transaction Ref
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:16px;
+                                padding:4px; text-align:center; border:1px solid #000;">
+                                    Reference
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:16px;
+                                padding:4px; text-align:center; border:1px solid #000;">
+                                    Date
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:16px;
+                                padding:4px; text-align:center; border:1px solid #000;">
+                                    Description
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:16px;
+                                padding:4px; text-align:center; border:1px solid #000;">
+                                    Amount
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:16px;
+                                padding:4px; text-align:center; border:1px solid #000;">
+                                    Tax Amount
+                                </th>
+                                <th style="background:#173b76; color:#ffffff; font-size:16px;
+                                padding:4px; text-align:center; border:1px solid #000;">
+                                    Total Amount
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <t t-foreach="docs" t-as="doc">
+
+                                <tr t-if="doc['transaction_ref'] != False">
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['transaction_ref']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['reference']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['date']"/>
+                                    </td>
+                                    <td style="text-align:left; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['description']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['amount']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['tax_amount']"/>
+                                    </td>
+                                    <td style="text-align:center; border-bottom:1px solid #ddd;">
+                                        <span t-esc="doc['total_amount']"/>
+                                    </td>
+                                </tr>
+
+                                <!-- TOTAL ROW -->
+                                <tr t-if="doc['transaction_ref'] == False">
+                                    <td colspan="4"
+                                        style="background:#173b76; color:#ffffff; text-align:center; border:1px solid #000; padding:4px;">
+                                        <strong>Total</strong>
+                                    </td>
+
+                                    <td style="background:#173b76; color:#ffffff; text-align:center; border:1px solid #000;">
+                                        <strong>
+                                            <span t-esc="doc['tot_amount']"/>
+                                        </strong>
+                                    </td>
+
+                                    <td style="background:#173b76; color:#ffffff; text-align:center; border:1px solid #000;">
+                                        <strong>
+                                            <span t-esc="doc['tot_tax_amount']"/>
+                                        </strong>
+                                    </td>
+
+                                    <td style="background:#173b76; color:#ffffff; text-align:center; border:1px solid #000;">
+                                        <strong>
+                                            <span t-esc="doc['tot_total_amount']"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+
+                            </t>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </page>
+
+            <!-- FOOTER -->
+            <div class="footer">
+                <div class="row text-center" style="border-top: 1px solid black;">
+                    <div>Report Date:
+                        <span t-esc="report_date"/>
+                    </div>
+                </div>
+            </div>
+
+        </t>
+    </template>
+
+</odoo>

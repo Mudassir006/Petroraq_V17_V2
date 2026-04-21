@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_payroll_view_hr_payslip_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.payroll.view.hr.payslip.form.inherit</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+
+            <header position="inside">
+                <button name="check_payslip_dates" string="Check Payslip Dates" type="object"
+                        groups="base.group_no_one"/>
+            </header>
+
+            <div name="button_box" position="inside">
+                <field name="salary_journal_entry_id" invisible="1"/>
+                <button name="action_open_salary_journal_entry" class="oe_stat_button" icon="fa-book" type="object"
+                        help="Journal Entry" string="Journal Entry" invisible="not salary_journal_entry_id"
+                        groups="hr_payroll.group_hr_payroll_manager">
+                </button>
+            </div>
+
+            <page name="worked_days_input" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </page>
+
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='quantity']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='rate']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+
+                <page string="Attendance Sheet">
+
+                    <!-- Show info -->
+                    <group>
+                        <field name="attendance_sheet_id" readonly="1"/>
+                    </group>
+
+                    <!-- Show sheet lines -->
+                    <field name="attendance_sheet_line_ids" widget="section_and_note_one2many" nolabel="1">
+                        <tree create="0">
+                            <field name="state" invisible="1"/>
+                            <field name="date"/>
+                            <field name="day" string="Day"/>
+                            <field name="pl_sign_in"
+                                   string="PL/IN"
+                                   widget="float_time"/>
+                            <field name="pl_sign_out"
+                                   string="PL/OUT"
+                                   widget="float_time"/>
+                            <field name="ac_sign_in"
+                                   string="ACT/IN"
+                                   widget="float_time"/>
+                            <field name="ac_sign_out"
+                                   string="ACT/OUT"
+                                   widget="float_time"/>
+                            <field name="day_amount" decoration-success="1" column_invisible="1"/>
+                            <field name="diff_amount" decoration-danger="1" column_invisible="1"/>
+                            <field name="worked_hours"
+                                   widget="float_time"
+                                   string="Worked/H"
+                                   sum="Total"/>
+                            <field name="act_late_in"
+                                   groups="base.group_no_one"
+                                   widget="float_time"
+                                   sum="Total"/>
+                            <field name="late_in"
+                                   widget="float_time"
+                                   sum="Total"/>
+                            <field name="late_in_amount"
+                                   sum="Total"
+                                   optional="hide"
+                                   decoration-danger="1"
+                            />
+                            <field name="absence_amount"
+                                   sum="Total"
+                                   column_invisible="1"
+                                   decoration-danger="1"
+                            />
+                            <field name="act_overtime"
+                                   groups="base.group_no_one"
+                                   widget="float_time"
+                                   sum="Total"/>
+                            <field name="overtime"
+                                   widget="float_time"
+                                   sum="Total"/>
+                            <field name="overtime_amount" decoration-danger="1" column_invisible="1"/>
+                            <field name="act_diff_time"
+                                   groups="base.group_no_one"
+                                   widget="float_time"
+                                   sum="Total"/>
+                            <field name="diff_time"
+                                   widget="float_time"
+                                   sum="Total"/>
+                            <field name="status"/>
+                            <field name="note"/>
+
+                        </tree>
+                    </field>
+
+                </page>
+                <page string="Attendance Data">
+                    <group>
+                        <group string="Over Time">
+                            <field name="no_overtime"/>
+                            <field name="tot_overtime" widget="float_time"/>
+                            <field name="tot_overtime_amount" style="color: green;"/>
+                            <field name="approved_overtime_hours" widget="float_time"/>
+                            <field name="approved_overtime_amount"/>
+                        </group>
+                        <group string="Late In" name="late_in_group">
+                            <field name="no_late"/>
+                            <field name="tot_late" widget="float_time"/>
+                            <field name="tot_late_in_minutes"/>
+                            <field name="tot_late_amount" style="color: red;"/>
+                        </group>
+                        <group string="Early Check Out" name="early_check_out_group">
+                            <field name="no_early_checkout"/>
+                            <field name="tot_early_checkout" widget="float_time"/>
+                            <field name="early_check_out_minutes"/>
+                            <field name="tot_early_checkout_amount" style="color: red;" string="Total ECO. Amount"/>
+                        </group>
+                        <group string="Absence">
+                            <field name="no_absence"/>
+                            <field name="tot_absence" widget="float_time"/>
+                            <field name="tot_absence_amount" style="color: red;"/>
+                        </group>
+                        <group string="Diffrenece Time" invisible="1">
+                            <field name="no_difftime"/>
+                            <field name="tot_difftime" widget="float_time"/>
+                            <field name="tot_difftime_amount" style="color: red;"/>
+                        </group>
+
+                        <group string="Carry Forward">
+                            <field name="carry_forward_absence_amount" style="color: red;"/>
+                            <field name="carry_forward_late_amount" style="color: red;"/>
+                            <field name="carry_forward_diff_amount" style="color: red;"/>
+                            <field name="carry_forward_overtime_amount" style="color: green;"/>
+                            <field name="carry_forward_early_checkout_amount" style="color: red;"/>
+                            <field name="carry_forward_deduction" style="color: red;"/>
+                        </group>
+
+                    </group>
+                </page>
+
+            </xpath>
+
+
+
+        </field>
+    </record>
+</odoo>

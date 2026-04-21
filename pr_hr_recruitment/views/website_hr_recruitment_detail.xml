@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="pr_website_hr_recruitment_detail_company_sudo"
+              inherit_id="website_hr_recruitment.detail"
+              name="Website HR Recruitment detail: sudo company access for public users">
+
+        <xpath expr="//meta[@itemprop='name' and @t-att-content='job.company_id.name']" position="attributes">
+            <attribute name="t-att-content">job.company_id.sudo().name</attribute>
+        </xpath>
+
+        <xpath expr="//meta[@itemprop='logo' and contains(@t-attf-content, 'job.company_id.id')]" position="attributes">
+            <attribute name="t-attf-content">/logo.png?company=#{job.company_id.sudo().id}</attribute>
+        </xpath>
+
+        <xpath expr="//meta[@itemprop='name' and @t-att-content='job.company_id.country_id.name']" position="attributes">
+            <attribute name="t-att-content">job.company_id.sudo().country_id.name</attribute>
+        </xpath>
+
+    </template>
+</odoo>

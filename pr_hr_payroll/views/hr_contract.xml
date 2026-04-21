@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="pr_hr_payroll_view_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.payroll.view.form.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+
+            <field name="date_start" position="after">
+<!--                <field name="other_first_payslip" readonly="state != 'draft'"/>-->
+                <field name="other_first_payslip"/>
+            </field>
+
+        </field>
+    </record>
+
+</odoo>

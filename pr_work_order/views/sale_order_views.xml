@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_order_form_inherit_pr_work_order" model="ir.ui.view">
+        <field name="name">sale.order.form.pr.work.order</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="action_work_order"
+                        string="Work Order" type="object"
+                        icon="fa-book" invisible="work_order_id == False"/>
+                <button class="oe_stat_button" name="action_view_expense_bucket"
+                        string="Budget" type="object"
+                        icon="fa-money"
+                        groups="pr_work_order.custom_group_work_order_accounts,pr_work_order.custom_group_work_order_management"
+                        invisible="expense_bucket_id == False">
+                    <field name="expense_bucket_count" widget="statinfo"/>
+                </button>
+
+            </xpath>
+
+            <xpath expr="//header" position="inside">
+                <field name="work_order_id" invisible="1"/>
+                <field name="inquiry_type" invisible="1"/>
+                <field name="expense_bucket_id" invisible="1"/>
+
+
+                <!--                <button name="action_create_work_order"-->
+                <!--                        type="object"-->
+                <!--                        string="Create Work Order"-->
+                <!--                        class="btn-primary"-->
+                <!--                        invisible="state not in ('sale','done') or work_order_id or inquiry_type == 'trading'"-->
+                <!--                        groups="pr_work_order.custom_group_work_order_user"/>-->
+                <!--                />-->
+
+            </xpath>
+
+            <xpath expr="//sheet/notebook/page[@name='order_lines']" position="after">
+                <page string="Work Order" invisible="work_order_id == False">
+                    <group>
+                        <field name="work_order_id"/>
+                        <field name="project_id"/>
+                        <field name="analytic_account_id"/>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

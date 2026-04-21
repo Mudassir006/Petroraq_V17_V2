@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_service_receipt_note_user,service.receipt.note.user,model_service_receipt_note,purchase.group_purchase_user,1,1,1,1
+access_service_receipt_note_line_user,service.receipt.note.line.user,model_service_receipt_note_line,purchase.group_purchase_user,1,1,1,1
+access_service_receipt_note_manager,service.receipt.note.manager,model_service_receipt_note,purchase.group_purchase_manager,1,1,1,1
+access_service_receipt_note_line_manager,service.receipt.note.line.manager,model_service_receipt_note_line,purchase.group_purchase_manager,1,1,1,1
+access_service_receipt_reject_wizard_inventory_admin,service.receipt.reject.wizard.inventory.admin,model_service_receipt_reject_wizard,pr_custom_purchase.inventory_admin,1,1,1,1

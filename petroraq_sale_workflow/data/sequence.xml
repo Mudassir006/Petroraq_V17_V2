@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <function model="ir.sequence" name="write">
+            <value eval="[ref('sale.seq_sale_order')]"/>
+            <value eval="{
+                'prefix': 'PEC-%(year)s-SO-',
+                'padding': 4
+            }"/>
+        </function>
+    </data>
+</odoo>

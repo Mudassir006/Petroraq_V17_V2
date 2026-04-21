@@ -1,0 +1,24 @@
+<odoo>
+    <record id="project_edit_project_custom_page" model="ir.ui.view">
+        <field name="name">project.project.form.custom.page</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='description']" position="after">
+                <page name="budget_info" string="Budget Information">
+                <group>
+                    <group>
+                        <field name="budget_type"/>
+                        <field name="budget_code"/>
+                    </group>
+                    <group>
+                        <field name="budget_allowance"/>
+                        <field name="budget_left"/>
+                        <field name="all_bank_accounts" widget="many2many_tags"/> 
+                    </group>
+                </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

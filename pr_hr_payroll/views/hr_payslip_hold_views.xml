@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_payslip_form_hold_salary_inherit" model="ir.ui.view">
+        <field name="name">hr.payslip.form.hold.salary.inherit</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+
+                <group string="Salary Hold">
+                    <field name="hold_salary"/>
+
+                    <field name="hold_reason"
+                           invisible="not hold_salary"/>
+
+                    <field name="hold_date"
+                           readonly="1"
+                           invisible="not hold_salary"/>
+
+                    <field name="release_date"
+                           readonly="1"
+                           invisible="not release_date"/>
+
+                    <button name="action_hold_salary"
+                            type="object"
+                            string="Hold Salary"
+                            class="btn-primary"
+                            invisible="hold_salary"/>
+
+                    <button name="action_release_salary"
+                            type="object"
+                            string="Release Salary"
+                            class="btn-secondary"
+                            invisible="not hold_salary"/>
+                </group>
+
+                <div class="alert alert-warning"
+                     invisible="not hold_salary">
+                    Salary is on HOLD. This payslip will not be included in salary voucher payment.
+                </div>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

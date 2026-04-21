@@ -1,0 +1,15 @@
+/* Hide bottom pager everywhere by default */
+.o_list_pager_bottom {
+    display: none;
+}
+
+/* But show it when inside our specific one2many field */
+.cash_line_with_bottom_pager .o_list_pager_bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--o-list-footer-bg, #fff);
+}
+

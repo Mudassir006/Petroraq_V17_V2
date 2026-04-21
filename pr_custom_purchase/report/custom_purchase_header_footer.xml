@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--Bridge template-->
+    <template id="custom_invoice_bridge_layout">
+        <!-- Multicompany -->
+        <t t-if="not o and doc">
+            <t t-set="o" t-value="doc"/>
+        </t>
+        <t t-if="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id.sudo()"/>
+        </t>
+        <t t-if="not o or not 'company_id' in o">
+            <t t-set="company" t-value="res_company"/>
+        </t>
+        <!--call to the header template--><!-- t-call = "module_name.header template id"-->
+        <t t-call="pr_custom_purchase.custom_invoice_header_layout"/>
+        <!--call to the body template-->
+        <div class="article">
+            <t t-raw="0"/>
+        </div><!--call to the footer template-->
+        <t t-call="pr_custom_purchase.custom_invoice_footer_layout"/>
+    </template>
+
+    <!--Template header-->
+    <template id="custom_invoice_header_layout">
+        <div class="header">
+            <div class="text-center">
+                <img src='/pr_custom_purchase/static/src/img/white_header.jpg' style="width:100%;"/>
+            </div>
+        </div>
+    </template>
+
+    <!--Template footer-->
+    <template id="custom_invoice_footer_layout">
+        <div class="footer">
+            <div style="border-bottom:1px solid #305081 !important;">
+                <table class="table table-borderless" style="line-height:0.5;font-family: 'DroidArabicNaskh';">
+                    <tr>
+                        <td width="50%" style="text-align:left;font-size: 18px !important;">
+                            <p>This is computer generated document, no signature and stamp required</p>
+                        </td>
+                        <td width="50%" style="text-align:right;font-size: 18px !important;">
+                            <p>هذه وثيقة تم إنشاؤها بواسطة الكمبيوتر، ولا تتطلب توقيعًا أو ختمًا</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="border-top:1px solid #305081 !important;">
+                <img src='/pr_custom_purchase/static/src/img/blue_footer.jpeg'
+                     style="width:100%;display:inline-block;"/>
+                <div name="pager" class="list-inline no-margin text-center" style="color:rgba(18,49,96,0.91);">
+                    Page:
+                    <span class="page"/>
+                    /
+                    <span class="topage"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</odoo>

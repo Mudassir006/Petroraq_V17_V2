@@ -1,0 +1,102 @@
+<odoo>
+
+
+    <record id="attendance_notification_form_view" model="ir.ui.view">
+        <field name="name">pr.hr.attendance.notification.form.view</field>
+        <field name="model">pr.hr.attendance.notification</field>
+        <field name="arch" type="xml">
+            <form string="Attendance Notification">
+                <header>
+                    <button name="gen_att_sheet" string="Generate Sheets" class="oe_highlight" invisible="state != 'draft'"
+                            type="object"/>
+                    <button name="submit_att_sheet" string="Submit Sheets" class="oe_highlight" invisible="state != 'gen'"
+                            type="object"/>
+                     <button name="action_done" string="Approve Sheets" class="oe_highlight"  invisible="state != 'sub'"
+                            type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,gen,sub,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="open_related_attendance_sheets" type="object" class="oe_stat_button" icon="fa-calendar-check-o"
+                                invisible="att_sheet_ids_count == 0"
+                                help="Attendance Sheets">
+                            <field name="att_sheet_ids_count" widget="statinfo" string="Attendance Sheets"/>
+                        </button>
+                    </div>
+                    <div class="oe_title" >
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Name"
+                                   readonly="state  != 'draft'" force_save="1"
+                            />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state  != 'draft'" string="Date"/>
+                            <field name="company_id" readonly="state  != 'draft'" string="Company" options="{'no_create': True, 'no_edit': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                    </group>
+                    <notebook>
+                        <page string="Attendance Sheets">
+                            <field name="att_sheet_ids" readonly="state  != 'draft'">
+                                <tree create="0">
+                                    <field name="name"/>
+                                    <field name="employee_id"/>
+                                    <field name="state"/>
+                                    <field name="tot_absence" widget="float_time" optional="show"/>
+                                    <field name="tot_absence_amount" decoration-danger="1"/>
+                                    <field name="tot_late" optional="show"
+                                           widget="float_time"/>
+                                    <field name="tot_late_amount" decoration-danger="1"/>
+                                    <field name="tot_early_checkout" widget="float_time" optional="show"/>
+                                    <field name="tot_early_checkout_amount" decoration-danger="1" string="Total ECO. Amount"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="attendance_notification_tree_view" model="ir.ui.view">
+        <field name="name">pr.hr.attendance.notification.tree.view</field>
+        <field name="model">pr.hr.attendance.notification</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="company_id"/>
+                <field name="state"/>
+
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_attendance_notification_action" model="ir.actions.act_window">
+        <field name="name">Attendance Notifications</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pr.hr.attendance.notification</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+
+
+    <menuitem id="menu_main_hr_attendance_notification"
+              name="Attendance Notifications"
+              parent="hr_attendance.menu_hr_attendance_root"
+              sequence="22"/>
+
+    <menuitem id="menu_hr_attendance_notification"
+              name="Attendance Notifications"
+              parent="menu_main_hr_attendance_notification"
+              sequence="1"
+              action="action_attendance_notification_action"/>
+
+
+</odoo>

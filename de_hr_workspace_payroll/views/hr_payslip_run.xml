@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hr_payslip_run_approvals_view_tree" model="ir.ui.view">
+        <field name="name">hr.payslip.run.approvals.view.tree</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="arch" type="xml">
+            <tree string="Payslips Batches" sample="1">
+                <field name="name" readonly="state != 'draft'"/>
+                <field name="date_start" readonly="state != 'draft'"/>
+                <field name="date_end" readonly="state != 'draft'"/>
+                <field name="total_gross_amount" decoration-info="1"/>
+                <field name="total_net_amount" decoration-success="1"/>
+                <field name="state" column_invisible="1"/>
+                <field name="approval_state" string="status"
+                       widget="badge"
+                       decoration-danger="approval_state == 'draft'"
+                       decoration-warning="approval_state == 'verify'"
+                       decoration-info="approval_state == 'close'"
+                       decoration-success="approval_state == 'paid'"
+                />
+                <field name="payslip_count" string="Payslips Count" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_payslip_run_approvals_view_action" model="ir.actions.act_window">
+        <field name="name">Payslip Batches</field>
+        <field name="res_model">hr.payslip.run</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_payslip_run_approvals_view_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('hr_payroll.hr_payslip_run_form')})]"/>
+        <field name="domain">[('approval_state', 'in', ['submitted'])]</field>
+        <field name="context">{'create': False,'edit': False}</field>
+        <field name="search_view_id" ref="hr_payroll.hr_payslip_run_filter"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                There Is No Payslip Batches To Approve
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="hr_payslip_run_approvals_view_menu"
+              parent="de_hr_workspace.menu_my_employee_approvals"
+              name="Payslip Batches"
+              action="hr_payslip_run_approvals_view_action"
+              sequence="50"
+              groups="pr_account.custom_group_accounting_manager"
+    />
+
+</odoo>

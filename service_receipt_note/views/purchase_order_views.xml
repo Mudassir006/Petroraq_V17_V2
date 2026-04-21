@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_order_form_inherit_service_receipt_note" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.service.receipt.note</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_service_receipt_notes"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        invisible="service_receipt_note_count == 0">
+                    <field name="service_receipt_note_count" widget="statinfo" string="SRNs"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//header" position="inside">
+                <field name="has_service_lines" invisible="1"/>
+                <button name="action_create_service_receipt_note"
+                        type="object"
+                        string="Create SRN"
+                        class="btn-primary"
+                        invisible="state not in ('purchase','done') or not has_service_lines"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']/tree//field[@name='qty_received']" position="after">
+                <field name="srn_received_qty" optional="show"/>
+                <field name="srn_remaining_qty" optional="show"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

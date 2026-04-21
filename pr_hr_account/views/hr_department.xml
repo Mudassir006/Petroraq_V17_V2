@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_account_view_department_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.account.view.department.form.inherit</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="hr.view_department_form"/>
+        <field name="arch" type="xml">
+
+            <field name="color" position="after">
+                <field name="department_cost_center_id" options="{'no_create_edit': True, 'no_create': True}" required="0"/>
+            </field>
+
+        </field>
+    </record>
+</odoo>

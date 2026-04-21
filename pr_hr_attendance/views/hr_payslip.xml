@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_attendance_view_hr_payslip_form_inherit" model="ir.ui.view">
+            <field name="name">pr.hr.attendance.view.hr.payslip.form.inherit</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='line_ids']/tree" position="attributes">
+                    <attribute name="decoration-danger">total &lt; 0</attribute>
+                    <attribute name="decoration-success">total &gt; 0</attribute>
+                    <attribute name="decoration-warning">code == 'NET'</attribute>
+                </xpath>
+
+            </field>
+        </record>
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_work_order_create_pr_wizard_form" model="ir.ui.view">
+        <field name="name">pr.work.order.create.pr.wizard.form</field>
+        <field name="model">pr.work.order.create.pr.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create PR from Work Order">
+                <group>
+                    <field name="work_order_id"/>
+                    <field name="priority"/>
+                    <field name="notes"/>
+                </group>
+                <field name="line_ids">
+                    <tree editable="bottom" create="0" delete="0">
+                        <field name="selected"/>
+                        <field name="boq_line_db_id" column_invisible="1"/>
+                        <field name="boq_line_id" column_invisible="1"/>
+                        <field name="product_name" readonly="1"/>
+                        <field name="product_id" column_invisible="1"/>
+                        <field name="cost_center_id"/>
+                        <field name="quantity"/>
+                        <field name="unit_id"/>
+                        <field name="unit_price"/>
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_create_pr" type="object" string="Create PR" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

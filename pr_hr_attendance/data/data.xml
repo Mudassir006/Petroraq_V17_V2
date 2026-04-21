@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="hr_salary_rule_att_early_check_out" model="hr.salary.rule">
+            <field name="code">ECO</field>
+            <field name="name">Early Checkout</field>
+            <field name="category_id" ref="hr_payroll.DED"/>
+            <field name="struct_id"
+                   ref="gs_hr_attendance_sheet.structure_attendance_sheet"/>
+            <field name="condition_select">python</field>
+<!--            <field name="condition_python">result = (worked_days.ATTSHECO and worked_days.ATTSHECO.number_of_hours > 0) or False</field>-->
+            <field name="condition_python">result = ((payslip.attendance_sheet_id.tot_early_checkout or 0) or (payslip.attendance_sheet_id.carry_forward_early_checkout_amount or 0)) or False</field>
+            <field name="amount_select">code</field>
+<!--            <field name="amount_python_compute">result=-worked_days.ATTSHECO.number_of_hours * contract.wage / (9*26)</field>-->
+            <field name="amount_python_compute">result = ((payslip.attendance_sheet_id.tot_early_checkout_amount + payslip.attendance_sheet_id.carry_forward_early_checkout_amount)*-1 or 0)</field>
+            <field name="sequence" eval="65"/>
+            <field name="note">deduction of early check out</field>
+        </record>
+
+        <record id="gs_hr_attendance_sheet.structure_attendance_sheet" model="hr.payroll.structure">
+            <field name="unpaid_work_entry_type_ids"
+                   eval="[
+                   (4, ref('gs_hr_attendance_sheet.work_entry_type_attendance_sheet_overtime')),
+                   (4, ref('gs_hr_attendance_sheet.work_entry_type_attendance_sheet_late_in')),
+                   (4, ref('gs_hr_attendance_sheet.work_entry_type_attendance_sheet_early_check_out')),
+                   (4, ref('gs_hr_attendance_sheet.work_entry_type_attendance_sheet_absence'))]"/>
+        </record>
+
+    </data>
+</odoo>

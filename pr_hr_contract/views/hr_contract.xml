@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="pr_hr_contract_view_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.contract.view.form.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+                <button name="action_set_to_draft" type="object" string="Set To Draft" class="btn-danger"
+                        invisible="state != 'open'"/>
+            </xpath>
+
+            <xpath expr="//notebook" position="replace">
+                <notebook>
+                    <page string="Contract Details" name="other" groups="hr_contract.group_hr_contract_manager">
+                        <group name="contract_details_0"/>
+                        <group name="contract_details" col="2"/>
+                        <group name="contract_details_2"/>
+                        <group name="notes_group" string="Notes">
+                            <field name="notes" nolabel="1" colspan="2"
+                                   placeholder="Type in notes about this contract..."/>
+                        </group>
+                    </page>
+                    <page string="Salary Information" name="information" class="o_hr_contract_salary_information">
+                        <group name="salary_info">
+                            <group name="salary">
+                                <label for="wage"/>
+                                <div class="o_row mw-50" name="wage">
+                                    <field name="wage" class="oe_inline o_hr_narrow_field" nolabel="1"/>
+                                    <div class="mb-3" name="wage_period_label">/ month</div>
+                                </div>
+                            </group>
+                            <group name="yearly_benefits"/>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
+
+            <page name="information" position="replace">
+                <page string="Salary Information" name="information" class="o_hr_contract_salary_information">
+                    <group name="salary_info">
+                        <group name="salary">
+                            <label for="wage" string="Basic Salary"/>
+                            <div class="o_row mw-50" name="wage">
+                                <field name="wage" class="oe_inline o_hr_narrow_field" nolabel="1"
+                                       readonly="state != 'draft'"/>
+                                <div class="mb-3">/ month</div>
+                            </div>
+                            <field name="is_automatic_gosi" widget="boolean_toggle" readonly="state != 'draft'"/>
+                            <field name="gosi_salary" style="color: purple;"
+                                   readonly="is_automatic_gosi == True or state != 'draft'"/>
+                            <field name="company_portion" style="color: green;"
+                                   readonly="is_automatic_gosi == True or state != 'draft'"/>
+                            <field name="employee_portion" style="color: green;"
+                                   readonly="is_automatic_gosi == True or state != 'draft'"/>
+                            <field name="is_special_gosi"/>
+                            <field name="special_company_gosi_rate"/>
+
+                            <!--                            <field name="struct_id" required="0" invisible="1"/>-->
+                            <field name="structure_type_id" required="0" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group name="Salary Details">
+                            <field name="wage" string="Basic Salary" style="color:green" force_save="1"/>
+                            <field name="gosi_amount" string="GOSI" style="color:red" readonly="1"/>
+                            <field name="gross_amount" string="Gross Salary" style="color:orange" readonly="1"/>
+                            <field name="net_amount" string="NET Salary" style="color:green" readonly="1"/>
+                        </group>
+                    </group>
+                    <label for="contract_salary_rule_ids" string="Salary Rules"/>
+                    <field name="contract_salary_rule_ids" string="Salary Rules" widget="section_and_note_one2many"
+                           readonly="state != 'draft'">
+                        <tree string="Contract Rules" editable="bottom">
+                            <field name="contract_id" column_invisible="1"/>
+                            <field name="salary_rule_domain" column_invisible="1"/>
+                            <field name="sequence_ref"/>
+                            <field name="salary_rule_id" options="{'no_create': True, 'no_edit': True}"
+                                   domain="salary_rule_domain" required="1"/>
+                            <field name="pay_in_payslip"/>
+                            <field name="amount_type"/>
+                            <field name="amount_value"/>
+                            <field name="amount"/>
+                        </tree>
+                    </field>
+                </page>
+            </page>
+
+            <group name="notes_group" position="replace">
+
+            </group>
+
+            <group name="contract_details" position="replace">
+                <group>
+                    <group string="Contract Info" name="contract_info">
+                        <field name="contract_employment_type" required="1" readonly="state != 'draft'"/>
+                        <label for="contract_period" string="Contract Period"/>
+                        <div class="o_row mw-50" name="contract_period">
+                            <field name="contract_period" readonly="state != 'draft'"
+                                   class="oe_inline" nolabel="1"/>
+                            <div class="mb-3">months
+                            </div>
+                        </div>
+                        <field name="expected_end_date"/>
+                        <field name="date_end" invisible="1" readonly="state != 'draft'"/>
+                    </group>
+
+                    <group string="Trial Period Info" name="trial_period_info">
+                        <label for="trial_period" string="Trial Period"/>
+                        <div class="o_row mw-50" name="trial_period">
+                            <field name="trial_period" readonly="state != 'draft'"
+                                   class="oe_inline o_hr_narrow_field" nolabel="1"/>
+                            <div class="mb-3">months</div>
+                        </div>
+                        <field name="trial_end_date" force_save="1"
+                               readonly="1"/>
+                    </group>
+
+                    <group string="Notice Period Info" name="notice_period_info">
+                        <label for="notice_period" string="Period"/>
+                        <div class="o_row mw-50" name="notice_period">
+                            <field name="notice_period" readonly="state != 'draft'"
+                                   class="oe_inline o_hr_narrow_field" nolabel="1"/>
+                            <div class="mb-3">months</div>
+                        </div>
+                        <field name="notice_end_date" readonly="1" string="Period End Date"/>
+                    </group>
+                    <group name="notes_group" string="Notes">
+                        <field name="notes" nolabel="1" colspan="2"
+                               placeholder="Type in notes about this contract..."/>
+                    </group>
+
+                    <group name="application_group"/>
+                </group>
+
+            </group>
+
+            <field name="date_start" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+                <attribute name="string">Start Date</attribute>
+            </field>
+
+            <field name="date_start" position="after">
+                <field name="joining_date" readonly="state != 'draft'"/>
+            </field>
+
+            <xpath expr="//field[@name='department_id'][1]" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='department_id'][2]" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+
+
+            <xpath expr="//field[@name='job_id'][1]" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='job_id'][2]" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='contract_type_id'][1]" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='contract_type_id'][2]" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+            </xpath>
+
+            <field name="hr_responsible_id" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+            </field>
+
+            <field name="employee_id" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+            </field>
+
+            <xpath expr="//field[@name='resource_calendar_id'][1]" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='resource_calendar_id'][2]" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+            </xpath>
+
+            <field name="name" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+            </field>
+
+            <field name="date_end" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <xpath expr="//field[@name='structure_type_id'][2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='structure_type_id'][1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='state'][2]" position="replace">
+                <field name="state" widget="statusbar"/>
+            </xpath>
+
+            <xpath expr="//field[@name='state'][1]" position="replace">
+            </xpath>
+
+            <xpath expr="//header" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+
+
+            <xpath expr="//field[@name='state']" position="before">
+                <button string="SET TO RUNNING"
+                        confirm="Are you sure you want to convert this contract to Running Mode, This action can not be un done"
+                        name="action_running" type="object" class="btn btn-success"
+                        invisible="state != 'draft'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_contract_view_form_payroll_inherit" model="ir.ui.view">
+        <field name="name">hr.contract.view.form.payroll.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_payroll.hr_contract_form_inherit"/>
+        <field name="arch" type="xml">
+            <field name="structure_type_id" position="attributes">
+                <attribute name="required">0</attribute>
+                <attribute name="invisible">1</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="hr_contract_view_search_payroll_inherit" model="ir.ui.view">
+        <field name="name">hr.contract.view.search.payroll.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_payroll.hr_contract_search_inherit"/>
+        <field name="arch" type="xml">
+            <field name="employee_id" position="attributes">
+                <attribute name="string">Employee</attribute>
+            </field>
+        </field>
+    </record>
+
+    <menuitem id="bof_hr_contract_single_menu"
+              name="Contract"
+              parent="pr_hr_contract.menu_hr_employee_contract_separator"
+              sequence="1"
+              action="hr_contract.action_hr_contract"/>
+
+
+</odoo>

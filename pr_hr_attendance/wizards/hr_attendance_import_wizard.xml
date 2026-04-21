@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="hr_attendance_import_wizard_view_form" model="ir.ui.view">
+            <field name="name">hr.attendance.import.wizard.view.form</field>
+            <field name="model">hr.attendance.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Attendance Import">
+                    <group>
+                        <group>
+                            <field name="file_attachment" widget="binary" required="1" filename="attachment_file_name"/>
+                            <field name="attachment_file_name" invisible="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_import" string="IMPORT" type="object" class="oe_highlight"/>
+                        <button string="CANCEL" class="btn-danger" special="cancel" data-hotkey="x" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="hr_attendance_import_wizard_view_action" model="ir.actions.act_window">
+            <field name="name">Attendance Import</field>
+            <field name="res_model">hr.attendance.import.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_hr_attendance_import_wizard"
+            name="Attendance Import"
+            action="hr_attendance_import_wizard_view_action"
+            parent="hr_attendance.menu_hr_attendance_root"
+            sequence="40"/>
+
+</odoo>

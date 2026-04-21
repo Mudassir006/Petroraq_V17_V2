@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_sale_approval_manager" model="res.groups">
+            <field name="name">Sales Approval - Manager</field>
+            <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_manager'))]"/>
+        </record>
+        <record id="group_sale_approval_md" model="res.groups">
+            <field name="name">Sales Approval - MD / Final Authority</field>
+        </record>
+        <record id="group_sale_approval_sales" model="res.groups">
+            <field name="name">Sales Approval - =Salesman</field>
+            <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+        </record>
+        <!-- Explicit model record to ensure access rights can reference the wizard -->
+        <record id="model_sale_order_reject_wizard" model="ir.model">
+            <field name="name">sale.order.reject.wizard</field>
+            <field name="model">sale.order.reject.wizard</field>
+            <field name="transient" eval="True"/>
+        </record>
+    </data>
+</odoo>

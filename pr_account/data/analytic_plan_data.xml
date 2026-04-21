@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <function model="ir.config_parameter" name="set_param" eval="('analytic.project_plan', '14')"/>
+    </data>
+    <data noupdate="1">
+
+<!--        <record id="pr_account_analytic_plan_project" model="account.analytic.plan">-->
+<!--            <field name="name">Projects</field>-->
+<!--        </record>-->
+
+        <record id="pr_account_analytic_plan_our_project" model="account.analytic.plan">
+            <field name="name">Projects</field>
+            <field name="analytic_plan_type">project</field>
+            <field name="sequence" eval="30"/>
+        </record>
+
+        <record id="pr_account_analytic_plan_department" model="account.analytic.plan">
+            <field name="name">Departments</field>
+            <field name="analytic_plan_type">department</field>
+        </record>
+
+        <record id="pr_account_analytic_plan_section" model="account.analytic.plan">
+            <field name="name">Sections</field>
+            <field name="analytic_plan_type">section</field>
+        </record>
+
+    </data>
+</odoo>

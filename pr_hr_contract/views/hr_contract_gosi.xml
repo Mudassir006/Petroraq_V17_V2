@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_contract_gosi_view_form" model="ir.ui.view">
+        <field name="name">hr.contract.gosi.view.form</field>
+        <field name="model">hr.contract.gosi</field>
+        <field name="arch" type="xml">
+            <form string="Gosi Configuration" create="false" delete="false">
+                <!-- Invisible Fields -->
+                <field name="lock" invisible="1"/>
+                <header>
+                    <button name="set_lock" string="LOCK" type="object" class="btn-info" invisible="lock == True"/>
+                    <button name="set_unlock" string="UNLOCK" type="object" class="btn-danger" invisible="lock == False"/>
+                     <button name="update_gosi" string="Update Gosi" type="object" class="oe_highlight" icon="fa-refresh"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="LOCKED" bg_color="bg-info" invisible="lock == False"/>
+                    <widget name="web_ribbon" title="UNLOCKED" bg_color="bg-danger" invisible="lock == True"/>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" readonly="lock == True"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="citizen_portion" string="Citizen Portion">
+                            <field name="citizen_employee_portion" string="Employee Portion" readonly="lock == True"/>
+                            <field name="citizen_company_portion" string="Company Portion" readonly="lock == True"/>
+                        </group>
+                        <group name="resident_portion" string="Resident Portion">
+                            <field name="resident_employee_portion" string="Employee Portion" readonly="lock == True"/>
+                            <field name="resident_company_portion" string="Company Portion" readonly="lock == True"/>
+                        </group>
+                    </group>
+<!--                    <group cols="1" name="gosi_salary_rules" string="GOSI Salary Rules">-->
+<!--                        <field name="gosi_salary_rule_ids" options="{'no_create': True, 'no_edit': True}"-->
+<!--                               widget="many2many_tags" readonly="lock == True"/>-->
+<!--                    </group>-->
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!--  HR Contract Gosi List View  -->
+    <record id="hr_contract_gosi_view_tree" model="ir.ui.view">
+        <field name="name">hr.contract.gosi.view.tree</field>
+        <field name="model">hr.contract.gosi</field>
+        <field name="arch" type="xml">
+            <tree create="false" delete="false">
+                <field name="lock" invisible="1"/>
+                <field name="name" readonly="lock == True"/>
+                <field name="citizen_employee_portion" readonly="lock == True"/>
+                <field name="citizen_company_portion" readonly="lock == True"/>
+                <field name="resident_employee_portion" readonly="lock == True"/>
+                <field name="resident_company_portion" readonly="lock == True"/>
+<!--                <field name="gosi_salary_rule_ids" readonly="lock == True"-->
+<!--                       options="{'no_create': True, 'no_edit': True}" widget="many2many_tags"/>-->
+            </tree>
+        </field>
+    </record>
+
+    <!--  HR Contract Gosi Action View  -->
+    <record id="hr_contract_gosi_view_action" model="ir.actions.act_window">
+        <field name="name">Gosi Configuration</field>
+        <field name="res_model">hr.contract.gosi</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new contract gosi configuration
+            </p>
+        </field>
+    </record>
+
+    <!--  HR Contract Gosi Menu  -->
+    <menuitem id="hr_contract_gosi_menu"
+              name="Gosi Configuration"
+              parent="hr.menu_human_resources_configuration"
+              sequence="2"
+              action="hr_contract_gosi_view_action"/>
+
+</odoo>

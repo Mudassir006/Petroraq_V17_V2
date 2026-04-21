@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_my_workspace"
+                  name="Workspace"
+                  sequence="50"
+                  groups="de_hr_workspace.group_hr_employee_workspace"
+                  web_icon="de_hr_workspace,static/img/workspace.png"
+        />
+
+        <menuitem id="menu_my_ws_employee"
+                  name="Employee"
+                  parent="menu_my_workspace"
+                  sequence="10"
+                  groups="de_hr_workspace.group_hr_employee_workspace" />
+    </data>
+</odoo>

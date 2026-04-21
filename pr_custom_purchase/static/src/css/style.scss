@@ -1,0 +1,110 @@
+.total-amount-highlight {
+    font-size: 1.3em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.total_amount {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.total_amount_quotation {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75em;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.total_amount_main {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.total_padding{
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.btn-primary {
+    background-color: #122AA0 !important;
+    border-color: #122AA0 !important;
+}
+
+.btn-outline-primary{
+    border-color: #122AA0 !important;
+    color: #122AA0 !important;;
+}
+
+.btn-outline-primary:hover{
+    color: white !important;
+    background-color: #122AA0 !important;
+}
+html .o_web_client > .o_action_manager {
+    overflow-y: auto;
+}
+/* RFQ comparison matrix: avoid giant HTML widget blank area */
+.rfq-comparison-matrix-wrap .o_field_html .note-editor,
+.rfq-comparison-matrix-wrap .o_field_html .note-editing-area,
+.rfq-comparison-matrix-wrap .o_field_html .note-editable {
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+.rfq-comparison-matrix-wrap .o_field_html .note-editable {
+    padding: 0 !important;
+}
+
+.rfq-comparison-matrix-wrap .o_field_html .note-status-output {
+    display: none !important;
+}
+
+.o_rfq_compare_scroll {
+    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
+}
+
+.o_rfq_compare_table {
+    border-collapse: collapse;
+    table-layout: auto;
+    width: max-content;
+    min-width: 100%;
+}
+
+.o_rfq_compare_table th,
+.o_rfq_compare_table td {
+    border: 1px solid #9f9f9f !important;
+    padding: 6px 8px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.o_rfq_compare_table thead th {
+    background: #d9ead3;
+    font-weight: 700;
+}
+
+
+.o_rfq_compare_table tbody td:nth-child(2) {
+    text-align: left;
+    min-width: 260px;
+}
+
+.o_rfq_compare_table tbody td:nth-child(5),
+.o_rfq_compare_table tbody td:nth-child(6) {
+    text-align: left;
+    min-width: 140px;
+}

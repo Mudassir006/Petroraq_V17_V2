@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<data>
+		<record id="employee_upload_wizard_tcp_udp_view_form" model="ir.ui.view">
+			<field name="name">Employee Upload By TCP/UDP</field>
+			<field name="model">employee.upload.wizard</field>
+			<field name="mode">primary</field>
+			<field name="arch" type="xml">
+				<form string="Synchronize Data">
+					<div>
+						This wizard will upload selected employees to the selected machine.
+						<br />
+						Note: In case you get timeout error, please try on reducing
+						number
+						of employees to upload.
+					</div>
+					<group>
+						<group>
+							<field name="device_ids" widget="many2many_tags" domain="[('state', '!=', 'cancelled'), ('protocol', 'in', ['tcp', 'udp'])]"/>
+						</group>
+					</group>
+					<notebook>
+						<page id="unmapped_employees" string="Unmapped Employees">
+							<field name="employee_ids" 
+								domain="['|',
+										('device_user_ids.device_id.protocol', 'in', ['tcp', 'udp']),
+										('device_user_ids', '=', False)
+									]"/>
+						</page>
+						<page id="upload_details" string="Upload Details">
+							<field name="line_ids">
+								<tree create="0" editable="bottom">
+									<field name="employee_id" />
+									<field name="device_id"
+											domain="[('state', '!=', 'cancelled'), ('protocol', 'in', ['tcp', 'udp'])]"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+					<footer>
+						<button name="action_employee_upload" type="object"
+							groups="hr_attendance.group_hr_attendance_manager"
+							string="Upload Employees" class="oe_highlight" />
+						<button special="cancel" string="Cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="employee_upload_wizard_icloud_view_form" model="ir.ui.view">
+			<field name="name">Employee Upload By Icloud</field>
+			<field name="model">employee.upload.wizard</field>
+			<field name="mode">primary</field>
+			<field name="priority" eval="8" />
+			<field name="inherit_id" ref="pr_attendance_device.employee_upload_wizard_tcp_udp_view_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='device_ids']" position="attributes">
+					<attribute 
+						name="domain">[('state', '!=', 'cancelled'), ('protocol', '=', 'icloud')]
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='employee_ids']" position="attributes">
+					<attribute 
+						name="domain">['|',
+								('device_user_ids.device_id.protocol', '=', 'icloud'),
+								('device_user_ids', '=', False)
+							]
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='device_id']" position="attributes">
+					<attribute 
+						name="domain">[('state', '!=', 'cancelled'), ('protocol', '=', 'icloud')]
+					</attribute>
+				</xpath>
+			</field>
+		</record>
+
+	</data>
+</odoo>

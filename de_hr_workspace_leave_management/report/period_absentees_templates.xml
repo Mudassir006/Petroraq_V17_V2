@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="period_absentees_pdf">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Employee Absentees</h2>
+                    <p>Period: <span t-esc="duration"/></p>
+
+                    <h4 t-if="sections.get('include_absentees')">Absentees</h4>
+                    <table t-if="sections.get('include_absentees')" class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Absent Days</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="absentees" t-as="leave" t-key="leave.get('employee_id')">
+                                <td><span t-esc="leave.get('employee_name')"/></td>
+                                <td><span t-esc="leave.get('absent_days')"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 t-if="sections.get('include_sick_leaves')">Sick Leaves</h4>
+                    <table t-if="sections.get('include_sick_leaves')" class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Leave Type</th>
+                                <th>State</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Days</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="sick_leaves" t-as="leave" t-key="leave.get('employee_id')">
+                                <td><span t-esc="leave.get('employee_name')"/></td>
+                                <td><span t-esc="leave.get('leave_type')"/></td>
+                                <td><span t-esc="leave.get('state')"/></td>
+                                <td><span t-esc="leave.get('date_from')"/></td>
+                                <td><span t-esc="leave.get('date_to')"/></td>
+                                <td><span t-esc="leave.get('number_of_days')"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h4 t-if="sections.get('include_annual_leaves')">Annual Leaves</h4>
+                    <table t-if="sections.get('include_annual_leaves')" class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Leave Type</th>
+                                <th>State</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Days</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="annual_leaves" t-as="leave" t-key="leave.get('employee_id')">
+                                <td><span t-esc="leave.get('employee_name')"/></td>
+                                <td><span t-esc="leave.get('leave_type')"/></td>
+                                <td><span t-esc="leave.get('state')"/></td>
+                                <td><span t-esc="leave.get('date_from')"/></td>
+                                <td><span t-esc="leave.get('date_to')"/></td>
+                                <td><span t-esc="leave.get('number_of_days')"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h4 t-if="sections.get('include_other_leaves')">Other Leaves</h4>
+                    <table t-if="sections.get('include_other_leaves')" class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Leave Type</th>
+                                <th>State</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Days</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="other_leaves" t-as="leave" t-key="leave.get('employee_id')">
+                                <td><span t-esc="leave.get('employee_name')"/></td>
+                                <td><span t-esc="leave.get('leave_type')"/></td>
+                                <td><span t-esc="leave.get('state')"/></td>
+                                <td><span t-esc="leave.get('date_from')"/></td>
+                                <td><span t-esc="leave.get('date_to')"/></td>
+                                <td><span t-esc="leave.get('number_of_days')"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 t-if="sections.get('include_leave_type_metrics')">Leave Type Metrics</h4>
+                    <table t-if="sections.get('include_leave_type_metrics')" class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Leave Type</th>
+                                <th>Approved Days</th>
+                                <th>Approved</th>
+                                <th>Pending</th>
+                                <th>Refused</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="leave_type_metrics" t-as="metric" t-key="metric.get('leave_type')">
+                                <td><span t-esc="metric.get('leave_type')"/></td>
+                                <td><span t-esc="metric.get('approved_days')"/></td>
+                                <td><span t-esc="metric.get('approved_count')"/></td>
+                                <td><span t-esc="metric.get('pending_count')"/></td>
+                                <td><span t-esc="metric.get('refused_count')"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h4 t-if="sections.get('include_leave_availability')">Leave Availability</h4>
+                    <table t-if="sections.get('include_leave_availability')" class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Annual</th>
+                                <th>Sick</th>
+                                <th>Other</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="leave_availability" t-as="item" t-key="item.get('employee_id')">
+                                <td><span t-esc="item.get('employee_name')"/></td>
+                                <td><span t-esc="item.get('annual_remaining')"/></td>
+                                <td><span t-esc="item.get('sick_remaining')"/></td>
+                                <td><span t-esc="item.get('other_remaining')"/></td>
+                                <td><span t-esc="item.get('total_remaining')"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

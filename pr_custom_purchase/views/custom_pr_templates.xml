@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="paperformat_petroraq_invoice_report_sheet" model="report.paperformat">
+        <field name="name">Petroraq Purchase Order Report</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">370</field>
+        <field name="page_width">250</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">55</field>
+        <field name="margin_bottom">47</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">55</field>
+        <field name="dpi">100</field>
+    </record>
+    <!-- Report Action -->
+    <record id="action_report_petroraq_draft_invoice" model="ir.actions.report">
+        <field name="name">PetroRaq Invoice</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pr_custom_purchase.report_petroraq_draft_invoice</field>
+        <field name="report_file">pr_custom_purchase.report_petroraq_draft_invoice</field>
+        <field name="print_report_name">'PetroRaq_Invoice_' + object.name</field>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="pr_custom_purchase.paperformat_petroraq_invoice_report_sheet"/>
+    </record>
+    <template id="report_petroraq_draft_invoice">
+        <t t-call="web.external_layout">
+            <main>
+                <div class="page" style="margin-top:0; padding-top:0;">
+                    <style>
+                        .page table td, .page table th { padding: 6px 10px !important; }
+                        .page table.table-sm td, .page table.table-sm th { padding: 6px 10px !important; }
+                        .page table.table-borderless td, .page table.table-borderless th { padding: 6px 10px !important;
+                        }
+                    </style>
+                    <h3 class="text-center" style="margin:0; padding:0;">Tax Invoice / فاتورة ضريبية</h3>
+                    <t t-set="company" t-value="docs[0].company_id"/>
+                    <t t-set="vendor" t-value="docs[0].partner_id"/>
+                    <t t-set="is_confirmed" t-value="docs[0].state in ('purchase', 'done')"/>
+                    <table class='table table-borderless' style="width:90%; float:left; margin-top:10px;">
+                        <tbody>
+                            <tr>
+                                <td style="padding:2px; width:40%;">Invoice No.</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="docs[0].name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Invoice Date</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="docs[0].date_order or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Supplier</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="company and company.name or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Address</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="company and company.partner_id and company.partner_id.contact_address or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Tel #</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="company and company.phone or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Email</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="company and company.email or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Supplier VAT #</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="company and company.vat or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Project No</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="docs[0].project_id and docs[0].project_id.name or '-'"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class='table table-borderless' style="width:10%; float:right; margin-top:10px;">
+                        <tbody>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">رقم الفاتورة</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">تاريخ الفاتورة</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">المورد</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">العنوان</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">الهاتف</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">البريد الإلكتروني</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">الرقم الضريبي للمورد</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">رقم المشروع</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="clear:both;"></div>
+                    <table class='table table-borderless' style="width:90%; float:left; margin:10px 0;">
+                        <tbody>
+                            <tr>
+                                <td style="padding:2px; width:40%;">Customer</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="vendor and vendor.name or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Address</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="vendor and vendor.contact_address or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Tel #</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="vendor and vendor.phone or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Email</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="vendor and vendor.email or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">PO No.</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="docs[0].origin or docs[0].name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">PO Date</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="docs[0].date_planned or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Customer VAT #</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="vendor and vendor.vat or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:2px;">Customer CR #</td>
+                                <td style="padding:2px;">
+                                    <t t-esc="vendor and vendor.company_registry or ''"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class='table table-borderless' style="width:10%; float:right; margin:10px 0;">
+                        <tbody>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">العميل</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">العنوان</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">الهاتف</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">البريد الإلكتروني</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">رقم أمر الشراء</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">تاريخ أمر الشراء</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">الرقم الضريبي للعميل</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:2px;">السجل التجاري للعميل</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="clear:both;"></div>
+                    <t t-set="_subtotal_ex"
+                       t-value="sum((l.quantity or 0.0) * (l.price_unit or 0.0) for l in docs[0].custom_line_ids)"/>
+                    <t t-set="_vat15" t-value="_subtotal_ex * 0.15"/>
+                    <t t-set="_total_in" t-value="_subtotal_ex + _vat15"/>
+                    <table class="table table-sm table-bordered" style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th style="width:5%;">SL #</th>
+                                <th style="width:45%;">DESCRIPTION</th>
+                                <th style="width:8%;">QTY</th>
+                                <th style="width:8%;">UNIT</th>
+                                <th style="width:12%;">UNIT RATE</th>
+                                <th style="width:12%;">TAXABLE AMOUNT</th>
+                                <th t-if="is_confirmed" style="width:10%;">TAX RATE (15%)</th>
+                                <th t-if="is_confirmed" style="width:12%;">TOTAL AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs[0].custom_line_ids" t-as="l">
+                                <t t-set="_taxable" t-value="(l.quantity or 0.0) * (l.price_unit or 0.0)"/>
+                                <t t-set="_total" t-value="_taxable * 1.15"/>
+                                <tr>
+                                    <td>
+                                        <t t-esc="(l_index or 0) + 1"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="l.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="l.quantity"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="l.unit or ''"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="'%.2f' % (l.price_unit or 0.0)"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="'%.2f' % _taxable"/>
+                                    </td>
+                                    <td t-if="is_confirmed">15%</td>
+                                    <td t-if="is_confirmed">
+                                        <t t-esc="'%.2f' % _total"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <!-- Totals under items table (full width) -->
+                    <table class="table table-sm table-bordered"
+                           style="width:100%; border-collapse:collapse; margin-top:10px;">
+                        <tbody>
+                            <tr>
+                                <td style="width:50%;">Total (Excluding VAT)</td>
+                                <td style="width:25%; text-align:center;">
+                                    <t t-esc="'%.2f' % _subtotal_ex"/>
+                                </td>
+                                <td style="width:25%; text-align:right;">الإجمالي (بإستثناء ضريبة القيمة المضافة)</td>
+                            </tr>
+                            <tr t-if="is_confirmed">
+                                <td>Total VAT (15%)</td>
+                                <td style="text-align:center;">
+                                    <t t-esc="'%.2f' % _vat15"/>
+                                </td>
+                                <td style="text-align:right;">مجموع ضريبة القيمة المضافة</td>
+                            </tr>
+                            <tr t-if="is_confirmed">
+                                <td>Total (Including VAT)</td>
+                                <td style="text-align:center;">
+                                    <t t-esc="'%.2f' % _total_in"/>
+                                </td>
+                                <td style="text-align:right;">الإجمالي (شامل رضيبة القيمة المضافة)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="height: 200px"></div>
+                    <!-- Cheque / Bank details block -->
+                    <t t-set="bank"
+                       t-value="company and company.partner_id and company.partner_id.bank_ids and company.partner_id.bank_ids[0] or False"/>
+                    <table class='table table-borderless' style="width:100%; margin-top:16px;">
+                        <tr>
+                            <td style="width:50%; vertical-align:top;">
+                                <h5 style="margin:0 0 8px 0; font-weight: bold !important;">Make all cheques payable
+                                    to:
+                                </h5>
+                                <table class="table table-borderless" style="width:100%;">
+                                    <tr>
+                                        <td style="width:35%;">Account Title:</td>
+                                        <td>Petroraq Engineering Co. Ltd.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bank :</td>
+                                        <td>Alinma Bank</td>
+                                    </tr>
+                                    <tr>
+                                        <td>A/C No:</td>
+                                        <td>68204260514000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>IBAN No:</td>
+                                        <td>SA0205000068204260514000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Branch:</td>
+                                        <td>Al-Jubail</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SWIFT Code:</td>
+                                        <td>INMASARI</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style="width:50%; vertical-align:top; text-align:right;">
+                                <h5 style="margin:0 0 8px 0; font-weight: bold;">تصدر جميع الشيكات الى الحساب الآتي</h5>
+                                <table class="table table-borderless" style="width:100%;">
+                                    <tr>
+                                        <td style="text-align:right;"></td>
+                                        <td style="text-align:right; width:40%; font-weight: bold;">رشكة بيتوراق
+                                            انجنرتنجا لمحدودة
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">البنك االنماء</td>
+                                        <td style="text-align:right;">: بنك</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">٦٨٢٠٤٢٦٠٥١٤٠٠٠</td>
+                                        <td style="text-align:right;">رقم الحساب</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">SA ٠ ٢٠٥٠٠٠٠٦٨٢٠٤٢٦٠٠٠٠٠٠٠</td>
+                                        <td style="text-align:right;">رقم الايبان</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">الجبيل</td>
+                                        <td style="text-align:right;">- فرع</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">INMASARI</td>
+                                        <td style="text-align:right;">رقم السويفت</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- <table class='table table-borderless' style="width:100%; margin:20px 0;">
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <h6 style="margin:0;">Payment Reference:</h6>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <h6 style="margin:0;">via Bank</h6>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <h6>: رقم إشارة الدفع</h6>
+                            </td>
+                        </tr>
+                    </table> -->
+                    <!-- <p style="text-align:end;">Payment terms: Immediate Payment</p> -->
+                </div>
+            </main>
+        </t>
+    </template>
+    <!-- Custom Header Template -->
+    <!--Template header-->
+    <template id="custom_header">
+        <div class="header">
+            <div class="text-center">
+                <img src='/pr_custom_purchase/static/src/img/header_custom.png' style="width:100%;"/>
+            </div>
+        </div>
+    </template>
+<!--    &lt;!&ndash; replace headers &ndash;&gt;-->
+<!--    <template id="external_layout_standard" inherit_id="web.external_layout_standard">-->
+<!--        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">-->
+<!--            <t t-call="pr_custom_purchase.custom_header"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+<!--    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed">-->
+<!--        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">-->
+<!--            <t t-call="pr_custom_purchase.custom_header"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+<!--    <template id="external_layout_bold" inherit_id="web.external_layout_bold">-->
+<!--        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">-->
+<!--            <t t-call="pr_custom_purchase.custom_header"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+<!--    <template id="xternal_layout_striped" inherit_id="web.external_layout_striped">-->
+<!--        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">-->
+<!--            <t t-call="pr_custom_purchase.custom_header"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+    <!-- Custom Footer Template -->
+    <!--Template footer-->
+    <template id="custom_footer">
+        <div class="footer" style="display: flex; align-items: end;">
+            <!-- <div style="border-bottom:1px solid #305081 !important;">
+                <table class="table table-borderless" style="line-height:0.5;font-family: 'DroidArabicNaskh';">
+                    <tr>
+                        <td width="50%" style="text-align:left;font-size: 18px !important;">
+                            <p>This is computer generated document, no signature and stamp required</p>
+                        </td>
+                        <td width="50%" style="text-align:right;font-size: 18px !important;">
+                            <p>هذه وثيقة تم إنشاؤها بواسطة الكمبيوتر، ولا تتطلب توقيعًا أو ختمًا</p>
+                        </td>
+                    </tr>
+                </table>
+            </div> -->
+            <div style="border-top:1px solid #305081 !important;">
+                <div name="pager" class="list-inline no-margin text-center" style="color:rgba(18,49,96,0.91);">
+                    Page:
+                    <span class="page"/>
+                    /
+                    <span class="topage"/>
+                </div>
+                <img src='/pr_custom_purchase/static/src/img/footer.png' style="width:100%;display:inline-block;"/>
+
+            </div>
+        </div>
+    </template>
+    <!-- Footer replacements for all external layouts -->
+<!--    <template id="external_layout_standard_footer" inherit_id="web.external_layout_standard">-->
+<!--        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">-->
+<!--            <t t-call="pr_custom_purchase.custom_footer"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+<!--    <template id="external_layout_boxed_footer" inherit_id="web.external_layout_boxed">-->
+<!--        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">-->
+<!--            <t t-call="pr_custom_purchase.custom_footer"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+<!--    <template id="external_layout_bold_footer" inherit_id="web.external_layout_bold">-->
+<!--        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">-->
+<!--            <t t-call="pr_custom_purchase.custom_footer"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+<!--    <template id="external_layout_striped_footer" inherit_id="web.external_layout_striped">-->
+<!--        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">-->
+<!--            <t t-call="pr_custom_purchase.custom_footer"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+</odoo>

@@ -1,0 +1,87 @@
+<odoo>
+    <record id="view_purchase_order_form_inherit_send_email" model="ir.ui.view">
+        <field name="name">purchase.order.form.send.email</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header/*[1]" position="before">
+                <button name="action_send_purchase_order_email"
+                        string="Send Email"
+                        type="object"
+                        class="btn-primary"
+                        invisible="state not in ('draft','sent')"
+                        groups="pr_custom_purchase.procurement_admin"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_form_inherit_hide_send_by_email" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.hide.send.by_email</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header/button[@name='action_rfq_send'][1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//form/header/button[@name='action_rfq_send'][2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_form_inherit_reason_tab" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.reason.tab</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Reason" name="reason">
+                    <group>
+                        <field name="rejection_reason"
+                               placeholder="Enter Reason for Rejection"
+                               groups="pr_custom_purchase.project_engineer,pr_custom_purchase.project_manager,pr_custom_purchase.operations_director,pr_custom_purchase.managing_director"/>
+                        <field name="rejection_reason"
+                               readonly="1"
+                               placeholder="Enter Reason for Rejection"
+                               groups="pr_custom_purchase.procurement_admin"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_form_inherit_rfq_quotation_actions" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.rfq.quotation.actions</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <field name="quotation_count" invisible="1"/>
+            </xpath>
+            <xpath expr="//form/header" position="inside">
+                <field name="is_rfq_record" invisible="1"/>
+                <button name="action_create_po_from_rfq"
+                        type="object"
+                        string="Create PO"
+                        class="btn-primary"
+                        groups="pr_custom_purchase.procurement_admin"
+                        invisible="not is_rfq_record and state not in ('sent')"/>
+                <button name="action_open_rfq_comparison"
+                        type="object"
+                        string="Compare RFQs"
+                        class="btn-secondary"
+                        groups="pr_custom_purchase.procurement_admin"
+                        invisible="1"/>
+            </xpath>
+            <xpath expr="//sheet/div[@name='button_box']" position="inside">
+                <button type="object"
+                        class="oe_stat_button"
+                        name="action_view_rfq_quotations"
+                        icon="fa-list-alt"
+                        invisible="state not in ('draft','sent')">
+                    <field name="quotation_count" widget="statinfo" string="RFQs"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

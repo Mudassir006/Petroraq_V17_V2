@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="pr_hr_recruitment_pr_account_bank_payment_view_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.recruitment.pr.account.bank.payment.view.form.inherit</field>
+        <field name="model">pr.account.bank.payment</field>
+        <field name="inherit_id" ref="pr_account.pr_account_bank_payment_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="work_permit_id" invisible="1"/>
+                <button
+                        invisible="not work_permit_id"
+                        name="open_work_permit"
+                        class="oe_stat_button"
+                        icon="fa-file"
+                        type="object"
+                        string="Work Permit Request"
+                >
+                </button>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

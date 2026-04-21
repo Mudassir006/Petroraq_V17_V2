@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_payslip_my_workspace_form_view" model="ir.ui.view">
+        <field name="name">hr.payslip.form.my.workspace</field>
+        <field name="model">hr.payslip</field>
+        <field name="arch" type="xml">
+            <form string="Payslip">
+            <header>
+                <field name="state" widget="statusbar" statusbar_visible="draft,done,paid"/>
+            </header>
+            <sheet>
+                <div class="oe_button_box" name="button_box">
+                </div>
+                <div class="row justify-content-between position-relative w-100 m-0">
+                    <div class="oe_title mw-75 ps-0 pe-2" name="title">
+                        <h1 class="d-flex flex-row align-items-center">
+                            <field name="employee_id" placeholder="Employee" readonly="state not in ['draft', 'verify']"/>
+                        </h1>
+                        <h2 invisible="state == 'draft'"><field name="number" readonly="state not in ['draft', 'verify']"/></h2>
+                    </div>
+                    <div class="o_employee_avatar mw-25 m-0 p-0">
+                        <field name="image_1920" widget="image" class="oe_avatar m-0" options="{&quot;zoom&quot;: true, &quot;preview_image&quot;:&quot;avatar_128&quot;}"/>
+                    </div>
+                </div>
+                <div class="alert alert-warning" role="alert" invisible="not warning_message">
+                    <field name="warning_message" style="white-space: pre-wrap;"/>
+                </div>
+                <group col="4">
+                    <label for="date_from" string="Period"/>
+                    <div>
+                        <field name="date_from" class="oe_inline" readonly="state in ['cancel', 'done', 'paid']"/> - <field name="date_to" class="oe_inline" readonly="state in ['cancel', 'done', 'paid']"/>
+                    </div>
+                    <field name="company_id" invisible="1"/>
+                    <field name="salary_attachment_ids" invisible="1" force_save="1"/>
+                    <field name="wage_type" invisible="1"/>
+                    <field name="sum_worked_hours" invisible="1"/>
+                    <field name="credit_note" invisible="1" readonly="state not in ['draft', 'verify']"/>
+                    <field name="is_superuser" invisible="1"/>
+                    <field name="has_refund_slip" invisible="1"/>
+                    <field name="use_worked_day_lines" invisible="1"/>
+                </group>
+                <notebook>
+                    <page string="Salary Computation" name="salary_computation" class="o_hr_payroll_salary_computation">
+                        <field name="line_ids_filtered" colspan="4" nolabel="1" readonly="state not in ['draft', 'verify']" >
+                            <tree string="Salary Structure"
+                                  editable="bottom" decoration-info="total == 0" create="0" delete="0"
+                            decoration-danger="total &lt; 0"
+                            decoration-success="total &gt; 0"
+                            decoration-warning="code == 'NET'"
+                            >
+                                <field name="name"/>
+                                <field name="code" readonly="1" force_save="1" optional="hide"/>
+                                <field name="category_id" readonly="1" force_save="1"/>
+                                <field name="sequence" readonly="1" column_invisible="True" force_save="1"/>
+                                <field name="quantity" readonly="1" force_save="1" column_invisible="True"/>
+                                <field name="rate" readonly="1" force_save="1" column_invisible="True"/>
+                                <field name="salary_rule_id" groups="base.group_no_one" readonly="1" force_save="1"/>
+                                <field name="amount" readonly="1" force_save="1"/>
+                                <field name="total" readonly="1" force_save="1"/>
+                                <field name="currency_id" column_invisible="True"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+     
+    <record id="action_my_payslips" model="ir.actions.act_window">
+        <field name="name">My Payslips</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_payroll.view_hr_payslip_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('hr_payslip_my_workspace_form_view')})]"/>
+        <field name="context">{'create': False,'edit': False}</field>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                No payslip records to display
+            </p><p>
+                The payslip records of your employees will be displayed here.
+            </p>
+        </field>
+    </record>
+
+        <menuitem id="main_menu_my_payslips" name="Payslips" parent="de_hr_workspace.menu_my_workspace" action="action_my_payslips" sequence="50"/>
+
+
+<!--    <menuitem id="menu_my_payslips"-->
+<!--              name="My Payslips"-->
+<!--              parent="main_menu_my_payslips"-->
+<!--              action="action_my_payslips"-->
+<!--              sequence="10" />-->
+
+
+
+
+   
+</odoo>

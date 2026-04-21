@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="stock_delievery_note_extend" inherit_id="stock.report_delivery_document">se
+
+        <xpath expr="//div[@class='page']" position="before">
+
+            <h2>
+                Delivery Note:
+            </h2>
+
+        </xpath>
+
+    </template>
+</odoo>

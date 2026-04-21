@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="pr_hr_recruitment_hr_applicant_view_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.recruitment.hr.applicant.view.form.inherit</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="applicant_onboarding_id" invisible="1"/>
+                <button
+                        invisible="not applicant_onboarding_id"
+                        name="open_applicant_onboarding_id_view_form"
+                        class="oe_stat_button"
+                        icon="fa-user"
+                        type="object"
+                        string="Applicant Onboarding"
+                >
+                </button>
+            </xpath>
+
+            <xpath expr="//field[@name='application_status']" position="after">
+                <field name="check_first_interview_stage_sequence" invisible="1"/>
+                <field name="check_second_interview_stage_sequence" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='interviewer_ids']" position="attributes">
+                <attribute name="invisible">not check_first_interview_stage_sequence</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='interviewer_ids']" position="after">
+                <field name="second_interviewer_ids" options="{'no_create': True, 'no_create_edit': True}" widget="many2many_avatar_user" invisible="not check_second_interview_stage_sequence"/>
+            </xpath>
+
+            <xpath expr="//field[@name='priority']" position="attributes">
+                <attribute name="invisible">not check_first_interview_stage_sequence</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='priority']" position="after">
+                <field name="second_priority"  widget="priority" invisible="not check_second_interview_stage_sequence"/>
+            </xpath>
+
+            <xpath expr="//field[@name='availability']" position="attributes">
+                <attribute name="invisible">not check_first_interview_stage_sequence</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='availability']" position="after">
+                <field name="second_availability"  placeholder="Directly Available" invisible="not check_second_interview_stage_sequence"/>
+            </xpath>
+
+            <xpath expr="//label[@for='salary_proposed']" position="attributes">
+                <attribute name="invisible">not check_first_interview_stage_sequence</attribute>
+            </xpath>
+
+            <xpath expr="//group[@name='recruitment_contract']//div[hasclass('o_row')][2]" position="attributes">
+                <attribute name="invisible">not check_first_interview_stage_sequence</attribute>
+            </xpath>
+
+            <xpath expr="//group[@name='recruitment_contract']//div[hasclass('o_row')][2]" position="after">
+                <label for="second_salary_proposed"/>
+                <div class="o_row">
+                    <field name="second_salary_proposed"/>
+                    <span invisible="not salary_proposed_extra"> + </span>
+                    <field name="salary_proposed_extra" placeholder="Extra advantages..."/>
+                </div>
+            </xpath>
+
+
+
+        </field>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_pr_expense_bucket_tree_inherit_work_order" model="ir.ui.view">
+        <field name="name">pr.expense.bucket.tree.work.order</field>
+        <field name="model">pr.expense.bucket</field>
+        <field name="inherit_id" ref="pr_custom_purchase.view_pr_expense_bucket_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_id']" position="after">
+                <field name="work_order_id" optional="show"/>
+                <field name="sale_order_id" optional="show"/>
+                <field name="po_reference" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pr_expense_bucket_form_inherit_work_order" model="ir.ui.view">
+        <field name="name">pr.expense.bucket.form.work.order</field>
+        <field name="model">pr.expense.bucket</field>
+        <field name="inherit_id" ref="pr_custom_purchase.view_pr_expense_bucket_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_id']" position="after">
+                <field name="work_order_id" invisible="scope != 'project'"
+                       required="scope == 'project'" readonly="state == 'approved'"/>
+                <field name="sale_order_id" invisible="scope != 'trading'"
+                       required="scope == 'trading'" readonly="state == 'approved'"/>
+                <field name="po_reference" invisible="scope != 'trading'" readonly="state == 'approved'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

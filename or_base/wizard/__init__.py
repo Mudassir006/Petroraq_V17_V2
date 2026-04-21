@@ -1,0 +1,1 @@
+# Intentionally left minimal; no wizard components are loaded.

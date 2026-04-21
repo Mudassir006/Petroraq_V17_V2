@@ -1,0 +1,107 @@
+
+<odoo>
+	<data>
+
+        <record id="command_device_view_form" model="ir.ui.view">
+			<field name="name">attendance.command.device.view.form</field>
+			<field name="model">attendance.command.device</field>
+			<field name="arch" type="xml">
+				<form string="Command To Device"
+                    create="false">
+					<sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" string="Command Name"/></h1>
+                        </div>
+						<group>
+							<group>
+								<field name="data_view" />
+								<field name="return_value" />
+                                <field name="description" />
+                                <field name="state" widget="badge"
+                                    decoration-warning="state == 'pending'"
+                                    decoration-success="state == 'done'"
+                                    decoration-danger="state == 'error'"
+                                    decoration-info="state == 'draft'" />
+							</group>
+							<group>
+								<field name="device_id" />
+								<field name="create_date" />
+								<field name="transfer_time" />
+                                <field name="return_time" />
+							</group>
+						</group>
+					</sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+				</form>
+			</field>
+		</record>
+
+        <record id="command_device_view_tree" model="ir.ui.view">
+			<field name="name">attendance.command.device.view.tree</field>
+			<field name="model">attendance.command.device</field>
+			<field name="arch" type="xml">
+				<tree string="Command To Device"
+					create="false" edit="false" sample="1">
+					<field name="device_id" />
+					<field name="name" />
+					<field name="data_view" />
+					<field name="create_date" />
+					<field name="transfer_time" />
+					<field name="return_value" />
+                    <field name="description" />
+					<field name="return_time" />
+					<field name="state" widget="badge"
+                        decoration-warning="state == 'pending'"
+                        decoration-success="state == 'done'"
+                        decoration-danger="state == 'error'"
+                        decoration-info="state == 'draft'" />
+				</tree>
+			</field>
+		</record>
+
+        <record id="attendance_command_device_view_filter" model="ir.ui.view">
+            <field name="name">attendance.command.device.view.filter</field>
+            <field name="model">attendance.command.device</field>
+            <field name="arch" type="xml">
+                <search string="Command Device">
+                    <field name="name" />
+                    <field name="device_id" />
+                    <field name="state" />
+                    <filter name="state" string="Status Draft"
+                        domain="[('state', '=', 'draft')]" />
+                    <filter name="state" string="Status Pending"
+                        domain="[('state', '=', 'pending')]" />
+                    <filter name="state" string="Status Error"
+                        domain="[('state', '=', 'error')]" />
+                    <filter name="state" string="Status Done"
+                        domain="[('state', '=', 'done')]" />
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_device_id" string="Device"
+                            context="{'group_by': 'device_id'}" />
+                        <filter name="group_by_name" string="Comand Name"
+                            context="{'group_by': 'name'}" />
+                        <filter name="group_by_state" string="State"
+                            context="{'group_by': 'state'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="attendance_command_device_tree_action" model="ir.actions.act_window">
+			<field name="name">Log Command To Device</field>
+			<field name="res_model">attendance.command.device</field>
+			<field name="view_mode">tree,form</field>
+            <field name="context"></field>
+			<field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    The commands instruct the timekeeping device to perform actions.
+                    For machines connected via iCloud.
+                </p>
+			</field>
+		</record>
+
+    </data>
+</odoo>

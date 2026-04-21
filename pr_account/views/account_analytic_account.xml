@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_account_view_account_analytic_account_form_inherit" model="ir.ui.view">
+        <field name="name">pr.account.view.account.analytic.account.form.inherit</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="before">
+                <field name="analytic_plan_type" invisible="1" force_save="1"/>
+                <field name="section_id_domain" invisible="1"/>
+                <field name="project_code" invisible="analytic_plan_type != 'project'" readonly="1" force_save="1"/>
+                <field name="department_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                       invisible="analytic_plan_type not in  ['asset', 'employee', 'project', 'section']" required="analytic_plan_type == 'project'"/>
+                <field name="section_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                       invisible="analytic_plan_type not in  ['asset', 'employee', 'project']"
+                       required="analytic_plan_type == 'project'" domain="section_id_domain"/>
+                <field name="project_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                       invisible="analytic_plan_type not in  ['asset', 'employee']" required="analytic_plan_type == 'project'"/>
+                <field name="project_partner_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}" domain="[('employee_ids', '!=', False)]"/>
+            </field>
+
+            <field name="plan_id" position="after">
+                <field name="analytic_plan_type" force_save="1"/>
+            </field>
+
+            <field name="partner_id" position="attributes">
+                <attribute name="required">analytic_plan_type == 'project'</attribute>
+                <attribute name="domain">[('customer_rank', '=', 1)]</attribute>
+                <attribute name="options">{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}</attribute>
+            </field>
+
+            <field name="code" position="attributes">
+                <attribute name="string">Contract Number</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="analytic.action_account_analytic_account_form" model="ir.actions.act_window">
+        <field name="name">Cost Centers</field>
+    </record>
+</odoo>

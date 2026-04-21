@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="account_ledger_multi_wizard_view">
+        <field name="name">Account Ledger (Multi)</field>
+        <field name="model">account.ledger.multi</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Account Ledger (Multi)">
+                <group>
+                    <group string="Filters">
+                        <field name="account_domain" invisible="1"/>
+                        <field name="main_head"/>
+                        <field name="sort_by"/>
+                        <field name="sort_order"/>
+                        <field name="account_ids" widget="many2many_tags"
+                               domain="account_domain"
+                               options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                        <field name="date_start"/>
+                        <field name="date_end"/>
+                    </group>
+                    <group>
+                        <field name="company_id"
+                               options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                        <field name="department_id"
+                               options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                        <field name="section_id"
+                               options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                        <field name="project_id"
+                               options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                        <field name="employee_id"
+                               options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                        <field name="asset_id"
+                               options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="get_report" string="PRINT PDF" type="object" class="btn-info"/>
+                    <button name="print_xlsx_report" string="PRINT XLSX" type="object" class="btn-success"/>
+                    <button string="CANCEL" special="cancel" class="btn-danger"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="account_ledger_multi_action" model="ir.actions.act_window">
+        <field name="name">Account Ledger (Multi)</field>
+        <field name="res_model">account.ledger.multi</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="help" type="html">
+            <p>Account Ledger (Multi)</p>
+        </field>
+    </record>
+
+    <menuitem action="account_ledger_multi_action"
+              id="menu_account_ledger_multi_id"
+              name="Account Ledger (Multi)"
+              parent="pr_account.account_reports_main_menu"
+              sequence="2"/>
+
+</odoo>

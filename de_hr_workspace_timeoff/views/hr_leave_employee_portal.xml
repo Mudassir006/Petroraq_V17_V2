@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="portal_employee_leaves" name="Employee Leaves" customize_show="True"
+              inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/de_hr_workspace_timeoff/static/src/img/leaves_portal.png'"/>
+                <t t-set="title">Leaves</t>
+                <t t-set="url" t-value="'/my/leaves'"/>
+                <t t-set="text">Follow your leaves</t>
+                <t t-set="placeholder_count" t-value="'my_leave_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_my_leaves" name="My Leaves">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Leaves</t>
+            </t>
+            <t t-if="not leaves">
+                <div class="alert alert-warning" role="alert">
+                    There are no leaves.
+                </div>
+            </t>
+            <t t-if="leaves">
+                <t t-call="portal.portal_table">
+                    <t t-set="loop_cycle_number" t-value="0" />
+                    <thead>
+                        <tr class="active" style="background-color: #009879;color: #ffffff;">
+                            <th>Leave Type</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Duration</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="leaves" t-as="leave" t-att-style="'background-color: #ffffff' if loop_cycle_number % 2 == 0 else 'background-color: #f2f2f2;color: #009879;'">
+                            <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1" />
+                            <td>
+                                <span t-esc="leave.holiday_status_id.name"/>
+                            </td>
+                            <td>
+                                <span t-field="leave.request_date_from"/>
+                            </td>
+                            <td>
+                                <span t-field="leave.request_date_to"/>
+                            </td>
+                            <td>
+                                <span t-field="leave.number_of_days"/>
+                            </td>
+                            <td>
+                                <span t-field="leave.name"/>
+                            </td>
+                            <td>
+                                <span t-field="leave.state" style="color: #fff !important;background-color: #008080 !important;border-color: #008080 !important;border-radius: 8px !important;padding: 6px !important;"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

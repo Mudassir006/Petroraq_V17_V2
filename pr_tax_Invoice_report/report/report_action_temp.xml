@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="petroraq_invoice_report_temp_id">
+            <t t-call="web.internal_layout">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="pr_tax_Invoice_report.petroraq_tax_invoice_report_header_and_footer_id">
+                        <link href='https://fonts.googleapis.com/css?family=Arabic sans serif Fonts'
+                              rel="stylesheet"/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+
+                        <style>
+                            @font-face {
+                            font-family: 'DroidArabicNaskh';
+                            src: url('tax_Invoice_report/static/src/font/droid-arabic-naskh-regular/Droid Arabic Naskh Regular/Droid Arabic Naskh Regular.ttf');
+                            }
+                            html {
+                                margin: 0;
+                                padding: 0;
+                            }
+                            body {
+                                font-family: 'DroidArabicNaskh', sans-serif;
+                                margin: 0;
+                                padding: 0;
+                            html, body, .page, .content, main, div#wrapwrap {
+                                margin: 0 !important;
+                                padding: 0 !important;
+                                width: 100% !important;
+                            }
+                            body {
+                                font-family: 'DroidArabicNaskh', sans-serif;
+                            }
+
+                        </style>
+                        <div class="page" style="margin:0; padding:0;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p style="font-size:25px;text-align:center;color:#000000;">
+                                        <strong style="font-weight: bold;">
+                                            <b>Tax Invoice / فاتورة ضريبية</b>
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+                            <br/>
+                            <table class="table-borderless" width="100%"
+                                   style="border:1px solid white;font-family: 'DroidArabicNaskh';">
+                                <tr>
+                                    <td style="text-align:left">Customer:</td>
+                                    <td style="text-align:left">
+                                        <span t-esc="o.partner_id.name"/>
+                                    </td>
+                                    <td style="text-align:right">
+<!--                                            <span t-esc="o.translate_to_arabic(o.partner_id.arabic_name)"/>-->
+                                        <span t-esc="o.partner_id.arabic_name"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : العميل
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Invoice No.</td>
+                                    <td style="text-align:left">
+                                        <span t-esc="o.name"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-esc="o.translate_invoice_name(o.name)"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : رقم الفاتورة
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Invoice Date:</td>
+                                    <td style="text-align:left">
+                                        <span t-esc="o.invoice_date"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-esc="o.convert_to_eastern_arabic_numerals(o.invoice_date)"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : تاريخ الفاتورة
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Supplier:</td>
+                                    <td style="text-align:left">
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.invoice_date"/>-->
+                                        <span t-if="o.move_type == 'out_invoice'">Petroraq Engineering Co. Ltd</span>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.name"/>
+                                    </td>
+                                    <td style="text-align:right">
+<!--                                            <span t-esc="o.convert_to_eastern_arabic_numerals(o.invoice_date)"/>-->
+                                        <span t-if="o.move_type == 'out_invoice'">شركة بيتروراق انجنيرنج المحدودة</span>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.arabic_name"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        المورد
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left">Address:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'out_invoice'">Al-Majd, King Faisal Street (West), Al Jubail</span><br/>
+                                        <span t-if="o.move_type == 'out_invoice'">Kingdom of Saudi Arabia</span>
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.company_id.city"/><br/>-->
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.company_id.country_id.name"/>-->
+
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.street"/><br/>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.street2"/>
+<!--                                            <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.city"/><br/>-->
+<!--                                            <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.country_id.name"/>-->
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'out_invoice'">المجد شارع الملك فيصل (غربي) الجبيل</span><br/>
+                                        <span t-if="o.move_type == 'out_invoice'">المملكة العربية السعودية</span>
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.translate_to_arabic(o.company_id.city)"/><br/>-->
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.translate_to_arabic(o.company_id.country_id.name)"/>-->
+
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.arabic_street"/><br/>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.arabic_street2"/>
+<!--                                            <span t-if="o.move_type == 'in_invoice'" t-esc="o.translate_to_arabic(o.partner_id.city)"/><br/>-->
+<!--                                            <span t-if="o.move_type == 'in_invoice'" t-esc="o.translate_to_arabic(o.partner_id.country_id.name)"/>-->
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : العنوان
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Tel #:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'out_invoice'">+966133614446</span>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.phone"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals('+966133614446')"/>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.phone)"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : الهاتف
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Email:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'out_invoice'">info@petroraq.com</span>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.email"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'out_invoice'">info@petroraq.com</span>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.email"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : البريد الإلكتروني
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Supplier VAT #:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'out_invoice'">311428741500003</span>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.vat"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals('311428741500003')"/>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.vat)"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : الرقم الضريبي للمورد
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Supplier CR #:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.company_id.l10n_sa_additional_identification_number"/>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.partner_id.l10n_sa_additional_identification_number"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals(o.company_id.l10n_sa_additional_identification_number)"/>
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.l10n_sa_additional_identification_number)"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : سجل التجاري للمورد
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="text-align:left;">Customer:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'in_invoice'">Petroraq Engineering Co. Ltd</span>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.name"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'in_invoice'">شركة بيتروراق انجنيرنج المحدودة</span>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.arabic_name"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        المورد
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left">Address:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'in_invoice'">Al-Majd, King Faisal Street (West), Al Jubail</span><br/>
+                                        <span t-if="o.move_type == 'in_invoice'">Kingdom of Saudi Arabia</span>
+<!--                                            <span t-if="o.move_type == 'in_invoice'" t-esc="o.company_id.city"/><br/>-->
+<!--                                            <span t-if="o.move_type == 'in_invoice'" t-esc="o.company_id.country_id.name"/>-->
+
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.street"/><br/>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.street2"/>
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.city"/><br/>-->
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.country_id.name"/>-->
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'in_invoice'">المجد شارع الملك فيصل (غربي) الجبيل</span><br/>
+                                        <span t-if="o.move_type == 'in_invoice'">المملكة العربية السعودية</span>
+<!--                                            <span t-if="o.move_type == 'in_invoice'" t-esc="o.translate_to_arabic(o.company_id.city)"/><br/>-->
+<!--                                            <span t-if="o.move_type == 'in_invoice'" t-esc="o.translate_to_arabic(o.company_id.country_id.name)"/>-->
+
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.arabic_street"/><br/>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.arabic_street2"/>
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.translate_to_arabic(o.partner_id.city)"/><br/>-->
+<!--                                            <span t-if="o.move_type == 'out_invoice'" t-esc="o.translate_to_arabic(o.partner_id.country_id.name)"/>-->
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : العنوان
+                                    </td>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Tel #:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'in_invoice'">+966133614446</span>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.phone"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals('+966133614446')"/>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.phone)"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : الهاتف
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Email:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'in_invoice'">info@petroraq.com</span>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.email"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'in_invoice'">info@petroraq.com</span>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.email"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : البريد الإلكتروني
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Customer VAT #:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'in_invoice'">311428741500003</span>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.vat"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals('311428741500003')"/>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.vat)"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : الرقم الضريبي للعميل
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">Customer CR #:</td>
+                                    <td style="text-align:left">
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.company_id.l10n_sa_additional_identification_number"/>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.partner_id.l10n_sa_additional_identification_number"/>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <span t-if="o.move_type == 'in_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals(o.company_id.l10n_sa_additional_identification_number)"/>
+                                        <span t-if="o.move_type == 'out_invoice'" t-esc="o.convert_phone_to_eastern_arabic_numerals(o.partner_id.l10n_sa_additional_identification_number)"/>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        : سجل التجاري للعميل
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table table-bordered"
+                                       style="border:1px solid black;text-align:center;margin-top:-15px;font-family: 'DroidArabicNaskh';">
+                                    <tr style="background-color:#dbdbd9">
+                                        <td width="10%">
+                                            <b>الرقم التسلسلي
+                                                <br/>
+                                                # SL
+                                            </b>
+                                        </td>
+                                        <td width="30%">
+                                            <b>                                                    البند أو الوصف
+                                                <br/>
+                                                Description
+                                            </b>
+                                        </td>
+                                        <td width="5%">
+                                            <b>الكمية
+                                                <br/>
+
+                                                Qty
+                                            </b>
+
+                                        </td>
+                                        <td width="10%">
+                                            <b>وحدة السعر
+                                                <br/>
+                                                UNIT PRICE
+                                            </b>
+                                        </td>
+                                        <td width="10%">
+                                            <b>                                                    معدل الضريبة
+                                                <br/>
+                                                TAX RATE (15%)
+                                            </b>
+                                        </td>
+                                        <td width="10%">
+                                            <b>                                                    المبلغ الإجمالي
+                                                <br/>
+                                                TOTAL AMOUNT
+                                            </b>
+                                        </td>
+                                    </tr>
+                                    <t t-set="sr_number" t-value="0"/>
+                                    <t t-set="taxable_amount" t-value="0"/>
+                                    <t t-set="total_qty" t-value="0"/>
+                                    <t t-set="total_unit_price" t-value="0"/>
+                                    <t t-esc="excluding_vat" t-value="0"/>
+                                    <t t-esc="total_vat_tax" t-value="0"/>
+                                    <tr t-foreach="o.invoice_line_ids" t-as="l">
+                                        <t t-set="sr_number" t-value="sr_number+1"/>
+                                        <t t-set="taxable_amount" t-value="(l.quantity * l.price_unit/100)*15"/>
+                                        <t t-set="total_qty" t-value="total_qty + l.quantity"/>
+                                        <t t-set="total_unit_price" t-value="total_unit_price + l.price_unit"/>
+                                        <t t-set="excluding_vat" t-value="total_qty * total_unit_price"/>
+                                        <!--                                            <t t-if="l.tax_ids.name">-->
+                                        <!--                                                <t t-set="total_vat_tax" t-value="total_vat_tax + str(l.tax_ids.name)"/>-->
+                                        <!--                                            </t>-->
+
+                                        <td>
+                                            <span t-esc="sr_number"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="l.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="l.quantity"/>
+                                        </td>
+                                        <td>
+<!--                                                <span t-esc="'{0:,.2f}'.format(l.price_unit)"-->
+                                            <span t-esc="l.price_unit"
+                                            t-options='{"widget": "monetary", "display_currency": l.currency_id}'/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="l.tax_ids.name"/>
+                                        </td>
+                                        <td>
+<!--                                                <span t-esc="'{0:,.2f}'.format(l.price_subtotal)"-->
+                                            <span t-esc="l.price_subtotal"
+                                            t-options='{"widget": "monetary", "display_currency": l.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table table-border"
+                                       style="border:1px solid #000000;margin-top:-10px;font-family: 'DroidArabicNaskh';">
+
+                                    <tr>
+                                        <td width="35%" style="border:1px solid #000000;">
+                                            Untaxed Amount
+                                        </td>
+                                        <td width="23%" style="text-align:center;border:1px solid #000000">
+<!--                                                <span t-esc="'{0:,.2f}'.format(o.amount_untaxed)"-->
+                                            <span t-esc="o.amount_untaxed"
+                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                        <td width="42%" style="text-align:right;border:1px solid #000000">
+                                            الإجمالي (باستثناء ضريبة القيمة المضافة)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="35%" style="border:1px solid #000000;">
+                                            Total VAT (15%)
+                                        </td>
+                                        <td width="23%" style="text-align:center;border:1px solid #000000">
+                                            <span t-esc="o.amount_tax"
+                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                        <td width="42%" style="text-align:right;border:1px solid #000000">
+                                            مجموع ضريبة القيمة المضاف
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="35%" style="border:1px solid #000000;">
+                                            Total Due Amount:
+                                        </td>
+                                        <td width="23%" style="text-align:center;border:1px solid #000000">
+<!--                                                <span t-esc="'{0:,.2f}'.format(o.amount_residual)"-->
+                                            <span t-esc="o.amount_residual"
+                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                        <td width="42%" style="text-align:right;border:1px solid #000000">
+                                            : إجمالي المبلغ المستحق
+                                        </td>
+                                    </tr>
+                                </table>
+                                <t t-set="total_word"
+                                   t-value="o.amount_to_text(o.amount_total)"
+                                />
+                                <t t-set="total_words"
+                                   t-value="o.amount_to_world(o.amount_total)"/>
+                                <table class="table table-border"
+                                       style="border:1px solid #000000;margin-top:-10px;font-size:15px;font-family: 'Noto Sans Arabic';">
+                                    <tr>
+                                        <td style="border-left:1px solid black;">
+                                            <span t-esc="total_word" style="text-align:right"/>
+                                        </td>
+                                        <td style="border-right:1px solid black;">
+                                            <span t-esc="total_words" style="text-align:right"/>
+                                        </td>
+                                    </tr>
+                                </table>
+<!--                                    <div class="row">-->
+<!--                                        <div class="col-2" style="margin: auto;">-->
+<!--                                            <img t-if="o.qr_image"-->
+<!--                                                 t-att-src="'/web/image?model=account.move&amp;field=qr_image&amp;id=' + str(o.id)"-->
+<!--                                                 style="width: 90%;text-align:right;margin: auto;"/>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+                                <div class="row">
+                                    <div class="col-2" style="margin: auto;">
+                                        <img t-if="o.l10n_sa_qr_code_str"
+                                             style="display:block;"
+                                             t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', quote_plus(o.l10n_sa_qr_code_str), 200, 200)"/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <table class="table table-borderless"
+                                       style="line-height:0.5;font-family: 'DroidArabicNaskh';">
+
+                                    <tr>
+                                        <td width="45%" style="text-align:left;">
+                                            <b>Make all cheques payable to:</b>
+                                        </td>
+                                        <td width="55%" style="text-align:right;">
+                                            <b>: تصدر جميع الشيكات الى الحساب الآتي
+                                            </b>
+                                        </td>
+                                    </tr>
+                                    <table class="table table-borderless" style="margin-top:-10px;line-height:0.5">
+                                        <tr>
+                                            <td width="15%" style="text-align:left;">
+                                                Account Title:
+                                            </td>
+                                            <td width="25%" style="text-align:left;">
+                                                Petroraq Engineering Co. Ltd.
+                                            </td>
+                                            <td width="55%" style="text-align:right;">
+                                                شركة بيتروراق انجنيرنج المحدودة
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="15%" style="text-align:left;">
+                                                Bank :
+                                            </td>
+                                            <td width="25%" style="text-align:left;">
+                                                Alinma Bank
+                                            </td>
+                                                                                            <td width="55%" style="text-align:right;">
+                                                                                                بنك : البنك الانماء
+                                                                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="15%" style="text-align:left;">
+                                                A/C No:
+                                            </td>
+                                            <td width="25%" style="text-align:left;">
+                                                68204260514000
+                                            </td>
+                                                                                            <td width="55%" style="text-align:right;">
+                                                                                                <span>رقم الحساب: ٦٨٢٠٤٢٦٠٥١٤٠٠٠</span>
+                                                                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="15%" style="text-align:left;">
+                                                IBAN No:
+                                            </td>
+                                            <td width="25%" style="text-align:left;">
+                                                SA0205000068204260514000
+                                            </td>
+                                                                                            <td width="55%" style="text-align:right;">
+<!--                                                                                                    <span>رقم الأيبان: SA<span t-esc="o.convert_phone_to_eastern_arabic_numerals('0205000068204260514000')"/> </span>-->
+<!--                                                                                                    <span>SA<span t-esc="o.convert_phone_to_eastern_arabic_numerals('0205000068204260514000')"/> رقم الأيبان: </span>-->
+                                                                                                <span>SA0205000068204260514000 :رقم الأيبان</span>
+                                                                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="15%" style="text-align:left;">
+                                                Branch:
+                                            </td>
+                                            <td width="25%" style="text-align:left;">
+                                                Al-Jubail
+                                            </td>
+                                                                                            <td width="55%" style="text-align:right;">
+                                                                                                فرع - الجبيل
+                                                                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="15%" style="text-align:left;">
+                                                SWIFT Code:
+                                            </td>
+                                            <td width="25%" style="text-align:left;">
+                                                INMASARI
+                                            </td>
+                                                                                            <td width="55%" style="text-align:right;">INMASARI :رقم السويفت
+                                                                                            </td>
+                                        </tr>
+                                    </table>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
+

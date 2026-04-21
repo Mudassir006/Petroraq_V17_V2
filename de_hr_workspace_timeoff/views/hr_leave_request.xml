@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="hr_leave_request_tree_view_inherit" model="ir.ui.view">
+        <field name="name">hr.leave.request.tree.view.inherit</field>
+        <field name="model">pr.hr.leave.request</field>
+        <field name="inherit_id" ref="pr_hr_holidays.hr_leave_request_tree_view"/>
+        <field name="arch" type="xml">
+             <xpath expr="//tree" position="attributes">
+               <attribute name="js_class">leave_request_button_in_tree</attribute>
+           </xpath>
+        </field>
+    </record>
+
+    <record id="action_my_leave_request" model="ir.actions.act_window">
+        <field name="name">Leave Requests</field>
+        <field name="res_model">pr.hr.leave.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pr_hr_holidays.hr_leave_request_tree_view')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('pr_hr_holidays.hr_leave_request_form_view')})]"/>
+        <field name="domain">['|', ('employee_id.user_id', '=', uid), ('employee_id.parent_id.user_id', '=', uid)]</field>
+        <field name="context">{'create': False,'edit': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                No leave requests to display
+            </p><p>
+                The leave requests of your employees will be displayed here.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_my_leave_request"
+              name="Leave Requests"
+              parent="menu_my_timeoff"
+              action="action_my_leave_request"
+              sequence="20"
+              groups="de_hr_workspace.group_hr_employee_workspace"/>
+
+    <!--  Approvals  -->
+
+    <record id="hr_leave_request_approvals_tree_view" model="ir.ui.view">
+        <field name="name">pr.hr.leave.request.approvals.tree.view</field>
+        <field name="model">pr.hr.leave.request</field>
+        <field name="arch" type="xml">
+            <tree string="Leave Requests">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="leave_type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="company_id"/>
+                <field name="employee_manager_id" column_invisible="1"/>
+                <field name="hr_supervisor_ids" widget="many2many_tags" column_invisible="1"/>
+                <field name="hr_manager_ids" widget="many2many_tags" column_invisible="1"/>
+                <field name="approval_state" widget="badge"
+                    decoration-danger="approval_state == 'reject'"
+                    decoration-warning="approval_state == 'manager_approve'"
+                    decoration-success="approval_state == 'hr_approve'"
+                    decoration-info="approval_state == 'hr_supervisor'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_my_leave_request_approvals" model="ir.actions.act_window">
+        <field name="name">Leave Requests</field>
+        <field name="res_model">pr.hr.leave.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_leave_request_approvals_tree_view')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('pr_hr_holidays.hr_leave_request_form_view')})]"/>
+        <field name="domain">['|', '|', ('employee_manager_id.user_id', '=', uid), ('hr_supervisor_ids', 'in', uid), ('hr_manager_ids', 'in', uid)]</field>
+        <field name="context">{'create': False,'edit': False, "approvals_of_leave_request": True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                No leave requests to display
+            </p><p>
+                The leave requests of your employees will be displayed here.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_my_leave_request_approvals"
+              name="Leave Requests"
+              parent="de_hr_workspace.menu_my_employee_approvals"
+              action="action_my_leave_request_approvals"
+              sequence="30"
+              groups="de_hr_workspace.group_hr_employee_workspace,de_hr_workspace.group_hr_employee_approvals,hr_holidays.group_hr_holidays_manager,pr_hr_holidays.custom_group_hr_holidays_supervisor"/>
+
+</odoo>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <data noupdate="1">
+        <record id="pr_account_analytic_plan_employee" model="account.analytic.plan">
+            <field name="name">Employees</field>
+            <field name="analytic_plan_type">employee</field>
+            <field name="sequence" eval="40"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="pr_hr_account_pr_transaction_payment_view_search_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.account.pr.transaction.payment.view.search.inherit</field>
+        <field name="model">pr.transaction.payment</field>
+        <field name="inherit_id" ref="pr_account.account_pr_transaction_payment_view_search"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='debit_account_id']" position="after">
+                <field name="debit_cs_employee_id" string="Debit Employee"/>
+            </xpath>
+
+            <xpath expr="//field[@name='credit_account_id']" position="after">
+                <field name="credit_cs_employee_id" string="Credit Employee"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='debit_account_id']" position="after">
+                <filter name="debit_cs_employee_id" string="Debit Employee" domain="[]" context="{'group_by':'debit_cs_employee_id'}"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='credit_account_id']" position="after">
+                <filter name="credit_cs_employee_id" string="Credit Employee" domain="[]" context="{'group_by':'credit_cs_employee_id'}"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="pr_hr_account_pr_transaction_payment_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.account.pr.transaction.payment.form.inherit</field>
+        <field name="model">pr.transaction.payment</field>
+        <field name="inherit_id" ref="pr_account.account_pr_transaction_payment_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='debit_analytic_distribution']" position="after">
+                <field name="debit_cs_employee_id" options="{'no_create_edit': True, 'no_create': True}" readonly="state != 'draft'" string="Employee"/>
+            </xpath>
+
+            <xpath expr="//field[@name='credit_analytic_distribution']" position="after">
+                <field name="credit_cs_employee_id" options="{'no_create_edit': True, 'no_create': True}" readonly="state != 'draft'" string="Employee"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="pr_hr_account_pr_transaction_payment_tree_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.account.pr.transaction.payment.tree.inherit</field>
+        <field name="model">pr.transaction.payment</field>
+        <field name="inherit_id" ref="pr_account.account_pr_transaction_payment_view_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='debit_analytic_distribution']" position="after">
+                <field name="debit_cs_employee_id" optional="hide"/>
+            </xpath>
+
+            <xpath expr="//field[@name='credit_analytic_distribution']" position="after">
+                <field name="credit_cs_employee_id" optional="hide"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

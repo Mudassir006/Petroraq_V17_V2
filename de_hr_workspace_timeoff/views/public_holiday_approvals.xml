@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="de_hr_workspace_hr_public_holiday_form_inherit_approval" model="ir.ui.view">
+        <field name="name">hr.public.holiday.form.inherit.approval</field>
+        <field name="model">hr.public.holiday</field>
+        <field name="inherit_id" ref="gs_hr_attendance_sheet.hr_public_holiday_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header" position="inside">
+                <button name="action_submit_for_approval" string="Submit" type="object" class="oe_highlight"
+                        invisible="approval_state != 'draft'"/>
+                <button name="action_hr_manager_approve" string="Approve" type="object" class="oe_highlight"
+                        invisible="approval_state != 'to_approve'"
+                        groups="hr.group_hr_manager"/>
+                <button name="action_hr_manager_reject" string="Reject" type="object"
+                        invisible="approval_state not in ['to_approve', 'approved']"
+                        groups="hr.group_hr_manager"/>
+                <field name="approval_state" widget="statusbar" statusbar_visible="draft,to_approve,approved,rejected"/>
+            </xpath>
+            <xpath expr="//field[@name='note']" position="after">
+                <field name="approved_by_id" readonly="1"/>
+                <field name="approved_on" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="de_hr_workspace_hr_public_holiday_tree_inherit_approval" model="ir.ui.view">
+        <field name="name">hr.public.holiday.tree.inherit.approval</field>
+        <field name="model">hr.public.holiday</field>
+        <field name="inherit_id" ref="gs_hr_attendance_sheet.hr_public_holiday_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_to']" position="after">
+                <field name="approval_state" widget="badge"
+                       decoration-warning="approval_state == 'to_approve'"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-danger="approval_state == 'rejected'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="de_hr_workspace_public_holiday_approvals_action" model="ir.actions.act_window">
+        <field name="name">Public Holiday Approvals</field>
+        <field name="res_model">hr.public.holiday</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('approval_state', '=', 'to_approve')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No public holidays are pending approval.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="de_hr_workspace_public_holiday_approvals_menu"
+              name="Public Holidays"
+              parent="de_hr_workspace.hr_approvals_menu_root"
+              action="de_hr_workspace_public_holiday_approvals_action"
+              sequence="40"
+              groups="hr.group_hr_manager"/>
+</odoo>

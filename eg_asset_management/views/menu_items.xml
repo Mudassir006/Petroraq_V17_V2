@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <menuitem
+            id="main_menu_assets"
+            parent="account_accountant.menu_accounting"
+            name="Asset Management"/>
+
+    <menuitem id="main_menu_asset"
+              name="Asset"
+              parent="main_menu_assets"
+              sequence="1"/>
+
+    <menuitem
+            id="menu_asset_configuration"
+            name="Configuration"
+            parent="main_menu_assets"
+            sequence="2"/>
+
+</odoo>

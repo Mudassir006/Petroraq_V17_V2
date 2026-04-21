@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Actions -->
+        <record id="action_custom_pr_all" model="ir.actions.act_window">
+            <field name="name">All Purchase Requisitions</field>
+            <field name="res_model">custom.pr</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record id="action_custom_pr_standard" model="ir.actions.act_window">
+            <field name="name">PR</field>
+            <field name="res_model">custom.pr</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('pr_type','=','standard')]</field>
+            <field name="context">{'default_pr_type':'standard'}</field>
+        </record>
+        <record id="action_custom_pr_cash" model="ir.actions.act_window">
+            <field name="name">Cash PR</field>
+            <field name="res_model">custom.pr</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('pr_type','=','cash')]</field>
+            <field name="context">{'default_pr_type':'cash'}</field>
+        </record>
+        <!-- Menus -->
+        <!-- <menuitem id="menu_custom_purchase_root"
+                  name="Custom Purchase"
+                  sequence="10"/>
+        <menuitem id="menu_purchase_requisition"
+                  name="Purchase Requisition"
+                  parent="menu_custom_purchase_root"
+                  sequence="10"/> -->
+        <menuitem id="menu_purchase_requisition"
+                  name="Budgets"
+                  parent="purchase.menu_purchase_root"
+                  sequence="30"/>
+        <menuitem id="menu_pr"
+                  name="Regular PR"
+                  parent="menu_purchase_requisition"
+                  action="action_custom_pr_standard"
+                  sequence="10"/>
+        <menuitem id="menu_cash_pr"
+                  name="Cash PR"
+                  parent="menu_purchase_requisition"
+                  action="action_custom_pr_cash"
+                  sequence="20"/>
+        <!-- Tree View -->
+        <record id="view_custom_pr_tree" model="ir.ui.view">
+            <field name="name">custom.pr.tree</field>
+            <field name="model">custom.pr</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Requisitions">
+                    <field name="name"/>
+                    <field name="pr_type"/>
+                    <field name="requested_by"/>
+                    <field name="date_request"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state == 'purchase'"
+                           decoration-danger="state == 'cancel'"
+                           decoration-warning="state == 'rfq_sent'"
+                           decoration-muted="state == 'draft'"
+                           decoration-info="state == 'pending'"/>
+                    <field name="linked_requisition_status" widget="badge"
+                           decoration-success="linked_requisition_status == 'approved'"
+                           decoration-danger="linked_requisition_status == 'rejected'"
+                           decoration-warning="linked_requisition_status == 'pending'"
+                           decoration-muted="linked_requisition_status == 'missing'"/>
+                    <field name="linked_rfq_status" widget="badge"
+                           decoration-success="linked_rfq_status == 'done'"
+                           decoration-danger="linked_rfq_status == 'cancel'"
+                           decoration-warning="linked_rfq_status == 'sent'"
+                           decoration-muted="linked_rfq_status in ('draft','missing')"/>
+                    <field name="linked_quotation_status" widget="badge"
+                           decoration-success="linked_quotation_status == 'po'"
+                           decoration-info="linked_quotation_status == 'quote'"
+                           decoration-muted="linked_quotation_status == 'missing'"/>
+                    <field name="linked_po_status" widget="badge"
+                           decoration-success="linked_po_status in ('purchase','done')"
+                           decoration-danger="linked_po_status == 'cancel'"
+                           decoration-warning="linked_po_status == 'pending'"
+                           decoration-info="linked_po_status in ('draft','sent')"
+                           decoration-muted="linked_po_status == 'missing'"/>
+                    <field name="approval" widget="badge"
+                           decoration-success="approval == 'approved'"
+                           decoration-danger="approval == 'rejected'"
+                           decoration-info="approval == 'pending'"/>
+                    <field name="total_excl_vat"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Form View -->
+        <record id="view_custom_pr_form" model="ir.ui.view">
+            <field name="name">custom.pr.form</field>
+            <field name="model">custom.pr</field>
+            <field name="arch" type="xml">
+                <form string="Purchase Requisition">
+                    <header>
+                        <button name="action_request_budget_increase"
+                                type="object"
+                                string="Request Budget Increase"
+                                class="btn btn-secondary"
+                                invisible="not show_request_budget_increase_button"/>
+
+                        <button name="action_create_pr"
+                                type="object"
+                                string="Create PR"
+                                class="btn btn-primary"
+                                invisible="approval == 'approved'"/>
+                        <button name="action_reset_to_draft"
+                                type="object"
+                                string="Reset to Draft"
+                                class="btn btn-secondary"
+                                invisible="state == 'draft'"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,rfq_sent,pending,purchase,cancel"/>
+                        <field name="approval" widget="badge"
+                               decoration-success="approval == 'approved'"
+                               decoration-danger="approval == 'rejected'"
+                               decoration-info="approval == 'pending'"/>
+                    </header>
+                    <sheet>
+                        <field name="wo_variance_requires_approval" invisible="1"/>
+                        <div class="alert alert-warning"
+                             role="alert"
+                             invisible="not wo_variance_requires_approval">
+                            Quantity or unit cost exceeds Work Order baseline for one or more lines, but total line
+                            amount is still within Work Order budget. Supervisor approval is required.
+                        </div>
+                        <div name="button_box" class="oe_button_box">
+                            <button icon="fa-pencil-square-o" type="object" string="Budget Requests"
+                                    class="oe_stat_button"
+                                    name="action_open_budget_requests"
+                                    invisible="budget_increase_request_count == 0"
+                            >
+                                <field name="budget_increase_request_count" widget="statinfo" string="Budget Requests"/>
+                            </button>
+
+                        </div>
+                        <group>
+                            <group>
+                                <field name="approval" invisible='1'/>
+                                <field name="linked_requisition_status" invisible="1"/>
+                                <field name="linked_rfq_status" invisible="1"/>
+                                <field name="linked_quotation_status" invisible="1"/>
+                                <field name="linked_po_status" invisible="1"/>
+                                <field name="show_request_budget_increase_button" invisible="1"/>
+                                <field name="pr_created" invisible='1'/>
+                                <field name="name" invisible='1'/>
+                                <field name="pr_type"
+                                       readonly="state == 'purchase' or state == 'cancel' or approval == 'approved'"/>
+                                <field name="requested_by" readonly='1'/>
+                                <field name="department" readonly='1'/>
+                            </group>
+                            <group>
+                                <field name="supervisor" readonly='1'/>
+                                <field name="requested_user_id" invisible='1'/>
+                                <field name="date_request"
+                                       readonly="state == 'purchase' or state == 'cancel' or approval == 'approved'"/>
+                                <field name="required_date" readonly="1"/>
+                                <field name="priority"
+                                       readonly="state == 'purchase' or state == 'cancel' or approval == 'approved'"/>
+                                <field name="expense_type"
+                                       readonly="state == 'purchase' or state == 'cancel' or approval == 'approved'"/>
+                                <field name="expense_bucket_id"
+                                       readonly="state == 'purchase' or state == 'cancel' or approval == 'approved'"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="allowed_cost_center_ids" invisible="1"/>
+                                <field name="line_ids"
+                                       readonly="state == 'purchase' or state == 'cancel' or approval == 'approved'">
+                                    <tree editable="bottom">
+                                        <!-- <field name="description"/> -->
+                                        <field name="description" context="{'display_default_code': False}"/>
+                                        <field name="cost_center_id" domain="[('id', 'in', parent.allowed_cost_center_ids)]"/>
+                                        <field name="type" readonly="1"/>
+                                        <field name="unit"/>
+                                        <field name="quantity"/>
+                                        <field name="unit_price"/>
+                                        <field name="total_price" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Notes">
+                                <group>
+                                    <field name="notes"
+                                           readonly="state == 'purchase' or state == 'cancel' or approval == 'approved'"/>
+                                </group>
+                            </page>
+                            <page string="Reason">
+                                <group>
+                                    <field name="rejection_reason" placeholder="Enter Reason for Rejection"
+                                           groups="pr_custom_purchase.group_custom_pr_end_user" readonly="1"/>
+                                </group>
+                            </page>
+                            <page string="Linked Status">
+                                <group>
+                                    <group>
+                                        <field name="linked_requisition_status" widget="badge"
+                                               decoration-success="linked_requisition_status == 'approved'"
+                                               decoration-danger="linked_requisition_status == 'rejected'"
+                                               decoration-warning="linked_requisition_status == 'pending'"
+                                               decoration-muted="linked_requisition_status == 'missing'"/>
+                                        <field name="linked_rfq_status" widget="badge"
+                                               decoration-success="linked_rfq_status == 'done'"
+                                               decoration-danger="linked_rfq_status == 'cancel'"
+                                               decoration-warning="linked_rfq_status == 'sent'"
+                                               decoration-muted="linked_rfq_status in ('draft','missing')"/>
+                                    </group>
+                                    <group>
+                                        <field name="linked_quotation_status" widget="badge"
+                                               decoration-success="linked_quotation_status == 'po'"
+                                               decoration-info="linked_quotation_status == 'quote'"
+                                               decoration-muted="linked_quotation_status == 'missing'"/>
+                                        <field name="linked_po_status" widget="badge"
+                                               decoration-success="linked_po_status in ('purchase','done')"
+                                               decoration-danger="linked_po_status == 'cancel'"
+                                               decoration-warning="linked_po_status == 'pending'"
+                                               decoration-info="linked_po_status in ('draft','sent')"
+                                               decoration-muted="linked_po_status == 'missing'"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        <div class="d-flex text-end justify-content-end gap-2 fs-4">
+                            <span class="fw-bold">SubTotal</span>
+                            <field name="total_excl_vat" readonly="1"/>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="pr_account.ListRendererBottomPager"
+       t-inherit="web.ListRenderer"
+       t-inherit-mode="extension">
+
+        <xpath expr="//table[@t-ref='table']" position="after">
+            <t t-if="!props.list.isGrouped and props.list.count &gt; props.list.limit">
+                <div class="o_list_pager_bottom">
+                    <Pager t-props="getBottomPagerProps()"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+</templates>

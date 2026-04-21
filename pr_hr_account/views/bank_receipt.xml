@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+
+    <record id="pr_hr_account_bank_receipt_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.account.bank.receipt.form.inherit</field>
+        <field name="model">pr.account.bank.receipt</field>
+        <field name="inherit_id" ref="pr_account.pr_account_bank_receipt_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='bank_receipt_line_ids']/tree/field[@name='partner_id']" position="after">
+                <field name="cs_employee_id" options="{'no_create_edit': True, 'no_create': True}" optional="show" readonly="check_cost_centers_block == False"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

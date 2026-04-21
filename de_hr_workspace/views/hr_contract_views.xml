@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+      <record id="hr_my_contract_form_view" model="ir.ui.view">
+            <field name="name">hr.my.contract.form.view</field>
+            <field name="model">hr.contract</field>
+            <field name="arch" type="xml">
+                <form string="Current Contract">
+                    <header>
+                        <field name="state" readonly="1" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active == True"/>
+                        <div class="oe_title pe-0 w-100 mw-100" name="title">
+                            <h1 class="d-flex flex-row justify-content-between">
+                                <field name="name" class="text-truncate" placeholder="Contract Reference"/>
+                            </h1>
+                            <h2>
+                                <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                            </h2>
+                        </div>
+                        <group name="top_info">
+                            <group name="top_info_left">
+                                <field name="active" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="employee_id" widget="many2one_avatar_employee" options="{'relation': 'hr.employee.public'}"/>
+                                <field name="date_start" string="Start Date"/>
+                                <field name="joining_date" string="Joining Date"/>
+                                <field name="calendar_mismatch" invisible="1"/>
+                                <label for="resource_calendar_id"/>
+                                <div class="d-flex align-items-center">
+                                    <field name="resource_calendar_id"/>
+                                    <widget name="contract_warning_tooltip"
+                                        invisible="not calendar_mismatch"/>
+                                </div>
+                            </group>
+                            <group name="top_info_right">
+                                <field name="department_id" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="job_id" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="contract_type_id"  options="{'no_open': True, 'no_create': True}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Contract Details" name="other" groups="hr_contract.group_hr_contract_manager">
+                                <group name="contract_details_0"/>
+                                <group name="contract_details" col="2"/>
+                                <group name="contract_details_2"/>
+                                <group name="notes_group" string="Notes">
+                                    <field name="notes" nolabel="1" colspan="2"
+                                           placeholder="Type in notes about this contract..."/>
+                                </group>
+                            </page>
+                            <page string="Salary Information" name="information" class="o_hr_contract_salary_information">
+                                <group name="salary_info">
+                                    <group name="salary">
+                                        <label for="wage" string="Basic Salary"/>
+                                        <div class="o_row mw-50" name="wage">
+                                            <field name="wage" class="oe_inline o_hr_narrow_field" nolabel="1"
+                                                   readonly="state != 'draft'"/>
+                                            <div class="mb-3">/ month</div>
+                                        </div>
+                                        <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </group>
+                                    <group name="Salary Details">
+                                        <field name="wage" string="Basic Salary" style="color:green" readonly="1" force_save="1"/>
+                                        <field name="gosi_amount" string="GOSI" style="color:red" readonly="1"/>
+                                        <field name="gross_amount" string="Gross Salary" style="color:orange" readonly="1"/>
+                                        <field name="net_amount" string="NET Salary" style="color:green" readonly="1"/>
+                                    </group>
+                                </group>
+                                <label for="contract_salary_rule_ids" string="Salary Rules"/>
+                                <field name="contract_salary_rule_ids" string="Salary Rules" widget="section_and_note_one2many" readonly="1">
+                                    <tree string="Contract Rules" editable="bottom">
+                                        <field name="contract_id" column_invisible="1"/>
+                                        <field name="salary_rule_domain" column_invisible="1"/>
+                                        <field name="sequence_ref"/>
+                                        <field name="salary_rule_id" options="{'no_create': True, 'no_edit': True}" domain="salary_rule_domain" required="1"/>
+                                        <field name="pay_in_payslip"/>
+                                        <field name="amount_type"/>
+                                        <field name="amount_value"/>
+                                        <field name="amount"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+    <record id="hr_my_contract_tree_view" model="ir.ui.view">
+            <field name="name">hr.my.contracts.tree.view</field>
+            <field name="model">hr.contract</field>
+            <field name="arch" type="xml">
+                <tree string="Contracts" multi_edit="1" sample="1" default_order='date_start ASC'>
+                    <field name="company_id" column_invisible="1"/>
+                    <field name="name" readonly="1"/>
+                    <field name="employee_id" readonly="1" widget="many2one_avatar_employee"/>
+                    <field name="job_id"/>
+                    <field name="date_start" readonly="1"/>
+                    <field name="expected_end_date" readonly="1"/>
+                    <field name="resource_calendar_id" optional="show"/>
+                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'close'" decoration-success="state == 'open'"/>
+                    <field name="company_id" groups="base.group_multi_company" readonly="1" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+    
+    <!-- Define the action to open the form view -->
+    <record id="action_my_contracts" model="ir.actions.act_window">
+        <field name="name">My Contracts</field>
+        <field name="res_model">hr.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids"
+				eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_my_contract_tree_view')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('hr_my_contract_form_view')})]" />
+        <!--
+        <field name="search_view_id" ref="hr.view_employee_filter"/>
+        -->
+        <field name="context">{'create': False,'edit':False}</field>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+
+    </record>
+
+
+
+    <record id="hr_employee_action_from_user" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="res_model">hr.contract</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    
+    <menuitem id="menu_my_contracts" name="My Contracts" parent="menu_my_ws_employee" action="action_my_contracts" sequence="20" groups="de_hr_workspace.group_hr_employee_workspace"/>
+   
+</odoo>

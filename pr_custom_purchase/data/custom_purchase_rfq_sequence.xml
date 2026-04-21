@@ -1,0 +1,11 @@
+<odoo>
+    <record id="seq_custom_purchase_rfq" model="ir.sequence">
+        <field name="name">Custom Purchase RFQ</field>
+        <field name="code">custom.purchase.rfq</field>
+        <field name="prefix">PEC-RFQ-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="number_increment">1</field>
+        <field name="implementation">no_gap</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

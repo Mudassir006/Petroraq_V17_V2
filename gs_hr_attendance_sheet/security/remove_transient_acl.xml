@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+<!--        <delete id="gs_hr_attendance_sheet.access_attendance_overtime_reject_wizard_user" model="ir.model.access"/>-->
+<!--        <delete id="gs_hr_attendance_sheet.access_attendance_overtime_reject_wizard_manager" model="ir.model.access"/>-->
+    </data>
+</odoo>

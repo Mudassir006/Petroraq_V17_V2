@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_iqama,pr_hr_employee_iqama,model_hr_employee_iqama,hr.group_hr_user,1,1,1,1
+access_hr_employee_iqama_line,pr_hr_employee_iqama_line,model_hr_employee_iqama_line,hr.group_hr_user,1,1,1,1
+
+access_hr_employee_medical_insurance,pr_hr_employee_medical_insurance,model_hr_employee_medical_insurance,hr.group_hr_user,1,1,1,1
+access_hr_employee_medical_insurance_line,pr_hr_employee_medical_insurance_line,model_hr_employee_medical_insurance_line,hr.group_hr_user,1,1,1,1
+
+access_hr_employee_dependent_relation,or_hr_employee_dependent_relation,model_hr_employee_dependent_relation,hr.group_hr_user,1,1,1,1
+access_hr_employee_iqama_check_wizard,hr.employee.iqama.check.wizard,model_hr_employee_iqama_check_wizard,hr.group_hr_user,1,1,1,1
+access_hr_employee_iqama_check_line_wizard,hr.employee.iqama.check.line.wizard,model_hr_employee_iqama_check_line_wizard,hr.group_hr_user,1,1,1,1
+access_hr_employee_iqama_line_add_wizard,hr.employee.iqama.line.add.wizard,model_hr_employee_iqama_line_add_wizard,hr.group_hr_user,1,1,1,1
+access_hr_employee_medical_insurance_line_add_wizard,hr.employee.medical.insurance.line.add.wizard,model_hr_employee_medical_insurance_line_add_wizard,hr.group_hr_user,1,1,1,1
+access_hr_department_subrule_user,hr.department.subrule.user,model_hr_department_subrule,hr.group_hr_user,1,1,1,1
+access_hr_department_subrule_employee,hr.department.subrule.employee,model_hr_department_subrule,base.group_user,1,0,0,0
+
+
+

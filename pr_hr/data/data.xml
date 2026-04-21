@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="employee_dependent_relationship_self" model="hr.employee.dependent.relation">
+            <field name="name">Self</field>
+    </record>
+
+    <record id="employee_dependent_relationship_wife" model="hr.employee.dependent.relation">
+            <field name="name">Wife</field>
+    </record>
+	
+	<record id="employee_dependent_relationship_son" model="hr.employee.dependent.relation">
+            <field name="name">Son</field>
+    </record>
+	
+	<record id="employee_dependent_relationship_daughter" model="hr.employee.dependent.relation">
+            <field name="name">Daughter</field>
+    </record>
+
+    <record id="employee_dependent_relationship_father" model="hr.employee.dependent.relation">
+            <field name="name">Father</field>
+    </record>
+
+    <record id="employee_dependent_relationship_mother" model="hr.employee.dependent.relation">
+            <field name="name">Mother</field>
+    </record>
+	
+	<record id="employee_dependent_relationship_other" model="hr.employee.dependent.relation">
+            <field name="name">Other</field>
+    </record>
+</odoo>

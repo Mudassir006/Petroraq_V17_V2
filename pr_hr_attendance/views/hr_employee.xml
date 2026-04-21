@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_attendance_view_employee_form_inherit" model="ir.ui.view">
+            <field name="name">pr.hr.attendance.view.employee.form.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//div[@id='o_work_employee_main']" position="inside">
+                    <group name="employee_overtime" string="Overtime">
+                        <field name="add_overtime" widget="boolean_toggle"/>
+                        <field name="attendance_email_enabled" widget="boolean_toggle"/>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+</odoo>

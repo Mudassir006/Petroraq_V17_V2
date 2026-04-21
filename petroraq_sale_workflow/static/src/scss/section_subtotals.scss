@@ -1,0 +1,76 @@
+.o_section_and_note_list_view .o_is_line_section .o_data_cell .o_field_widget {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.o_section_subtotal_chip {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.o_section_subtotal_chip_label {
+    color: var(--o-gray-700);
+}
+
+.o_section_subtotal_chip_value {
+    color: var(--o-brand-900);
+}
+
+.o_petroraq_totals {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--o-gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.o_petroraq_total_row {
+    display: grid;
+    grid-template-columns: 220px 160px 1fr;
+    column-gap: 32px;
+    align-items: center;
+}
+
+.o_petroraq_total_label {
+    font-weight: 600;
+    color: var(--o-gray-700);
+    padding-left: 16px;
+    white-space: nowrap;
+}
+
+.o_petroraq_total_input {
+    min-width: 0;
+}
+
+.o_petroraq_total_input .o_field_widget {
+    width: 100%;
+}
+
+.o_petroraq_percent_input {
+    width: 100%;
+}
+
+.o_petroraq_total_value {
+    font-weight: 600;
+    color: var(--o-brand-900);
+    white-space: nowrap;
+    text-align: right;
+    min-width: 180px;
+    padding-right: 16px;
+}
+
+.o_petroraq_total_row.o_petroraq_total_grand .o_petroraq_total_label,
+.o_petroraq_total_row.o_petroraq_total_great .o_petroraq_total_label {
+    text-transform: uppercase;
+}
+
+.o_petroraq_total_row.o_petroraq_total_great {
+    border-top: 1px dashed var(--o-gray-300);
+    padding-top: 12px;
+    margin-top: 8px;
+}

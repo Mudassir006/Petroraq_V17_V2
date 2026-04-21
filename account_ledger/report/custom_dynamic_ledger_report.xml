@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="custom_dynamic_ledger_report_view_xlsx" model="ir.actions.report">
+        <field name="name">Balance Excel Report</field>
+        <field name="model">custom.dynamic.ledger.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">account_ledger.custom_dynamic_ledger_report</field>
+        <field name="report_file">account_ledger.custom_dynamic_ledger_report</field>
+    </record>
+</odoo>

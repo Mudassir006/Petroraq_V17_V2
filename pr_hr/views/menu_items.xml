@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="hr.menu_hr_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('hr.group_hr_manager'), ref('hr.group_hr_user')])]"/>
+        </record>
+
+
+        <menuitem
+            id="hr.menu_hr_employee_payroll"
+            name="Employees"
+            parent="hr.menu_hr_root"
+            groups="hr.group_hr_user"
+            sequence="1"/>
+
+        <menuitem id="menu_hr_employee_separator"
+                  parent="hr.menu_hr_employee_payroll"
+                  name="Employee"
+                  sequence="1"/>
+        <menuitem
+                id="hr.menu_hr_employee_user"
+                name="Employees"
+                action="hr.open_view_employee_list_my"
+                parent="menu_hr_employee_separator"
+                sequence="1"/>
+
+        <menuitem
+                id="menu_hr_employee_analysis"
+                name="Analysis"
+                parent="hr.menu_hr_root"
+                sequence="3"/>
+
+        <menuitem
+                id="menu_hr_employee_analysis_separator"
+                name="Employee"
+                parent="menu_hr_employee_analysis"
+                sequence="1"/>
+
+        <menuitem id="menu_hr_dependent_config_seperator"
+                  parent="hr.menu_human_resources_configuration"
+                  name="Dependent"
+                  sequence="10"/>
+
+<!--        <record model="ir.ui.menu" id="hr.menu_hr_department_kanban">-->
+<!--            <field name="groups_id" eval="[(6,0,[ref('base.group_no_one')])]"/>-->
+<!--        </record>-->
+    </data>
+</odoo>

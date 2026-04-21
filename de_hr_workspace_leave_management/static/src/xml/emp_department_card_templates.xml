@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+<!--    This template renders a department card that displays the current shift,-->
+    <!--    upcoming holidays, and a list of employees on leave. -->
+    <!--    It takes in various props such as department ID, employee count, and absentees.-->
+    <div t-name="de_hr_workspace_leave_management.EmpDepartmentCard" owl="1"
+         class="o_timeoff_card py-3 text-odoo de-status-panel" style="width:18%;">
+        <t t-set="id" t-value="props.id"/>
+        <t t-set="department_id" t-value="props.department_id"/>
+        <t t-set="emp_count" t-value="0"/>
+        <t t-set="child_count" t-value="props.child_all_count"/>
+        <t t-set="children" t-value="props.children"/>
+        <t t-set="absentees" t-value="props.absentees"/>
+        <t t-set="shift" t-value="props.current_shift"/>
+        <t t-set="upcoming_holidays" t-value="props.upcoming_holidays"/>
+        <div t-if="shift" class="de-status-tile">
+            <div class="de-status-title"><i class="fa fa-calendar-check-o me-1"/> Current Shift</div>
+            <div class="de-status-line"><t t-esc="shift"/></div>
+        </div>
+        <div class="de-status-grid">
+            <div class="de-status-tile">
+                <div class="de-status-title text-danger"><i class="fa fa-user-times me-1"/> On Leave</div>
+                <t t-if="absentees.length>0">
+                    <t t-foreach="absentees" t-as="child" t-key="child.employee_id">
+                        <div class="de-status-line"><t t-esc="child.name"/></div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="de-status-line text-muted">No employees on leave</div>
+                </t>
+            </div>
+            <div class="de-status-tile">
+                <div class="de-status-title text-success"><i class="fa fa-gift me-1"/> Upcoming Holidays</div>
+                <t t-if="upcoming_holidays.length>0">
+                    <t t-foreach="upcoming_holidays" t-as="holiday" t-key="holiday.id">
+                        <div class="de-status-line"><t t-esc="holiday.name"/></div>
+                        <div class="de-status-date">(<t t-esc="holiday.date_from"/>)</div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="de-status-line text-muted">No upcoming holidays</div>
+                </t>
+            </div>
+        </div>
+    </div>
+</templates>

@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_workspace_user,hr.employee.workspace.user,hr.model_hr_employee,de_hr_workspace.group_hr_employee_workspace,1,0,0,0
+access_hr_contract_workspace_user,hr.contract.workspace.user,hr_contract.model_hr_contract,de_hr_workspace.group_hr_employee_workspace,1,0,0,0
+access_hr_contract_salary_rule_workspace_user,hr.contract.salary.rule.workspace.user,pr_hr_contract.model_hr_contract_salary_rule,de_hr_workspace.group_hr_employee_workspace,1,0,0,0
+access_pr_ir_model_employee_approval,pr_ir_model_employee_approval,base.model_ir_model,de_hr_workspace.group_hr_employee_approvals,1,1,1,1
+access_hr_employee_public_portal_user,hr.employee.public.portal.user,hr.model_hr_employee_public,base.group_portal,1,0,0,0
+access_hr_employee_portal_user,hr.employee.portal.user,hr.model_hr_employee,base.group_portal,1,0,0,0
+access_hr_job_portal_user,hr.job.portal.user,hr.model_hr_job,base.group_portal,1,0,0,0

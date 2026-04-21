@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_order_inq,access.order.inq,sale_order_inquiry.model_order_inq,,1,1,1,1
+access_order_inq_reject_reason_wizard,access.order.inq.reject.reason.wizard,sale_order_inquiry.model_order_inq_reject_reason_wizard,,1,1,1,1
+access_order_inq_extend_deadline_wizard,order.inq.extend.deadline.wizard,model_order_inq_extend_deadline_wizard,petroraq_sale_workflow.group_sale_approval_manager,1,1,1,1
+access_ir_attachment_read_users,ir.attachment read for users,base.model_ir_attachment,base.group_user,1,0,0,0
+
+
+

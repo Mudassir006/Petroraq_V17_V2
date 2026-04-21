@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_service_receipt_note_tree" model="ir.ui.view">
+        <field name="name">service.receipt.note.tree</field>
+        <field name="model">service.receipt.note</field>
+        <field name="arch" type="xml">
+            <tree string="Service Receipt Notes">
+                <field name="name"/>
+                <field name="purchase_id"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="state"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_service_receipt_note_search" model="ir.ui.view">
+        <field name="name">service.receipt.note.search</field>
+        <field name="model">service.receipt.note</field>
+        <field name="arch" type="xml">
+            <search string="Service Receipt Notes">
+                <field name="name"/>
+                <field name="purchase_id"/>
+                <field name="partner_id"/>
+                <filter name="filter_ready" string="Ready" domain="[('state','=','ready')]"/>
+                <filter name="filter_done" string="Done" domain="[('state','=','done')]"/>
+                <filter name="filter_cancel" string="Cancelled" domain="[('state','=','cancel')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="group_vendor" string="Vendor" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_purchase" string="Purchase Order" context="{'group_by':'purchase_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_service_receipt_note_form" model="ir.ui.view">
+        <field name="name">service.receipt.note.form</field>
+        <field name="model">service.receipt.note</field>
+        <field name="arch" type="xml">
+            <form string="Service Receipt Note">
+                <header>
+                    <button name="action_set_ready" type="object" string="Set Ready" class="btn-secondary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary"
+                            groups="pr_custom_purchase.inventory_admin"
+                            invisible="state in ('done','cancel') or approval_state == 'approved'"/>
+                    <button name="action_open_reject_wizard" type="object" string="Reject" class="btn-secondary"
+                            groups="pr_custom_purchase.inventory_admin"
+                            invisible="state in ('done','cancel')"/>
+                    <button name="action_validate" type="object" string="Validate" class="btn-primary"
+                            invisible="state in ('done','cancel')"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" class="btn-secondary"
+                            invisible="state in ('done','draft')"/>
+                    <button name="action_cancel" type="object" string="Cancel" class="btn-secondary"
+                            invisible="state in ('done','cancel')"/>
+                    <button name="action_view_backorders" type="object" string="Backorders" class="btn-secondary"
+                            invisible="backorder_count == 0"/>
+                    <field name="approval_state" widget="badge"
+                           decoration-warning="approval_state == 'pending'"
+                           decoration-success="approval_state == 'approved'"
+                           decoration-danger="approval_state == 'rejected'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,ready,done,cancel"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_backorders" type="object" class="oe_stat_button" icon="fa-files-o"
+                                invisible="backorder_count == 0">
+                            <field name="backorder_count" widget="statinfo" string="Backorders"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="purchase_id" readonly="1"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="date" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="backorder_id" readonly="1"/>
+                            <field name="rejection_reason" readonly="1" invisible="not rejection_reason"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Lines">
+                            <field name="line_ids" readonly="state in ('done','cancel')">
+                                <tree editable="bottom">
+                                    <field name="purchase_line_id" readonly="1"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="name"/>
+                                    <field name="ordered_qty" readonly="1"/>
+                                    <field name="already_received_qty" readonly="1"/>
+                                    <field name="remaining_qty_before" readonly="1"/>
+                                    <field name="done_qty"/>
+                                    <field name="balance_qty" readonly="1"/>
+                                    <field name="uom_id" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="note"/>
+                        </page>
+                        <page string="Chatter">
+                            <field name="message_follower_ids"/>
+                            <field name="activity_ids"/>
+                            <field name="message_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_service_receipt_note" model="ir.actions.act_window">
+        <field name="name">Service Receipt Notes</field>
+        <field name="res_model">service.receipt.note</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_service_receipt_note_search"/>
+    </record>
+
+    <record id="view_service_receipt_reject_wizard_form" model="ir.ui.view">
+        <field name="name">service.receipt.reject.wizard.form</field>
+        <field name="model">service.receipt.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Service Receipt Note">
+                <group>
+                    <field name="receipt_id" readonly="1"/>
+                    <field name="rejection_reason" placeholder="Please provide rejection reason..."/>
+                </group>
+                <footer>
+                    <button name="action_confirm_reject" type="object" string="Reject" class="btn-danger"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <menuitem id="menu_service_receipt_note_purchase"
+              name="Service Receipt Notes"
+              parent="purchase.menu_purchase_root"
+              action="action_service_receipt_note"
+              sequence="60"/>
+
+    <menuitem id="menu_service_receipt_note_inventory"
+              name="Service Receipt Notes"
+              parent="stock.menu_stock_root"
+              action="action_service_receipt_note"
+              sequence="85"/>
+
+</odoo>

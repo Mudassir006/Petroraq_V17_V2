@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="hr_applicant_onboarding_form_view" model="ir.ui.view">
+        <field name="name">hr.applicant.onboarding.form.view</field>
+        <field name="model">hr.applicant.onboarding</field>
+        <field name="arch" type="xml">
+            <form string="Applicant Onboarding">
+                <!--        Invisible Fields        -->
+                <field name="applicant_id" invisible="1"/>
+                <field name="work_permit_id" invisible="1"/>
+                <header>
+                    <button name="generate_checklist" string="CHECKLIST" class="btn-info"
+                            invisible="state != 'initialize'"
+                            type="object" groups="hr_recruitment.group_hr_recruitment_user"/>
+                    <button name="action_generate_work_permit" string="WORK PERMIT &amp; IQAMA" class="btn-primary"
+                            invisible="state != 'checklist'"
+                            type="object" groups="hr_recruitment.group_hr_recruitment_user"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                                invisible="not applicant_id"
+                                name="open_applicant_id_view_form"
+                                class="oe_stat_button"
+                                icon="fa-user"
+                                type="object"
+                                string="Applicant"
+                        >
+                        </button>
+                        <button
+                                invisible="not work_permit_id"
+                                name="open_work_permit_id_view_form"
+                                class="oe_stat_button"
+                                icon="fa-file"
+                                type="object"
+                                string="Work Permit"
+                        >
+                        </button>
+                    </div>
+                    <div class="oe_title" >
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name"
+                            />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="hire_type"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="checklist_items" string="Checklist Items" invisible="state == 'initialize'">
+                            <field name="checklist_ids" widget="one2many_list">
+                                <tree string="Budget Items" editable="bottom">
+                                    <field name="applicant_onboarding_id" column_invisible="1"/>
+                                    <field name="checklist_item"/>
+                                    <field name="is_completed"/>
+                                    <field name="file_attachment" widget="binary" filename="attachment_file_name"/>
+                                    <field name="attachment_file_name" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="hr_applicant_onboarding_tree_view" model="ir.ui.view">
+        <field name="name">hr.applicant.onboarding.tree.view</field>
+        <field name="model">hr.applicant.onboarding</field>
+        <field name="arch" type="xml">
+            <tree string="Applicant Onboarding">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="hire_type"/>
+                <field name="state" widget="badge"
+                    decoration-danger="state == 'initialize'"
+                    decoration-warning="state == 'checklist'"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="hr_applicant_onboarding_view_action" model="ir.actions.act_window">
+        <field name="name">Applicant Onboarding</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.applicant.onboarding</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create A New Applicant Onboarding
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="hr_applicant_onboarding_root_menu"
+        name="Onboarding"
+        web_icon="pr_hr_recruitment/static/src/img/onboarding.png"
+        groups="hr_recruitment.group_hr_recruitment_user,hr_recruitment.group_hr_recruitment_manager"
+        sequence="211"/>
+
+
+    <menuitem id="hr_applicant_onboarding_menu"
+              name="Applicant Onboarding"
+              parent="hr_applicant_onboarding_root_menu"
+              sequence="1"
+              action="hr_applicant_onboarding_view_action"/>
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="action_hr_approval_dashboard" model="ir.actions.client">
+        <field name="name">Approvals Dashboard</field>
+        <field name="tag">de_hr_workspace_attendance.approval_dashboard</field>
+    </record>
+
+    <menuitem id="menu_hr_approval_dashboard"
+              name="Dashboard"
+              parent="de_hr_workspace.menu_my_employee_approvals"
+              action="action_hr_approval_dashboard"
+              sequence="5"
+              groups="de_hr_workspace.group_hr_employee_approvals"/>
+
+</odoo>

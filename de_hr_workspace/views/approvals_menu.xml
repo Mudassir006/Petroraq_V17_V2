@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_my_employee_approvals"
+                  name="Approvals"
+                  sequence="60"
+                  groups="base.group_user"
+                  web_icon="de_hr_workspace,static/img/approvals.png"
+        />
+
+        <menuitem id="hr_approvals_menu_root"
+              parent="de_hr_workspace.menu_my_employee_approvals"
+              name="HR"
+              sequence="10"
+              groups="de_hr_workspace.group_hr_employee_workspace,de_hr_workspace.group_hr_employee_approvals,hr.group_hr_manager,hr_holidays.group_hr_holidays_manager,pr_hr_holidays.custom_group_hr_holidays_supervisor"
+        />
+
+    </data>
+</odoo>

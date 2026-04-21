@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="payroll_report" model="ir.actions.report">
+                <field name="name">Payroll Report</field>
+                <field name="model">hr.payslip.run</field>
+                <field name="report_type">xlsx</field>
+                <field name="report_name">xlsx_payroll_report.xlsx_payroll_report</field>
+                <field name="report_file">Payroll Report</field>
+            </record>
+
+</odoo>

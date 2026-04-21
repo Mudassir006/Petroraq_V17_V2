@@ -1,0 +1,956 @@
+/* HEADER BASE */
+.petroraq-header {
+
+
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    z-index: 999;
+}
+
+.petroraq-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* LOGO */
+.petroraq-logo {
+    height: 55px;
+}
+
+/* CENTER NAV */
+.nav-center .nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+.nav-link {
+    color: white;
+    font-weight: 600;
+    padding: 10px 15px;
+    text-transform: uppercase;
+}
+
+.nav-link:hover {
+    color: #FDB514; /* Yellow hover */
+}
+
+/* DROPDOWN */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    background: white;
+    padding: 10px;
+    list-style: none;
+    display: none;
+    min-width: 220px;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 8px;
+    color: #003366;
+}
+
+/* RIGHT: GET A QUOTE BUTTON */
+.btn-quote {
+    background: #FDB514;
+    padding: 10px 25px;
+    color: #000;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.btn-quote:hover {
+    background: #ffcc4d;
+}
+
+/* MAIN WRAPPER */
+.success-section {
+    width: 100%;
+    position: relative;
+    margin-top: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* YELLOW BLOCK */
+.success-yellow {
+    background: #F8B92A;
+    padding: 80px 10%;
+    color: #00254D;
+}
+
+.success-small-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.success-big-title {
+    font-size: 46px;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+.success-desc {
+    width: 70%;
+    margin-top: 20px;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+/* FLOATING CARD WRAPPER */
+.success-stats-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: -60px;   /* makes them overlap yellow+white */
+    padding: 40px 0;
+}
+
+/* INDIVIDUAL CARD */
+.stat-card {
+    background: white;
+    width: 48%;
+    padding: 40px;
+    border-radius: 6px;
+    box-shadow: 0px 3px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h1 {
+    font-weight: 800;
+    color: #00254D;
+    font-size: 48px;
+}
+
+.stat-card p {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .success-stats-wrapper {
+        flex-direction: column;
+        margin-top: -40px;
+    }
+
+    .stat-card {
+        width: 100%;
+    }
+
+    .success-desc {
+        width: 100%;
+    }
+}
+
+
+
+/* MOBILE MENU — we will build after desktop version is perfect */
+/* MOBILE TOGGLE (Hamburger) */
+.nav-mobile-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.nav-mobile-toggle span {
+    width: 28px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+}
+
+/* MOBILE MENU */
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 85px;
+    left: 0;
+    width: 100%;
+    background: #002b5c;
+    padding: 20px;
+    z-index: 9999;
+}
+
+.mobile-menu ul {
+    list-style: none;
+}
+
+.mobile-menu ul li {
+    margin-bottom: 15px;
+}
+
+.mobile-menu ul li a {
+    color: white;
+    font-size: 18px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Mobile Dropdown */
+.mobile-dropdown ul {
+    padding-left: 15px;
+    display: none;
+}
+
+.mobile-dropdown.active ul {
+    display: block;
+}
+
+/* RESPONSIVE BEHAVIOR */
+@media (max-width: 991px) {
+
+    /* Hide desktop items */
+    .nav-center,
+    .nav-right {
+        display: none;
+    }
+
+    /* Show hamburger */
+    .nav-mobile-toggle {
+        display: flex;
+    }
+}
+
+/* FOOTER STYLE */
+.petroraq-footer {
+    background-color: #1D2940;
+    color: white;
+    padding-top: 50px;
+}
+
+.footer-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    padding-bottom: 40px;
+}
+
+.footer-col {
+    flex: 1;
+    min-width: 230px;
+}
+
+.footer-logo-img {
+    width: 180px;
+}
+
+.footer-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.footer-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.footer-list li {
+    margin-bottom: 8px;
+    color: #ddd;
+    font-size: 15px;
+}
+
+.footer-text {
+    color: #ccc;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.footer-subtitle {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.footer-line {
+    border: 0;
+    border-top: 1px solid #aaa;
+    margin: 15px 0;
+}
+
+.footer-about-btn {
+    display: inline-block;
+    background: #FDB514;
+    color: black;
+    padding: 10px 25px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.footer-about-btn:hover {
+    background: #ffcc4a;
+}
+
+/* COPYRIGHT */
+.footer-bottom {
+    text-align: center;
+    padding: 15px;
+    background-color: #182233;
+    font-size: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .footer-main {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-col {
+        margin-bottom: 30px;
+    }
+
+    .footer-logo-img {
+        margin-bottom: 20px;
+    }
+}
+
+
+/* ===============================
+   HERO SECTION STYLING
+   =============================== */
+
+#petroraq-hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Carousel must always stay full height */
+#petroraq-hero .carousel,
+#petroraq-hero .carousel-inner,
+#petroraq-hero .carousel-item {
+    width: 100%;
+    height: 100vh !important;
+}
+
+/* Image styling */
+#petroraq-hero .hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(0.45); /* dark effect for readability */
+}
+
+/* Make sure next slides do not collapse */
+#petroraq-hero .carousel-item {
+    position: relative;
+}
+
+/* ===============================
+   TEXT OVERLAY
+   =============================== */
+
+#petroraq-hero .hero-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: left;
+    width: 80%;
+    max-width: 900px;
+}
+
+#petroraq-hero .hero-title {
+    font-size: 60px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 20px 0;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+#petroraq-hero .hero-sub {
+    font-size: 24px;
+    font-weight: 600;
+    color: #FFC107; /* yellow from the UI */
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* CTA Button */
+#petroraq-hero .hero-btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #263A89;     /* Petroraq blue */
+    color: #fff;
+    border: 2px solid #263A89;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: 0.3s ease-in-out;
+}
+
+#petroraq-hero .hero-btn:hover {
+    background: transparent;
+    color: #fff;
+    border-color: #fff;
+}
+
+/* ===============================
+   RESPONSIVE
+   =============================== */
+
+@media (max-width: 992px) {
+    #petroraq-hero .hero-title {
+        font-size: 42px;
+    }
+
+    #petroraq-hero .hero-sub {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+    #petroraq-hero .hero-title {
+        font-size: 32px;
+    }
+
+    #petroraq-hero .hero-sub {
+        font-size: 16px;
+    }
+
+    #petroraq-hero .hero-overlay {
+        text-align: center;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #petroraq-hero .hero-btn {
+        padding: 10px 25px;
+        font-size: 14px;
+    }
+}
+
+
+/* ================= ABOUT SECTION ================= */
+
+.about-intro {
+    width: 100%;
+    padding: 90px 10% 120px;
+    background: #fff;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.about-container {
+    max-width: 950px;
+    margin: auto;
+}
+
+.about-title {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: #00254D;
+    margin-bottom: 35px;
+}
+
+.about-text {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #333;
+    text-align: justify;
+    margin-bottom: 25px;
+}
+
+/* BUTTONS */
+.about-buttons {
+    margin-top: 45px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.about-btn {
+    padding: 12px 28px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 3px;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+}
+
+.yellow-btn {
+    background: #FDB514;
+    color: #000;
+}
+
+.yellow-btn:hover {
+    background: #ffcc4d;
+}
+
+.outline-btn {
+    border: 2px solid #FDB514;
+    color: #FDB514;
+}
+
+.outline-btn:hover {
+    background: #FDB514;
+    color: #000;
+}
+
+/* ========== ISO SECTION ========== */
+
+.iso-section {
+    width: 100%;
+    background-image: url('/pr_website/static/images/cf-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 80px 0 120px;
+    position: relative;
+}
+
+.iso-overlay {
+    background: rgba(0,0,0,0.40); /* subtle dark overlay */
+    padding: 60px 0;
+}
+
+.iso-content {
+    width: 90%;
+    max-width: 1300px;
+    margin: auto;
+    text-align: center;
+}
+
+.iso-title {
+    color: #FDB514;
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 50px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.iso-cert-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: nowrap;
+}
+
+.iso-cert-card {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.2);
+    width: 30%;
+}
+
+.iso-cert-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .iso-cert-row {
+        flex-wrap: wrap;
+    }
+
+    .iso-cert-card {
+        width: 45%;
+    }
+}
+
+@media (max-width: 600px) {
+    .iso-cert-card {
+        width: 90%;
+    }
+}
+
+
+/* ============================
+   SERVICES SECTION
+===============================*/
+
+.services-wrapper {
+    padding: 80px 10%;
+    font-family: "Montserrat", sans-serif;
+}
+
+.services-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #00254D;
+    margin-bottom: 40px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 35px;
+}
+
+.service-card {
+    background: #fff;
+    border-radius: 6px;
+    padding-bottom: 25px;
+    box-shadow: 0px 4px 25px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0px 8px 35px rgba(0,0,0,0.15);
+}
+
+.service-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.service-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 15px;
+    color: #00254D;
+}
+
+.service-desc {
+    font-size: 15px;
+    margin: 0 15px 20px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.service-btn {
+    display: inline-block;
+    margin-left: 15px;
+    padding: 10px 25px;
+    background: #00254D;
+    color: #fff !important;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.service-btn:hover {
+    background: #03376b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== DARK OVERLAY PRESET ===== */
+.overlay-dark {
+    background: rgba(0, 0, 0, 0.55);  /* stronger darkening */
+    width: 100%;
+    height: 100%;
+    padding: 120px 15%;
+}
+
+/* GENERAL WRAPPER */
+.provide-sustain-wrapper {
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ============================ */
+/* ROW 1 — WE ALSO PROVIDE */
+/* ============================ */
+
+.provide-row {
+    width: 100%;
+    height: 380px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+/* CENTER the text block */
+.provide-content {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+    max-width: 420px;
+    color: white;
+}
+
+
+.provide-title {
+    color: #FDB514;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.provide-list {
+    list-style: none;
+    margin-bottom: 18px;
+}
+
+.provide-list li {
+    margin-bottom: 4px;
+    opacity: .9;
+}
+
+.provide-list li::before {
+    content: "• ";
+    color: #FDB514;
+}
+
+.provide-btn {
+    background: #FDB514;
+    padding: 10px 25px;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 3px;
+}
+
+/* ============================ */
+/* ROW 2 — TWO COLUMNS */
+/* ============================ */
+
+.two-col-row {
+    display: flex;
+    width: 100%;
+    min-height: 450px;
+}
+
+/* LEFT COLUMN */
+.left-col {
+    width: 50%;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
+
+.left-col-content {
+    position: relative;
+    z-index: 2;
+    padding: 100px 15%;
+}
+
+.left-col::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55); /* DARKER overlay */
+}
+
+/* Yellow label */
+.small-yellow {
+    color: #FDB514;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Title */
+.left-title {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 15px;
+}
+
+/* Paragraph */
+.left-desc {
+    max-width: 90%;
+    margin-bottom: 25px;
+    line-height: 1.7;
+    opacity: .9;
+}
+
+/* Button */
+.left-btn {
+    background: #FDB514;
+    padding: 12px 28px;
+    color: #000;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+/* ============================ */
+/* RIGHT COLUMN — BEST PRACTICES */
+/* ============================ */
+
+.right-col {
+    width: 50%;
+    background: url('/pr_website/static/images/hero-bg3.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.right-inner-overlay {
+    background: rgba(248, 185, 42, 0.70);  /* LESS yellow now */
+    height: 100%;
+    padding: 110px 60px;
+}
+
+/* Title */
+.right-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* Subtitle */
+.right-sub {
+    margin-bottom: 25px;
+    opacity: .8;
+}
+
+/* List */
+.practice-list {
+    list-style: none;
+    font-size: 18px;
+    line-height: 2.2;
+}
+
+.left-col-content,
+.left-col-content * {
+    color: white !important;
+}
+
+/* ============================
+   REQUEST QUOTE SECTION
+============================ */
+.pr-quote-wrapper {
+    width: 100%;
+    background: #f5f5f5;
+    padding: 100px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.pr-quote-container {
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+/* LEFT BOX */
+.pr-quote-form {
+    background: #0F2341;
+    width: 40%;
+    padding: 50px;
+    border-radius: 4px;
+    color: white;
+}
+
+.pr-quote-form h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.pr-quote-sub {
+    margin-bottom: 25px;
+    opacity: 0.8;
+}
+
+.pr-quote-form input,
+.pr-quote-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 2px;
+    outline: none;
+    margin-bottom: 18px;
+    font-size: 14px;
+}
+
+.pr-quote-form textarea {
+    height: 150px;
+    resize: none;
+}
+
+/* BUTTON */
+.pr-quote-btn {
+    width: 180px;
+    background: #FDB514;
+    color: #000;
+    border: none;
+    padding: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.pr-quote-btn:hover {
+    background: #ffcd4a;
+}
+
+/* RIGHT INFO */
+.pr-quote-info {
+    width: 45%;
+    padding-top: 20px;
+}
+
+.pr-quote-label {
+    color: #FDB514;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.pr-quote-title {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 30px;
+}
+
+.pr-info-item {
+    font-size: 18px;
+    margin-bottom: 18px;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 992px) {
+    .pr-quote-container {
+        flex-direction: column;
+    }
+
+    .pr-quote-form,
+    .pr-quote-info {
+        width: 100%;
+    }
+}

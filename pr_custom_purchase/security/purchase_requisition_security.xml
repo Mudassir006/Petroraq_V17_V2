@@ -1,0 +1,28 @@
+<odoo>
+    <record id="purchase_requisition_supervisor_rule" model="ir.rule">
+        <field name="name">PRs visible to assigned Supervisor</field>
+        <field name="model_id" ref="model_purchase_requisition"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('supervisor_partner_id', '=', str(user.partner_id.id))]</field>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    <record id="purchase_requisition_procurement_admin_rule" model="ir.rule">
+        <field name="name">Approved PRs for Procurement Admin</field>
+        <field name="model_id" ref="model_purchase_requisition"/>
+        <field name="domain_force">[]</field>
+        <field name="groups" eval="[
+        (4, ref('pr_custom_purchase.procurement_admin')),
+        (4, ref('pr_custom_purchase.project_engineer')),
+        (4, ref('pr_custom_purchase.project_manager')),
+        (4, ref('pr_custom_purchase.operations_director')),
+        (4, ref('pr_custom_purchase.managing_director'))
+    ]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+</odoo>

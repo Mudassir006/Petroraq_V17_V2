@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_inherit_petroraq_workflow" model="ir.ui.view">
+        <field name="name">sale.order.form.petroraq.workflow</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="approval_state" widget="statusbar" invisible="approval_state == 'approved'"
+                       statusbar_visible="draft,confirmed,to_manager,to_md,approved,rejected"/>
+
+                <field name="can_create_remaining_delivery" invisible="1"/>
+                <field name="approval_state" invisible="1"/>
+                <field name="show_reject_button" invisible="1"/>
+                <field name="can_refund_remaining_dp" invisible="1"/>
+                <!--                <field name="manager_approver_id" modifiers="{'invisible': True}"/>-->
+                <!--                <field name="md_approver_id" modifiers="{'invisible': True}"/>-->
+                <!--                <field name="show_manager_approve_button" modifiers="{'invisible': True}"/>-->
+                <!--                <field name="show_md_approve_button" modifiers="{'invisible': True}"/>-->
+                <!--                <field name="manager_approved" modifiers="{'invisible': True}"/>-->
+                <!--                <field name="md_approved" modifiers="{'invisible': True}"/>-->
+
+                <button name="action_create_remaining_delivery"
+                        type="object"
+                        string="Create Delivery for Remaining"
+                        class="btn-primary"
+                        invisible="not can_create_remaining_delivery"/>
+
+                <button string="Submit"
+                        type="object"
+                        name="action_confirm_quotation"
+                        class="btn-primary"
+                        invisible="approval_state in ('to_manager','to_md','approved','rejected') or state in ('cancel')"/>
+
+                <button
+                        name="action_refund_remaining_dp"
+                        type="object"
+                        string="Refund Remaining DP"
+                        class="btn-primary"
+                        invisible="not can_refund_remaining_dp"/>
+
+                <!--                <button string="Reset Draft"-->
+                <!--                        type="object"-->
+                <!--                        name="action_reset_to_draft"-->
+                <!--                        class="btn-secondary"-->
+                <!--                        invisible="approval_state in ('to_manager','to_md','approved','draft')"/>-->
+
+                <button string="Approve"
+                        type="object"
+                        name="action_manager_approve"
+                        class="btn-petroraq-custom-blue"
+                        invisible="approval_state in ('draft','to_md','approved','rejected')"
+                        groups="petroraq_sale_workflow.group_sale_approval_manager"/>
+                <button string="Approve"
+                        type="object"
+                        name="action_md_approve"
+                        class="btn-petroraq-custom-blue"
+                        invisible="approval_state in ('draft','to_manager','approved','rejected')"
+                        groups="petroraq_sale_workflow.group_sale_approval_md"/>
+                <button string="Reject"
+                        type="object"
+                        name="action_open_reject_wizard"
+                        class="btn-danger"
+                        groups="petroraq_sale_workflow.group_sale_approval_manager,petroraq_sale_workflow.group_sale_approval_md"
+                        invisible="show_reject_button == False"/>
+
+
+            </xpath>
+
+            <xpath expr="//field[@name='pricelist_id']" position="replace">
+                <field name="pricelist_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//header//button[@name='action_cancel']" position="attributes">
+                <attribute name="string">Reject</attribute>
+                <attribute name="invisible">state in ('draft','cancel','sale')</attribute>
+            </xpath>
+            <xpath expr="//header//button[@name='action_preview_sale_order']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!--            <xpath expr="//header//button[@id='send_by_email']" position="attributes">-->
+            <!--                <attribute name="invisible">approval_state != 'approved' or state == 'sent'</attribute>-->
+            <!--            </xpath>-->
+            <!--            <xpath expr="//header//button[@id='send_proforma']" position="attributes">-->
+            <!--                <attribute name="invisible">approval_state != 'approved' or state == 'sent'</attribute>-->
+            <!--            </xpath>-->
+            <xpath expr="//header//button[@id='create_invoice']" position="attributes">
+                <attribute name="groups">!pr_work_order.custom_group_work_order_user</attribute>
+            </xpath>
+
+
+            <!--            <xpath expr="//button[@name='action_open_discount_wizard']" position="replace">-->
+            <!--                <button name="action_open_discount_wizard" invisible="1"/>-->
+            <!--            </xpath>-->
+
+        </field>
+    </record>
+
+    <record id="view_order_form_petroraq_payment_terms" model="ir.ui.view">
+        <field name="name">sale.order.form.petroraq.payment.terms</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='payment_term_id']" position="before">
+                <field name="payment_term_domain" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <attribute name="domain">payment_term_domain</attribute>
+                <attribute name="readonly">locked</attribute>
+            </xpath>
+            <xpath expr="//sheet//group" position="inside">
+                <field name="dp_remaining_amount_ui" readonly="1"
+                       invisible="dp_remaining_amount_ui == 0"/>
+            </xpath>
+
+
+            <xpath expr="//button[@name='action_unlock']" position="attributes">
+                <attribute name="groups">
+                    petroraq_sale_workflow.group_sale_approval_manager,
+                    petroraq_sale_workflow.group_sale_approval_md
+                </attribute>
+            </xpath>
+
+
+            <xpath expr="//header/button" position="attributes">
+                <!-- Default: do nothing -->
+            </xpath>
+
+            <!--            &lt;!&ndash; Hide ALL header buttons except your workflow buttons while not fully approved &ndash;&gt;-->
+            <!--            <xpath expr="//header/button[not(@name='action_confirm_quotation') and not(@name='action_manager_approve') and not(@name='action_md_approve') and not(@name='action_open_reject_wizard')]"-->
+            <!--                   position="attributes">-->
+            <!--                <attribute name="invisible">approval_state != 'approved'</attribute>-->
+            <!--            </xpath>-->
+
+
+            <!-- Put validity_date after the last date_order -->
+            <xpath expr="//group[@name='order_details']/field[@name='date_order'][last()]" position="after">
+                <field name="validity_date"/>
+            </xpath>
+
+            <!-- Remove original validity_date (so it’s not duplicated) -->
+            <xpath expr="//group[@name='order_details']/field[@name='validity_date']" position="replace"/>
+
+            <!-- Apply groups to both date_order fields -->
+            <xpath expr="//group[@name='order_details']/field[@name='date_order']" position="attributes">
+                <attribute name="groups">base.group_user</attribute>
+            </xpath>
+
+            <!-- Apply groups to both labels for date_order -->
+            <xpath expr="//group[@name='order_details']/div[label[@for='date_order']]" position="attributes">
+                <attribute name="groups">base.group_user</attribute>
+            </xpath>
+
+
+        </field>
+    </record>
+
+    <record id="view_order_line_hide_taxes" model="ir.ui.view">
+        <field name="name">sale.order.form.hide.taxes</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/tree//field[@name='tax_id']" position="replace"/>
+            <!--            <xpath expr="//field[@name='order_line']/tree//field[@name='discount']" position="replace"/>-->
+            <xpath expr="//field[@name='order_line']/tree//field[@name='price_subtotal']" position="attributes">
+                <attribute name="string">Total Amount</attribute>
+            </xpath>
+            <!--            <xpath expr="//form[1]/sheet[1]/group[@name='sale_header']/group[@name='order_details']/field[@name='date_order']"-->
+            <!--                   position="after">-->
+            <!--                <xpath expr="//field[@name='validity_date']" position="move"/>-->
+            <!--                <xpath expr="//field[@name='payment_term_id']" position="move"/>-->
+            <!--            </xpath>-->
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-danger"
+                     style="margin: 5px 0; font-size: 15px;"
+                     invisible="not approval_comment">
+                    ❗
+                    <strong>This Quotation is Rejected.</strong>
+                    <br/>
+                    Rejection Reason :
+                    <field name="approval_comment"/>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_uom_qty']" position="after">
+                <field name="product_uom"
+                       force_save="1"
+                       string="Unit"
+                       readonly="product_uom_readonly"
+                       required="not display_type"
+                       context="{'company_id': parent.company_id}"
+                       options="{'no_open': True}"
+                       optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after"
+            >
+                <field name="proforma_dp"
+                       groups="petroraq_sale_workflow.group_sale_approval_manager,account.group_account_manager"
+                       invisible="state != 'sale'"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_uom'][@optional='show' and @groups='uom.group_uom']"
+                   position="attributes">
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree//field[@name='price_unit']" position="before">
+                <field name="cost_price_unit" string="Unit Cost" optional="show"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']/tree//field[@name='price_unit']" position="attributes">
+                <attribute name="string">Unit Price</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree//field[@name='price_unit']" position="after">
+                <field name="net_unit_price" readonly="1" column_invisible="0"/>
+
+            </xpath>
+
+
+            <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+                <field name="section_subtotal_display"
+                       widget="html"
+                       readonly="1"
+                       invisible="1"
+                       column_invisible="True"/>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Estimation" invisible="not estimation_id">
+                    <group>
+                        <field name="estimation_id" readonly="1"/>
+                    </group>
+                    <field name="estimation_display_line_ids"
+                           readonly="1"
+                           widget="section_and_note_one2many">
+                        <tree>
+                            <field name="display_type" column_invisible="1"/>
+                            <field name="section_type" column_invisible="1"/>
+                            <field name="product_id"/>
+                            <field name="name"/>
+                            <field name="section_subtotal_display"
+                                   widget="html"
+                                   readonly="1"
+                                   invisible="1"
+                                   column_invisible="True"/>
+                            <field name="quantity"/>
+                            <field name="quantity_hours"/>
+                            <field name="uom_id"/>
+                            <field name="unit_cost"/>
+                            <field name="subtotal"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Project Attachments" invisible="inquiry_type != 'construction'">
+                    <group>
+                        <field name="project_attachment_ids"
+                               widget="many2many_binary"
+                               context="{'default_res_model': 'sale.order', 'default_res_id': active_id}"
+                               invisible="inquiry_type != 'construction'" required="1"/>
+                    </group>
+                </page>
+            </xpath>
+
+            <xpath expr="//group[@name='sale_total']" position="replace">
+                <field name="inquiry_type" readonly="1" invisible="1"/>
+                <group class="oe_subtotal_footer o_petroraq_totals" colspan="2" name="sale_total">
+                    <div class="o_petroraq_total_row o_petroraq_total_plain" invisible="inquiry_type != 'trading'">
+                        <span class="o_petroraq_total_label">Total</span>
+                        <div class="o_petroraq_total_input"></div>
+                        <div class="o_petroraq_total_value">
+                            <field name="base_cost_total" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+
+                    <div class="o_petroraq_total_row o_petroraq_total_risk" invisible="inquiry_type != 'trading'">
+                        <span class="o_petroraq_total_label">Risk(%)</span>
+                        <div class="o_petroraq_total_input">
+                            <field name="risk_percent" class="o_petroraq_percent_input" nolabel="1" string=""
+                                   readonly="locked"/>
+                        </div>
+                        <div class="o_petroraq_total_value">
+                            <field name="risk_amount" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+                    <div class="o_petroraq_total_row o_petroraq_total_overhead" invisible="inquiry_type != 'trading'">
+                        <span class="o_petroraq_total_label">Over Head(%)</span>
+                        <div class="o_petroraq_total_input">
+                            <field name="overhead_percent" class="o_petroraq_percent_input" nolabel="1" string=""
+                                   readonly="locked"/>
+                        </div>
+                        <div class="o_petroraq_total_value">
+                            <field name="overhead_amount" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+                    <div class="o_petroraq_total_row o_petroraq_total_grand" invisible="inquiry_type != 'trading'">
+                        <span class="o_petroraq_total_label">Grand Total:</span>
+                        <div class="o_petroraq_total_input"></div>
+                        <div class="o_petroraq_total_value">
+                            <field name="buffer_total_amount" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+                    <div class="o_petroraq_total_row o_petroraq_total_profit" invisible="inquiry_type != 'trading'">
+                        <span class="o_petroraq_total_label">Profit(%)</span>
+                        <div class="o_petroraq_total_input">
+                            <field name="profit_percent" class="o_petroraq_percent_input" nolabel="1" string=""
+                                   readonly="locked"/>
+                        </div>
+                        <div class="o_petroraq_total_value">
+                            <field name="profit_amount" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+
+
+                    <div class="o_petroraq_total_row o_petroraq_total_before_discount"
+                         invisible="discount_amount_total == 0">
+                        <span class="o_petroraq_total_label">Amount Without Discount:</span>
+                        <div class="o_petroraq_total_input"></div>
+                        <div class="o_petroraq_total_value">
+                            <field name="amount_before_discount" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+
+
+                    <div class="o_petroraq_total_row o_petroraq_total_discount" invisible="discount_amount_total == 0">
+                        <span class="o_petroraq_total_label">Discount:</span>
+                        <div class="o_petroraq_total_input"></div>
+                        <div class="o_petroraq_total_value">
+                            <field name="discount_amount_total" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+                    <!--                    <div class="o_petroraq_total_row o_petroraq_total_base">-->
+                    <!--                        <span class="o_petroraq_total_label">Total Before Rounding</span>-->
+                    <!--                        <div class="o_petroraq_total_input"></div>-->
+                    <!--                        <div class="o_petroraq_total_value">-->
+                    <!--                            <field name="profit_grand_total" widget="monetary" readonly="1" nolabel="1" string=""/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <div class="o_petroraq_total_row o_petroraq_total_base" invisible="inquiry_type != 'trading'">
+                        <span class="o_petroraq_total_label">Before Rounded</span>
+                        <div class="o_petroraq_total_input"></div>
+                        <div class="o_petroraq_total_value">
+                            <field name="profit_grand_total" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+                    <div class="o_petroraq_total_row o_petroraq_total_base">
+                        <span class="o_petroraq_total_label">Net Total:</span>
+                        <div class="o_petroraq_total_input"></div>
+                        <div class="o_petroraq_total_value">
+                            <field name="amount_untaxed" widget="monetary" readonly="1" nolabel="1" string=""/>
+                        </div>
+                    </div>
+                    <!--                    <div class="o_petroraq_total_row o_petroraq_total_great">-->
+                    <!--                        <span class="o_petroraq_total_label">Net Total:</span>-->
+                    <!--                        <div class="o_petroraq_total_input"></div>-->
+                    <!--                        <div class="o_petroraq_total_value">-->
+                    <!--                            <field name="profit_grand_total" widget="monetary" readonly="1" nolabel="1" string=""/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

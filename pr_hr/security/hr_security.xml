@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="hr_dept_subrule_comp_rule" model="ir.rule">
+            <field name="name">Subrule multi company rule</field>
+            <field name="model_id" ref="model_hr_department_subrule"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <record id="hr_employee_iqama_comp_rule" model="ir.rule">
+            <field name="name">Employee Iqama multi company rule</field>
+            <field name="model_id" ref="model_hr_employee_iqama"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <record id="hr_employee_iqama_line_comp_rule" model="ir.rule">
+            <field name="name">Employee Iqama Line multi company rule</field>
+            <field name="model_id" ref="model_hr_employee_iqama_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <record id="hr_employee_dependent_relation_comp_rule" model="ir.rule">
+            <field name="name">Employee Dependent Relation multi company rule</field>
+            <field name="model_id" ref="model_hr_employee_dependent_relation"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+    </data>
+</odoo>

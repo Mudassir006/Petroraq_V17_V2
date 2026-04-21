@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="de_hr_workspace.menu_my_employee_approvals" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('hr.group_hr_manager')), (4, ref('hr_recruitment.group_hr_recruitment_manager'))]"/>
+    </record>
+
+    <record id="hr_recruitment_request_approvals_view_action" model="ir.actions.act_window">
+        <field name="name">Recruitment Requests</field>
+        <field name="res_model">hr.recruitment.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">['|', '|', '&amp;', ('state', '=', 'dept_approval'), ('department_manager_user_id', '=', uid), ('state', '=', 'hr_approval'), ('state', '=', 'md_approval')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                There Is No Recruitment Requests To Approve
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="hr_recruitment_request_approvals_view_menu"
+              parent="de_hr_workspace.hr_approvals_menu_root"
+              name="Recruitment Requests"
+              action="hr_recruitment_request_approvals_view_action"
+              sequence="4"
+              groups="de_hr_workspace.group_hr_employee_approvals,hr_recruitment.group_hr_recruitment_manager,hr.group_hr_manager"
+    />
+
+</odoo>

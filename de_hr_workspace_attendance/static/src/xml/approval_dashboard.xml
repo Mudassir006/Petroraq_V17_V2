@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="de_hr_workspace_attendance.ApprovalDashboard">
+        <div class="o_action_manager">
+            <div class="o_content m-2">
+                <div class="de-dashboard-hero mb-3">
+                    <div class="de-dashboard-hero-left text-center">
+                        <p class="de-dashboard-greeting mb-1" t-esc="greetingText"/>
+                        <h1 class="de-dashboard-title mb-1">Approvals Dashboard</h1>
+                        <p class="de-dashboard-subtitle mb-0">Track pending items across all approval menus and jump directly into action.</p>
+                    </div>
+                    <div class="de-dashboard-hero-right">
+                        <button class="btn btn-light de-dashboard-refresh" t-on-click="refresh">
+                            <i class="fa fa-refresh me-1"/> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <t t-if="state.loading">
+                    <div class="text-center p-5 text-muted">Loading dashboard...</div>
+                </t>
+
+                <t t-else="">
+                    <div class="row g-3 de-dashboard-grid">
+                        <t t-foreach="state.tiles" t-as="tile" t-key="tile.key">
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <button t-att-class="tileClass(tile)"
+                                        t-att-data-action-id="tile.action_id"
+                                        t-on-click="openTile">
+                                    <t t-if="tile.count &gt; 0">
+                                        <span class="de-dashboard-pending-dot" title="Pending approvals"/>
+                                    </t>
+                                    <div class="de-dashboard-icon">
+                                        <div t-att-class="iconBoxClass(tile)">
+                                            <i t-att-class="`fa ${tile.icon || 'fa-cubes'}`"/>
+                                        </div>
+                                    </div>
+                                    <div class="de-dashboard-info">
+                                        <div class="de-dashboard-count" t-esc="tile.count"/>
+                                        <div class="de-dashboard-label" t-esc="tile.name"/>
+                                        <div class="de-dashboard-hint">Click to open list view</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_department_subrule_form" model="ir.ui.view">
+            <field name="name">hr.department.subrule.form</field>
+            <field name="model">hr.department.subrule</field>
+            <field name="arch" type="xml">
+                <form string="Subrule">
+                    <field name="company_id" invisible="1"/>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box" invisible="not id">
+                            <button class="oe_stat_button" type="action" name="%(act_employee_from_department_subrule)d" icon="fa-users">
+                                <field string="Employees" name="total_employee" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                        <field name="active" invisible="1"/>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="manager_id" widget="many2one_avatar_user"/>
+                                <field name="parent_id"/>
+                                <field name="child_ids" invisible="1"/>
+                                <field name="company_id" options="{'no_create': True, 'no_edit': True}" groups="base.group_multi_company"/>
+                            </group>
+                            <group>
+                                <field name="department_id" options="{'no_create': True, 'no_edit': True}"/>
+                                <field name="color" widget="color_picker" string="Color"/>
+                            </group>
+                            <div invisible="not id or id and not child_ids and not parent_id">
+                                <widget name="hr_department_chart"/>
+                            </div>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_department_subrule_tree" model="ir.ui.view">
+            <field name="name">hr.department.subrule.tree</field>
+            <field name="model">hr.department.subrule</field>
+            <field name="arch" type="xml">
+                <tree string="Companies" sample="1" editable="bottom">
+                    <field name="company_id" column_invisible="True"/>
+                    <field name="name"/>
+                    <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                    <field name="manager_id" widget="many2one_avatar_user"/>
+                    <field name="total_employee" string="Employees"/>
+                    <field name="parent_id"/>
+                    <field name="color" widget="color_picker" string="Color"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_department_subrule_filter" model="ir.ui.view">
+            <field name="name">hr.department.subrule.search</field>
+            <field name="model">hr.department.subrule</field>
+            <field name="arch" type="xml">
+                <search string="Subrules">
+                    <field name="name" string="Subrule"/>
+                    <field name="manager_id" />
+                    <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction','=',True)]"
+                            groups="mail.group_mail_notification_type_inbox"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_company" string="Company" domain="[]" context="{'group_by': 'company_id'}"/>
+                        <filter name="group_manager" string="Manager" domain="[]" context="{'group_by': 'parent_id'}"/>
+                    </group>
+                </search>
+             </field>
+        </record>
+
+        <record id="hr_department_subrule_view_kanban" model="ir.ui.view" >
+            <field name="name">hr.department.subrule.kanban</field>
+            <field name="model">hr.department.subrule</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard o_hr_department_kanban o_kanban_small_column" sample="1">
+                    <field name="name"/>
+                    <field name="company_id"/>
+                    <field name="manager_id"/>
+                    <field name="color"/>
+                    <field name="total_employee"/>
+                    <templates>
+                        <t t-name="kanban-menu" t-if="!selection_mode">
+                            <div class="o_kanban_card_manage_section">
+                                <div role="menuitem" class="o_kanban_manage_reports">
+                                    <div class="o_kanban_card_manage_title ps-4 pb-1">
+                                        <span class="fw-bolder">Reporting</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a t-if="widget.editable" role="menuitem" class="dropdown-item" type="edit">Configuration</a>
+                            <ul t-if="widget.editable" class="oe_kanban_colorpicker" data-field="color" role="menu"/>
+                        </t>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''}">
+                                <div t-attf-class="o_kanban_card_header oe_kanban_details">
+                                    <div class="o_kanban_card_header_title">
+                                        <div class="o_primary"><a type="edit"><field name="name"/></a></div>
+                                        <div class="o_secondary" groups="base.group_multi_company">
+                                            <small>
+                                                <i class="fa fa-building-o" role="img" aria-label="Company" title="Company"/> <field name="company_id"/>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container o_kanban_card_content" t-if="!selection_mode">
+                                    <div class="row o_kanban_card_upper_content">
+                                        <div class="col-6 o_kanban_primary_left">
+                                            <button class="btn btn-primary" name="%(act_employee_from_department_subrule)d" type="action">
+                                                <t t-out="record.total_employee.raw_value"/> Employees
+                                            </button>
+                                        </div>
+                                        <div class="col-6 o_kanban_primary_right">
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_card_lower_content"
+                                         style="justify-content: end">
+                                        <!-- placeholder for bottom content -->
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="hr_department_subrule_kanban_action" model="ir.actions.act_window">
+            <field name="name">Subrules</field>
+            <field name="res_model">hr.department.subrule</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="view_department_subrule_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new subrule
+              </p>
+<!--<p>-->
+<!--                Odoo's subrule structure is used to manage all documents-->
+<!--                related to employees by subrules: expenses, timesheets,-->
+<!--                time off, recruitments, etc.-->
+<!--              </p>-->
+            </field>
+        </record>
+        <record id="hr_department_subrule_tree_action" model="ir.actions.act_window">
+            <field name="name">Subrules</field>
+            <field name="res_model">hr.department.subrule</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="search_view_id" ref="view_department_subrule_filter"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new subrules
+                </p>
+<!--                <p>-->
+<!--                    Odoo's department structure is used to manage all documents-->
+<!--                    related to employees by departments: expenses, timesheets,-->
+<!--                    leaves, recruitments, etc.-->
+<!--                </p>-->
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_hr_department_subrule_tree"
+                action="hr_department_subrule_tree_action"
+                parent="hr.menu_config_employee"
+                sequence="4"
+                groups="hr.group_hr_user"/>
+
+        <menuitem
+                id="menu_hr_department_subrule_kanban"
+                action="hr_department_subrule_kanban_action"
+                parent="hr.menu_hr_root"
+                sequence="40"
+                groups="hr.group_hr_user"/>
+    </data>
+</odoo>

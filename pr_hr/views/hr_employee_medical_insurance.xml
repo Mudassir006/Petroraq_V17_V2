@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="hr_employee_medical_insurance_view_search" model="ir.ui.view">
+        <field name="name">hr.employee.medical.insurance.view.search</field>
+        <field name="model">hr.employee.medical.insurance</field>
+        <field name="arch" type="xml">
+            <search string="Employee Insurance">
+                <field name="name" filter_domain="[('name','ilike',self)]" string="Name"/>
+                <field name="identification_id" filter_domain="[('identification_id','ilike',self)]" string="Name"/>
+                <field name="insurance_company" filter_domain="[('insurance_company','ilike',self)]" string="Name"/>
+                <field name="insurance_category" filter_domain="[('insurance_category','ilike',self)]" string="Name"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="valid" string="Valid" domain="[('state', '=', 'valid')]"/>
+                <filter name="expired" string="Expired" domain="[('state', '=', 'expired')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="employee_id" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Status" name="state" domain="[]" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="hr_employee_medical_insurance_view_form" model="ir.ui.view">
+        <field name="name">hr.employee.medical.insurance.view.form</field>
+        <field name="model">hr.employee.medical.insurance</field>
+        <field name="arch" type="xml">
+            <form string="Employee Insurance">
+                <field name="check_renews" invisible="1"/>
+                <header>
+                    <button
+                            name="action_request_approval"
+                            string="Request Approval"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-thumbs-up"
+                            invisible="state != 'draft'"
+                    />
+                    <button
+                            name="action_approve"
+                            string="Approve"
+                            type="object"
+                            class="btn-success"
+                            icon="fa-thumbs-up"
+                            invisible="state != 'pending_approval'"
+                            groups="hr.group_hr_manager"
+                    />
+                    <button
+                            name="action_renew"
+                            string="RENEW"
+                            type="object"
+                            class="btn-info"
+                            icon="fa-plus-square"
+                            invisible="check_renews == False or state != 'approve'"
+                    />
+                    <button
+                            name="action_renew"
+                            string="RELEASE"
+                            type="object"
+                            class="btn-info"
+                            icon="fa-plus-square"
+                            invisible="check_renews == True or state != 'approve'"
+                    />
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-warning" invisible="active == True" />
+                    <widget name="web_ribbon" title="VALID" bg_color="bg-success" invisible="state != 'valid'" />
+                    <widget name="web_ribbon" title="EXPIRED" bg_color="bg-danger" invisible="state != 'expired'" />
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name" string="Name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" readonly="state != 'draft'"/>
+                        </h1>
+                    </div>
+                    <group name="main">
+                        <group>
+                            <field name="employee_id" options="{'no_create': True, 'no_edit': True}"
+                            readonly="state != 'draft'"/>
+                            <field name="identification_id"/>
+
+                        </group>
+                        <group>
+                            <field name="company_id" invisible="1"/>
+                            <field name="insurance_company"/>
+                            <field name="insurance_category"/>
+                            <field name="expiry_date"/>
+                            <field name="expiry_date_hijri"/>
+                        </group>
+                    </group>
+                    <label for="insurance_line_ids" string="Insurance Renews" invisible="not insurance_line_ids"/>
+                    <field name="insurance_line_ids" string="Insurance Renews" widget="section_and_note_one2many" readonly="1" invisible="not insurance_line_ids">
+                        <tree string="Insurance Renews" editable="bottom">
+                            <field name="insurance_id" column_invisible="1"/>
+                            <field name="employee_id" column_invisible="1"/>
+                            <field name="company_id" column_invisible="1"/>
+                            <field name="sequence_ref"/>
+                            <field name="relation_id" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="identification_id"/>
+                            <field name="insurance_company"/>
+                            <field name="insurance_category"/>
+                            <field name="from_date"/>
+                            <field name="to_date"/>
+                            <field name="expiry_date"/>
+                            <field name="expiry_date_hijri"/>
+                            <field name="amount"/>
+                            <field name="state" widget="badge"
+               decoration-info="state == 'initiated'"
+               decoration-warning="state == 'in_progress'"
+               decoration-success="state == 'issued'"/>
+<!--                            <button-->
+<!--                            name="action_post"-->
+<!--                            string="POST"-->
+<!--                            type="object"-->
+<!--                            class="btn-success"-->
+<!--                            icon="fa-money"/>-->
+
+                        </tree>
+                    </field>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_employee_medical_insurance_view_tree" model="ir.ui.view">
+        <field name="name">hr.employee.medical.insurance.view.tree</field>
+        <field name="model">hr.employee.medical.insurance</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Insurance">
+                <field name="name"/>
+                <field name="check_renews" column_invisible="1"/>
+                <field name="employee_id" options="{'no_create': True, 'no_edit': True}"/>
+                <field name="company_id" column_invisible="1"/>
+                <field name="identification_id"/>
+                <field name="insurance_company"/>
+                <field name="insurance_category"/>
+                <field name="expiry_date"/>
+                <field name="expiry_date_hijri"/>
+                <field name="state" widget="badge"
+               decoration-info="state in ['draft', 'pending_approval']"
+               decoration-warning="state == 'approve'"
+               decoration-success="state == 'valid'"
+               decoration-danger="state == 'expired'"/>
+                <button
+                            name="action_renew"
+                            string="RENEW"
+                            type="object"
+                            class="btn-info"
+                            icon="fa-plus-square"
+                            invisible="check_renews == False"
+                />
+                <button
+                            name="action_renew"
+                            string="RELEASE"
+                            type="object"
+                            class="btn-info"
+                            icon="fa-plus-square"
+                            invisible="check_renews == True"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_employee_medical_insurance_view_kanban" model="ir.ui.view">
+        <field name="name">hr.employee.medical.insurance.view.kanban</field>
+        <field name="model">hr.employee.medical.insurance</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="identification_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb8">
+                                <strong>
+                                    <field name="name"/>
+                                </strong>
+                                <div class="o_kanban_record_headings ms-1">
+                                    <strong class="o_kanban_record_title">
+                                        <span>
+                                            <t t-esc="record.employee_id.value"/>
+                                        </span>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                 <strong>
+                                    <field name="identification_id"/>
+                                </strong>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_employee_medical_insurance">
+        <field name="name">Insurance Details</field>
+        <field name="res_model">hr.employee.medical.insurance</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="view_id" ref="hr_employee_medical_insurance_view_tree"/>
+        <field name="search_view_id" ref="hr_employee_medical_insurance_view_search"/>
+    </record>
+
+    <menuitem id="menu_hr_employee_medical_insurance"
+              parent="pr_hr.menu_hr_employee_separator"
+              name="Insurance Details"
+              action="action_hr_employee_medical_insurance"
+              sequence="4"/>
+
+</odoo>

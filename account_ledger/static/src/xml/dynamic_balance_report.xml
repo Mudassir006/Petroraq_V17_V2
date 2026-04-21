@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+   <t t-name="BalanceReport" owl="1">
+       <!-- Section contains a structure for the purchase report, including a filter
+       view and a table view. It has div elements for the filter view and table view,
+        with respective classes for styling.-->
+       <div class="">
+           <div>
+               <center>
+                   <h1 style="margin: 20px;">Balance Report</h1>
+               </center>
+           </div>
+       </div>
+       <div class="print-btns">
+           <div class="sub_container_left"
+                style="width: 285px; margin-left: 36px;">
+               <div class="report_print">
+                   <button type="button" class="btn btn-primary" id="xlsx"
+                           t-on-click="print_xlsx">
+                       Export (XLSX)
+                   </button>
+               </div>
+           </div>
+<!--           <br/>-->
+           <div class="sub_container_right" style="flex: 1;">
+               <div class="dropdown">
+                   <button class="btn btn-secondary dropdown-toggle time_range_pr"
+                           type="button" id="date_chose"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                       <span class="fa fa-calendar" title="Dates" role="img"
+                             aria-label="Dates"/>
+                       Date Range
+                   </button>
+                   <div class="dropdown-menu my_custom_dropdown" role="menu"
+                        aria-labelledby="date_chose">
+                       <div class="form-group">
+                           <label class="" for="date_from">Start Date :</label>
+                           <div class="input-group date" id="date_from"
+                                data-target-input="nearest">
+                               <input type="date" name="date_from"
+                                      t-ref="date_from"
+                                      class="form-control"
+                                      data-target="#date_from"
+                                      t-att-name="prefix"/>
+                               <div class="input-group-append"
+                                    data-target="#date_from"
+                                    style="pointer-events: none;">
+                               </div>
+                           </div>
+                           <label class="" for="date_to">End Date :</label>
+                           <div class="input-group date" id="date_to"
+                                data-target-input="nearest">
+                               <input type="date" name="date_to"
+                                      t-ref="date_to"
+                                      class="form-control"
+                                      data-target="#date_to"
+                                      t-att-name="prefix"/>
+                               <div class="input-group-append"
+                                    data-target="#date_to"
+                                    style="pointer-events: none;">
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   <div class="dropdown">
+                       <a class="btn btn-secondary dropdown-togglemain-head-type"
+                          href="#" role="button" id="dropdownMenuLink"
+                          data-bs-toggle="dropdown" aria-expanded="false">
+                           <span class="fa fa-book"/>
+                           <span class="low_case dropdown-toggle">Main Head
+                               :
+                           </span>
+                       </a>
+                       <select id="selection" class="dropdown-menu main_head"
+                               aria-labelledby="dropdownMenuLink"
+                               t-ref="main_head"
+                               name="states[]">
+                           <div role="separator" class="dropdown-divider"/>
+                           <option value="assets" selected="">Assets</option>
+                           <option value="liabilities" selected="">Liabilities</option>
+                           <option value="equity" selected="">Equity</option>
+                           <option value="revenue" selected="">Revenue</option>
+                           <option value="expense" selected="">expenses</option>
+                       </select>
+                       <span id="report_res" t-out="state.main_head"/>
+                   </div>
+               </div>
+<!--               <div class="search-Result-Selection">-->
+<!--&lt;!&ndash;                   <div class="dropdown">&ndash;&gt;-->
+<!--&lt;!&ndash;                       <a class="btn btn-secondary dropdown-togglemain-head-type"&ndash;&gt;-->
+<!--&lt;!&ndash;                          href="#" role="button" id="dropdownMenuLink"&ndash;&gt;-->
+<!--&lt;!&ndash;                          data-bs-toggle="dropdown" aria-expanded="false">&ndash;&gt;-->
+<!--&lt;!&ndash;                           <span class="fa fa-book"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                           <span class="low_case dropdown-toggle">Main Head&ndash;&gt;-->
+<!--&lt;!&ndash;                               :&ndash;&gt;-->
+<!--&lt;!&ndash;                           </span>&ndash;&gt;-->
+<!--&lt;!&ndash;                       </a>&ndash;&gt;-->
+<!--&lt;!&ndash;                       <select id="selection" class="dropdown-menu main_head"&ndash;&gt;-->
+<!--&lt;!&ndash;                               aria-labelledby="dropdownMenuLink"&ndash;&gt;-->
+<!--&lt;!&ndash;                               t-ref="main_head"&ndash;&gt;-->
+<!--&lt;!&ndash;                               name="states[]">&ndash;&gt;-->
+<!--&lt;!&ndash;                           <div role="separator" class="dropdown-divider"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                           <option value="assets" selected="">Assets</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                           <option value="liabilities" selected="">Liabilities</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                           <option value="equity" selected="">Equity</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                           <option value="revenue" selected="">Revenue</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                           <option value="expense" selected="">expenses</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                       </select>&ndash;&gt;-->
+<!--&lt;!&ndash;                       <span id="report_res" t-out="state.main_head"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                   </div>&ndash;&gt;-->
+
+<!--                   <div class="dropdown">-->
+<!--                       <a class="btn btn-secondary dropdown-toggle-department"-->
+<!--                          href="#" role="button" id="dropdownMenuLink"-->
+<!--                          data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                           <span class="fa fa-book"/>-->
+<!--                           <span class="low_case dropdown-toggle">Department:-->
+<!--                           </span>-->
+<!--                       </a>-->
+<!--&lt;!&ndash;                       <t t-set="department_ids" t-value="request.env['account.analytic.account'].search([('analytic_plan_type', '=', 'department')])"/>&ndash;&gt;-->
+<!--                       <t t-set="department_ids" t-value="state.department_ids"/>-->
+<!--                       <select id="selection" class="dropdown-menu department_id"-->
+<!--                               aria-labelledby="dropdownMenuLink"-->
+<!--                               t-ref="department_id"-->
+<!--                               name="states[]">-->
+<!--                           <div role="separator" class="dropdown-divider"/>-->
+<!--                           <t t-foreach="department_ids" t-as="department_id" t-key="department_id.id">-->
+<!--                               <option t-att-value="department_id.id">-->
+<!--                                   <t t-esc="department_id.name"/>-->
+<!--                               </option>-->
+<!--                           </t>-->
+<!--                       </select>-->
+<!--                       <span id="report_res" t-out="state.department_id"/>-->
+<!--                   </div>-->
+
+<!--                   <div class="dropdown">-->
+<!--                       <a class="btn btn-secondary dropdown-toggle-section"-->
+<!--                          href="#" role="button" id="dropdownMenuLink"-->
+<!--                          data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                           <span class="fa fa-book"/>-->
+<!--                           <span class="low_case dropdown-toggle">Section:-->
+<!--                           </span>-->
+<!--                       </a>-->
+<!--&lt;!&ndash;                       <t t-set="section_ids" t-value="request.env['account.analytic.account'].search([('analytic_plan_type', '=', 'section')])"/>&ndash;&gt;-->
+<!--                       <t t-set="section_ids" t-value="state.section_ids"/>-->
+<!--                       <select id="selection" class="dropdown-menu section_id"-->
+<!--                               aria-labelledby="dropdownMenuLink"-->
+<!--                               t-ref="section_id"-->
+<!--                               name="states[]">-->
+<!--                           <div role="separator" class="dropdown-divider"/>-->
+<!--                           <t t-foreach="section_ids" t-as="section_id" t-key="section_id.id">-->
+<!--                               <option t-att-value="section_id.id">-->
+<!--                                   <t t-esc="section_id.name"/>-->
+<!--                               </option>-->
+<!--                           </t>-->
+<!--                       </select>-->
+<!--                       <span id="report_res" t-out="state.section_id"/>-->
+<!--                   </div>-->
+
+<!--                   <div class="dropdown">-->
+<!--                       <a class="btn btn-secondary dropdown-toggle-project"-->
+<!--                          href="#" role="button" id="dropdownMenuLink"-->
+<!--                          data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                           <span class="fa fa-book"/>-->
+<!--                           <span class="low_case dropdown-toggle">Project:-->
+<!--                           </span>-->
+<!--                       </a>-->
+<!--&lt;!&ndash;                       <t t-set="project_ids" t-value="request.env['account.analytic.account'].search([('analytic_plan_type', '=', 'project')])"/>&ndash;&gt;-->
+<!--                       <t t-set="project_ids" t-value="state.project_ids"/>-->
+<!--                       <select id="selection" class="dropdown-menu project_id"-->
+<!--                               aria-labelledby="dropdownMenuLink"-->
+<!--                               t-ref="project_id"-->
+<!--                               name="states[]">-->
+<!--                           <div role="separator" class="dropdown-divider"/>-->
+<!--                           <t t-foreach="project_ids" t-as="project_id" t-key="project_id.id">-->
+<!--                               <option t-att-value="project_id.id">-->
+<!--                                   <t t-esc="project_id.name"/>-->
+<!--                               </option>-->
+<!--                           </t>-->
+<!--                       </select>-->
+<!--                       <span id="report_res" t-out="state.project_id"/>-->
+<!--                   </div>-->
+
+<!--                   <div class="dropdown">-->
+<!--                       <a class="btn btn-secondary dropdown-toggle-account"-->
+<!--                          href="#" role="button" id="dropdownMenuLink"-->
+<!--                          data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                           <span class="fa fa-book"/>-->
+<!--                           <span class="low_case dropdown-toggle">Account:-->
+<!--                           </span>-->
+<!--                       </a>-->
+<!--&lt;!&ndash;                       <t t-set="account_ids" t-value="request.env['account.account'].search([])"/>&ndash;&gt;-->
+<!--                       <t t-set="account_ids" t-value="state.account_ids"/>-->
+<!--                       <select id="selection" class="dropdown-menu account_id"-->
+<!--                               aria-labelledby="dropdownMenuLink"-->
+<!--                               t-ref="account_id"-->
+<!--                               name="states[]">-->
+<!--                           <div role="separator" class="dropdown-divider"/>-->
+<!--                           <t t-foreach="account_ids" t-as="account_id" t-key="account_id.id">-->
+<!--                               <option t-att-value="account_id.id">-->
+<!--                                   <t t-esc="account_id.name"/>-->
+<!--                               </option>-->
+<!--                           </t>-->
+<!--                       </select>-->
+<!--                       <span id="report_res" t-out="state.account_id"/>-->
+<!--                   </div>-->
+<!--               </div>-->
+               <div class="apply_filter">
+                   <button type="button" id="apply_filter"
+                           class="btn btn-primary" t-on-click="applyFilter">
+                       Apply
+                   </button>
+               </div>
+           </div>
+       </div>
+       <div class="overflow-auto" style="height: 70vh; padding:10px">
+           <div>
+               <div class="table_main_view">
+                   <table cellspacing="0" width="100%">
+                       <thead>
+                           <tr class="table_pr_head">
+                               <th class="mon_fld">Account Code</th>
+                               <th class="mon_fld">Account Name</th>
+                               <th class="mon_fld">Balance</th>
+                               <th class="mon_fld">Balance Type</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                           <t t-foreach="state.balance_report_line"
+                              t-as="dynamic_balance_report"
+                              t-key="dynamic_balance_report_index">
+                               <tr style="border: 1.5px solid black;"
+                                   class="pr-line">
+                                   <td style="text-align:center;">
+                                       <span>
+                                           <t t-esc="dynamic_balance_report['account_code']"/>
+                                       </span>
+                                   </td>
+                                   <td style="text-align:center;">
+                                       <span>
+                                           <t t-esc="dynamic_balance_report['account_name']"/>
+                                       </span>
+                                   </td>
+                                   <td style="text-align:center;">
+                                       <span>
+                                           <t t-esc="dynamic_balance_report['account_balance']"/>
+                                       </span>
+                                   </td>
+                                   <td style="text-align:center;">
+                                       <span>
+                                           <t t-esc="dynamic_balance_report['account_balance_type']"/>
+                                       </span>
+                                   </td>
+                               </tr>
+                           </t>
+                       </tbody>
+                   </table>
+               </div>
+           </div>
+       </div>
+   </t>
+</templates>

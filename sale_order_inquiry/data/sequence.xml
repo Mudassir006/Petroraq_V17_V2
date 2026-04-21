@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <data>
+
+        <record id="sequence_order_enq" model="ir.sequence">
+            <field name="name">Order Inquiry Sequence</field>
+            <field name="code">order.inq.sequence</field>
+            <field name="prefix">PEC-INQ-%(range_year)s-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+            <field name="use_date_range">True</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+    </data>
+</odoo>
+
+

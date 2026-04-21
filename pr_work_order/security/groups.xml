@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="module_category_work_order" model="ir.module.category">
+            <field name="name">Work Order</field>
+            <field name="description">Work Order Custom Access Groups</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="custom_group_work_order_user" model="res.groups">
+            <field name="name">Estimation</field>
+            <field name="category_id" ref="module_category_work_order"/>
+        </record>
+
+        <record id="custom_group_work_order_operations" model="res.groups">
+            <field name="name">Operations</field>
+            <field name="category_id" ref="module_category_work_order"/>
+        </record>
+
+        <record id="custom_group_work_order_accounts" model="res.groups">
+            <field name="name">Accounts</field>
+            <field name="category_id" ref="module_category_work_order"/>
+        </record>
+
+        <record id="custom_group_work_order_management" model="res.groups">
+            <field name="name">Management</field>
+            <field name="category_id" ref="module_category_work_order"/>
+        </record>
+
+    </data>
+</odoo>

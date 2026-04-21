@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_applicant_onboarding_user,hr.applicant.onboarding.user,model_hr_applicant_onboarding,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+access_hr_applicant_onboarding_manager,hr.applicant.onboarding.manager,model_hr_applicant_onboarding,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+
+access_hr_applicant_onboarding_checklist_user,hr.applicant.onboarding.checklist.user,model_hr_applicant_onboarding_checklist,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+
+access_hr_work_permit_user,hr.work.permit.user,model_hr_work_permit,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+access_hr_work_permit_manager,hr.work.permit.manager,model_hr_work_permit,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+access_hr_work_permit_accountant,hr.work.permit.accountant,model_hr_work_permit,account.group_account_invoice,1,1,0,0

@@ -1,0 +1,26 @@
+<odoo>
+    <data>
+        <template id="petroraq_tax_invoice_report_header_and_footer_id">
+            <t t-foreach="docs" t-as="o">
+                <div class="row" style="padding: 0;">
+                    <div class="header" style="width: 100% !important;">
+                        <div class="col-12" style="width: 100% !important; padding: 0; margin: 0;">
+                            <img src="/pr_tax_Invoice_report/static/src/img/header_custom.png" style="height:220px; width:100%; margin: 0; padding: 0; display: block;"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="article o_report_layout_standard">
+                    <t t-raw="0"/>
+                </div>
+                <div class="row" style="padding: 0;">
+                    <div class="footer" style="width: 100% !important; padding: 0; margin: 0;">
+                        <div class="col-12" style="width: 100% !important; padding: 0; margin: 0;">
+                            <img src="/pr_tax_Invoice_report/static/src/img/footer.png" style="height:100px; width:100%; margin: 0; padding: 0; display: block;"/>
+                        </div>
+                    </div>
+                </div>
+
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+<!--    <record id="eg_asset_management_bank_payment_view_search_inherit" model="ir.ui.view">-->
+<!--        <field name="name">eg.asset.management.bank.payment.view.search.inherit</field>-->
+<!--        <field name="model">pr.account.bank.payment</field>-->
+<!--        <field name="inherit_id" ref="pr_account.pr_account_bank_payment_view_search"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            <xpath expr="//field[@name='account_id']" position="after">-->
+<!--                <field name="asset_id" string="Asset"/>-->
+<!--            </xpath>-->
+
+<!--            <xpath expr="//filter[@name='account_id']" position="after">-->
+<!--                <filter name="asset_id" string="Asset" domain="[]" context="{'group_by':'asset_id'}"/>-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="eg_asset_management_bank_payment_form_inherit" model="ir.ui.view">
+        <field name="name">eg.asset.management.bank.payment.form.inherit</field>
+        <field name="model">pr.account.bank.payment</field>
+        <field name="inherit_id" ref="pr_account.pr_account_bank_payment_view_form"/>
+        <field name="arch" type="xml">
+
+<!--            <xpath expr="//field[@name='analytic_distribution']" position="after">-->
+<!--                <field name="asset_id" options="{'no_create_edit': True, 'no_create': True}" readonly="state != 'draft'"/>-->
+<!--            </xpath>-->
+
+            <xpath expr="//field[@name='bank_payment_line_ids']/tree/field[@name='description']" position="before">
+                <field name="asset_id" options="{'no_create_edit': True, 'no_create': True}" optional="show" readonly="check_cost_centers_block == False"/>
+            </xpath>
+
+        </field>
+    </record>
+
+<!--    <record id="eg_asset_management_bank_payment_tree_inherit" model="ir.ui.view">-->
+<!--        <field name="name">eg.asset.management.bank.payment.tree.inherit</field>-->
+<!--        <field name="model">pr.account.bank.payment</field>-->
+<!--        <field name="inherit_id" ref="pr_account.pr_account_bank_payment_view_tree"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            <xpath expr="//field[@name='company_id']" position="before">-->
+<!--                <field name="asset_id" options="{'no_create_edit': True, 'no_create': True}" optional="show"/>-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
+</odoo>

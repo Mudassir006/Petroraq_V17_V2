@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="account_ledger_cash_payment_tree_inherit" model="ir.ui.view">
+        <field name="name">account.ledger.cash.payment.tree.inherit</field>
+        <field name="model">pr.account.cash.payment</field>
+        <field name="inherit_id" ref="pr_account.pr_account_cash_payment_view_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='account_name']" position="after">
+                <button name="open_account_id_ledger_report" class="btn btn-link" icon="fa-download" type="object"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

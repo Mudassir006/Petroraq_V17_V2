@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="pr_hr_holidays_view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.holidays.view.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="check_annual_leave_balance" string="Check Balance" type="object" groups="base.group_no_one"/>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

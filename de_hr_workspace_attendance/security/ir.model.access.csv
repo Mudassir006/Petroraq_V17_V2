@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_attendance_workspace_user,hr.attendance.workspace.user,hr_attendance.model_hr_attendance,de_hr_workspace.group_hr_employee_workspace,1,0,0,0
+
+access_hr_shortage_request_workspace_user,hr.shortage.request.workspace.user,pr_hr_attendance.model_pr_hr_shortage_request,de_hr_workspace.group_hr_employee_workspace,1,0,0,0
+
+access_hr_attendance_portal_user,hr.attendance.portal.user,hr_attendance.model_hr_attendance,base.group_portal,1,0,0,0
+
+access_hr_shortage_request_portal_user,pr.hr.shortage.request.portal.user,pr_hr_attendance.model_pr_hr_shortage_request,base.group_portal,1,0,0,0

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="pr_hr_recruitment_view_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.recruitment.view.form.inherit</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//label[@for='no_of_recruitment']" position="before">
+                <field name="job_salary"/>
+                <field name="experience_years"/>
+            </xpath>
+
+            <xpath expr="//header" position="inside">
+                <button name="action_review" string="APPROVE" class="btn-info"
+                        type="object" groups="hr_recruitment.group_hr_recruitment_user"
+                        invisible="job_state != 'initialize'"
+                />
+                <button name="action_post" string="Approve" class="btn-success" type="object"
+                        invisible="job_state != 'review'"
+                        groups="hr_recruitment.group_hr_recruitment_manager"/>
+                <button name="action_reject" string="Reject" class="btn-danger" type="object"
+                        invisible="job_state != 'review'"
+                        groups="hr_recruitment.group_hr_recruitment_manager"/>
+                <field name="job_state" widget="statusbar"/>
+                <field name="approval_state" invisible="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="pr_hr_recruitment_view_hr_job_form_website_published_button_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.recruitment.view.hr.job.form.website.published.button.inherit</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="website_hr_recruitment.view_hr_job_form_website_published_button"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='website_published']" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>

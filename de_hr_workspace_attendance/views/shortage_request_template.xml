@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="shortage_request_template">
+        <style>
+            .get-in-touch {
+              max-width: 800px;
+              margin: 50px auto;
+              position: relative;
+
+            }
+            .get-in-touch .title {
+              text-align: center;
+              text-transform: uppercase;
+              letter-spacing: 3px;
+              font-size: 3.2em;
+              line-height: 48px;
+              padding-bottom: 48px;
+                 color: #5543ca;
+                background: #5543ca;
+                background: -moz-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
+                background: -webkit-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
+                background: linear-gradient(to right,#f4524d  0%,#5543ca  100%) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+            }
+
+            .contact-form {
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 20px; /* space between fields */
+            }
+
+            .contact-form .form-field {
+              position: relative;
+              margin: 32px 0;
+                flex: 1 1 calc(50% - 20px); /* two columns with spacing */
+                min-width: 250px;
+            }
+
+            .contact-form .form-field.full-width {
+              flex: 1 1 100%;
+            }
+
+            .contact-form .input-text {
+              display: block;
+              width: 100%;
+              height: 36px;
+              border-width: 0 0 2px 0;
+              border-color: #5543ca;
+              font-size: 18px;
+              line-height: 26px;
+              font-weight: 400;
+            }
+            .contact-form .input-text:focus {
+              outline: none;
+            }
+            .contact-form .input-text:focus + .label,
+            .contact-form .input-text.not-empty + .label {
+              -webkit-transform: translateY(-24px);
+                      transform: translateY(-24px);
+            }
+            .contact-form .label {
+              position: absolute;
+              left: 20px;
+              bottom: 11px;
+              font-size: 18px;
+              line-height: 26px;
+              font-weight: 400;
+              color: #5543ca;
+              cursor: text;
+              transition: -webkit-transform .2s ease-in-out;
+              transition: transform .2s ease-in-out;
+              transition: transform .2s ease-in-out,
+              -webkit-transform .2s ease-in-out;
+                -webkit-transform: translateY(-24px);
+                      transform: translateY(-24px);
+            }
+            .contact-form .submit-btn {
+              display: inline-block;
+              background-color: #000;
+               background-image: linear-gradient(125deg,#a72879,#064497);
+              color: #fff;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              font-size: 16px;
+              padding: 8px 16px;
+              border: none;
+              width:200px;
+              cursor: pointer;
+            }
+
+
+        </style>
+        <section class="get-in-touch">
+            <h1 class="title">Shortage Request</h1>
+            <t t-if="error_message">
+                <div class="alert alert-danger" style="margin-bottom: 20px;">
+                    <t t-esc="error_message"/>
+                </div>
+            </t>
+            <form class="contact-form row" action="/shortage_request/create" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="form-field col-lg-6">
+                    <select id="employee_id" class="input-text js-input" name="employee_id" size="1" required="1">
+                        <t>
+                            <option t-att-value="current_employee_id.id">
+                                <t t-esc="current_employee_id.name"/>
+                            </option>
+                        </t>
+                    </select>
+<!--                    <input id="name" class="input-text js-input" type="text" required="1"/>-->
+                    <label class="label" for="employee_id">Name</label>
+                </div>
+                <div class="form-field col-lg-6 ">
+                   <input id="email" class="input-text js-input" type="email" required="1" readonly="1" t-att-value="employee_email"/>
+                   <label class="label" for="email">E-mail</label>
+                </div>
+                <div class="form-field col-lg-6 ">
+                    <input id="date" class="input-text js-input" type="date" name="date" required="1" t-att-value="shortage_date"/>
+                    <label class="label" for="date">Date</label>
+                </div>
+                <div class="form-field col-lg-6 ">
+                   <input id="shortage" name="shortage" class="input-text js-input" type="text" readonly="1" t-att-value="shortage_text"/>
+                   <label class="label" for="shortage">Shortage</label>
+                </div>
+                <div class="form-field col-lg-6 ">
+                    <input id="checkin" class="input-text js-input" type="datetime-local" name="checkin" readonly="1" t-att-value="check_in"/>
+                    <label class="label" for="checkin">Check-In</label>
+                </div>
+                <div class="form-field col-lg-6 ">
+                    <input id="checkout" class="input-text js-input" type="datetime-local" name="checkout" readonly="1" t-att-value="check_out"/>
+                    <label class="label" for="checkout">Check-Out</label>
+                </div>
+                <div class="form-field col-lg-6 ">
+                    <input type="file" role="button" name="attachment_ids" multiple="multiple" id="attachment_ids" class="input-text js-input" />
+                   <label class="label" for="attachment_ids">Attachments</label>
+                </div>
+                <div class="form-field col-lg-12 full-width">
+                    <input id="message" class="input-text js-input" name="message" type="text" required="1"/>
+                    <label class="label" for="message">Reason</label>
+                </div>
+                <div class="form-field col-lg-12">
+                    <input class="submit-btn" id="submit_shortage" type="submit" value="Submit" t-att-disabled="'disabled' if not has_attendance else None"/>
+                </div>
+            </form>
+        </section>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function () {
+                const employeeInput = document.getElementById("employee_id");
+                const dateInput = document.getElementById("date");
+                const checkInInput = document.getElementById("checkin");
+                const checkOutInput = document.getElementById("checkout");
+                const shortageInput = document.getElementById("shortage");
+                const submitButton = document.getElementById("submit_shortage");
+
+                const fetchAttendanceByDate = async () => {
+                    if (!employeeInput || !dateInput || !dateInput.value) {
+                        return;
+                    }
+                    const queryParams = new URLSearchParams({
+                        employee_id: employeeInput.value,
+                        date: dateInput.value,
+                    });
+                    const response = await fetch(`/shortage_request/attendance_info?${queryParams.toString()}`, {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/json",
+                        },
+                    });
+                    if (!response.ok) {
+                        return;
+                    }
+                    const data = await response.json();
+                    checkInInput.value = data.check_in || "";
+                    checkOutInput.value = data.check_out || "";
+                    if (data.shortage_text) {
+                        shortageInput.value = data.shortage_text;
+                    } else {
+                        shortageInput.value = "";
+                    }
+                    if (submitButton) {
+                        submitButton.disabled = !data.has_attendance;
+                    }
+                };
+
+                if (dateInput) {
+                    dateInput.addEventListener("change", fetchAttendanceByDate);
+                }
+            });
+        </script>
+    </template>
+</odoo>

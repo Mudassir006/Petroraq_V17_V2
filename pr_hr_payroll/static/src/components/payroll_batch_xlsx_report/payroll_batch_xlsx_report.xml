@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pr_hr_payroll.PayrollBatchXlsxReport">
+        <div class="pr_xlsx_wrap">
+
+            <t t-if="state.loading">
+                <div class="o_view_nocontent_smiling_face pr_loading">Loading payroll matrix...</div>
+            </t>
+
+            <t t-elif="state.error">
+                <div class="alert alert-danger">
+                    <strong>Payroll matrix error:</strong>
+                    <t t-esc="state.error"/>
+                </div>
+            </t>
+
+            <t t-elif="!state.rows.length">
+                <div class="alert alert-info">
+                    No payslips found in this batch yet.
+                </div>
+            </t>
+
+            <t t-else="">
+                <!-- Blue Header (like XLSX) -->
+                <div class="pr_xlsx_title">
+                    <t t-esc="companyName"/>
+                </div>
+                <div class="pr_xlsx_subtitle">
+    Payroll Month <t t-esc="payrollMonth"/>
+</div>
+                <div class="pr_xlsx_subtitle">
+                    For the Period <t t-esc="dateStart"/>
+                    To
+                    <t t-esc="dateEnd"/>
+                </div>
+
+                <!-- Table -->
+                <div class="pr_table_wrap">
+                    <table class="pr_table">
+                        <thead>
+                            <tr>
+                                <th class="pr_th pr_sortable_th" t-on-click="toggleSort.bind(this, 'emp_code')">
+                                    Employee ID <span class="pr_sort_icon"><t t-esc="getSortIcon('emp_code')"/></span>
+                                </th>
+                                <th class="pr_th">Employee Name</th>
+                                <th class="pr_th">Department</th>
+
+                                <t t-foreach="state.columns" t-as="c" t-key="c.code">
+                                    <th class="pr_th pr_sortable_th"
+                                        t-att-class="c.hidden ? 'pr_hidden_col' : ''"
+                                        t-on-click="toggleSort.bind(this, c.code)">
+                                        <t t-esc="c.name"/> <span class="pr_sort_icon"><t t-esc="getSortIcon(c.code)"/></span>
+                                    </th>
+                                </t>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <t t-foreach="state.rows" t-as="r" t-key="r.emp_code + '_' + r.emp_name">
+                                <tr class="pr_tr">
+                                    <td class="pr_td"><t t-esc="r.emp_code"/></td>
+                                    <td class="pr_td pr_left"><t t-esc="r.emp_name"/></td>
+                                    <td class="pr_td pr_left"><t t-esc="r.dept"/></td>
+
+                                    <t t-foreach="state.columns" t-as="c" t-key="c.code">
+                                        <t t-set="v" t-value="r.valsByCode.get(c.code) || 0"/>
+                                        <td class="pr_td"
+                                            t-att-class="(c.hidden ? 'pr_hidden_col ' : '') + cellClass(v)">
+                                            <t t-esc="money(v)"/>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+
+                            <!-- Totals Row -->
+                            <tr class="pr_total_tr">
+                                <td class="pr_total_td">Total</td>
+                                <td class="pr_total_td"></td>
+                                <td class="pr_total_td"></td>
+
+                                <t t-foreach="state.columns" t-as="c" t-key="c.code">
+                                    <t t-set="tv" t-value="state.totals.get(c.code) || 0"/>
+                                    <td class="pr_total_td" t-att-class="c.hidden ? 'pr_hidden_col' : ''">
+                                        <t t-esc="money(tv)"/>
+                                    </td>
+                                </t>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+        <!-- Hr Contract Periods Check -->
+        <record id="cron_hr_contract_periods_check" model="ir.cron">
+            <field name="name">Hr Contract Periods Check</field>
+            <field name="interval_number">1</field>
+            <field eval="True" name="active"/>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="state">code</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="False" name="doall"/>
+            <field name="nextcall"
+                   eval="datetime.now().replace(hour=0, minute=0, second=0).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="doall" eval="False"/>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="code">model._cron_hr_contract_periods_check()</field>
+        </record>
+
+    </data>
+</odoo>

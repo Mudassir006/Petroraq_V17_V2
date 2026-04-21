@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_budget_increase_request_tree" model="ir.ui.view">
+        <field name="name">budget.increase.request.tree</field>
+        <field name="model">budget.increase.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="request_date"/>
+                <field name="requested_by_id"/>
+                <field name="custom_pr_id"/>
+                <field name="requisition_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('approved', 'done')"
+                       decoration-danger="state in ('rejected', 'cancel')"
+                       decoration-warning="state in ('draft', 'ops_approval', 'acc_approval', 'final_approval')"
+                       decoration-info="state in ('in_progress', 'pm_approval', 'accounts_approval', 'md_approval')"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_budget_increase_request_form" model="ir.ui.view">
+        <field name="name">budget.increase.request.form</field>
+        <field name="model">budget.increase.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="can_pm_approve" invisible="1"/>
+                    <field name="can_accounts_approve" invisible="1"/>
+                    <field name="can_md_approve" invisible="1"/>
+                    <field name="can_reject" invisible="1"/>
+                    <button name="action_submit" type="object" string="Submit" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_pm_approve" type="object" string="Approve" class="btn-primary"
+                            invisible="state != 'pm_approval' or not can_pm_approve"/>
+                    <button name="action_accounts_approve" type="object" string="Accounts Approve" class="btn-primary"
+                            invisible="state != 'accounts_approval' or not can_accounts_approve"/>
+                    <button name="action_md_approve" type="object" string="Approve" class="btn-primary"
+                            invisible="state != 'md_approval' or not can_md_approve"/>
+                    <button name="action_reject" type="object" string="Reject" class="btn-secondary"
+                            invisible="not can_reject"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" class="btn-secondary"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,pm_approval,accounts_approval,md_approval,approved,rejected"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="request_date"/>
+                            <field name="requested_by_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="custom_pr_id"/>
+                            <field name="requisition_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reason" placeholder="Why do you need this budget increase?"
+                               readonly="state != 'draft'"/>
+                        <field name="rejection_reason" readonly="1" invisible="not rejection_reason"/>
+                    </group>
+                    <notebook>
+                        <page string="Cost Centers">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <tree editable="bottom">
+                                    <field name="cost_center_id"/>
+                                    <field name="current_budget" readonly="1"/>
+                                    <field name="budget_left" readonly="1"/>
+                                    <field name="requested_increase"/>
+                                    <field name="remarks"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="PR Products">
+                            <field name="custom_pr_line_ids" readonly="1"
+                                   invisible="not custom_pr_id">
+                                <tree>
+                                    <field name="description" string="Product"/>
+                                    <field name="quantity"/>
+                                    <field name="unit"/>
+                                    <field name="unit_price"/>
+                                    <field name="total_price"/>
+                                    <field name="cost_center_id"/>
+                                </tree>
+                            </field>
+                            <p string="Select a Custom PR to view its products."
+                               invisible="custom_pr_id" class="text-muted"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_budget_increase_reject_wizard_form" model="ir.ui.view">
+        <field name="name">budget.increase.reject.wizard.form</field>
+        <field name="model">budget.increase.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Budget Increase Request">
+                <group>
+                    <field name="request_id" readonly="1"/>
+                    <field name="rejection_reason" placeholder="Please provide rejection reason..."/>
+                </group>
+                <footer>
+                    <button name="action_confirm_reject" type="object" string="Reject" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_budget_increase_request" model="ir.actions.act_window">
+        <field name="name">Budget Increase Requests</field>
+        <field name="res_model">budget.increase.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_budget_increase_request"
+              name="Budget Increase Requests"
+              parent="pr_custom_purchase.menu_purchase_requisition"
+              action="action_budget_increase_request"
+              sequence="40"/>
+</odoo>

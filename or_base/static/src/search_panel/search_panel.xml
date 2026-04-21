@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+<t t-inherit="web.SearchPanel.Regular" t-inherit-mode="extension" owl="1">
+    <xpath expr="//div[hasclass('o_search_panel')]" position="attributes">
+        <attribute name="class" add="position-relative" separator=" "/>
+    </xpath>
+    <xpath expr="//div[hasclass('o_search_panel')]" position="attributes">
+        <attribute name="t-on-scroll">_onScroll</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('o_search_panel')]" position="inside">
+        <span class="o_resize position-absolute z-index-1" t-on-mousedown.stop.prevent="_onStartResize"/>
+    </xpath>
+</t>
+<t t-inherit="web.SearchPanel.Small" t-inherit-mode="extension" owl="1">
+    <xpath expr="//div[hasclass('o_search_panel')]" position="attributes">
+        <attribute name="class" add="position-relative" separator=" "/>
+    </xpath>
+    <xpath expr="//div[hasclass('o_search_panel')]" position="attributes">
+        <attribute name="t-on-scroll">_onScroll</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('o_search_panel')]" position="inside">
+        <span class="o_resize position-absolute z-index-1" t-on-mousedown.stop.prevent="_onStartResize"/>
+    </xpath>
+</t>
+
+</templates>

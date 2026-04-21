@@ -1,0 +1,225 @@
+<odoo>
+    <record id="paperformat_petroraq_grn_ses_sheet" model="report.paperformat">
+        <field name="name">Petroraq Purchase Order Report</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">370</field>
+        <field name="page_width">250</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">55</field>
+        <field name="margin_bottom">47</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">55</field>
+        <field name="dpi">100</field>
+    </record>
+
+    <record id="action_report_grn_ses" model="ir.actions.report">
+        <field name="name">GRN/SES Report</field>
+        <field name="model">grn.ses</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pr_custom_purchase.report_petroraq_grn_ses</field>
+        <field name="report_file">pr_custom_purchase.report_petroraq_grn_ses</field>
+        <field name="print_report_name">'GRN_SES_' + object.name</field>
+        <field name="binding_model_id" ref="model_grn_ses"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="pr_custom_purchase.paperformat_petroraq_grn_ses_sheet"/>
+    </record>
+
+        <template id="report_petroraq_grn_ses">
+        <t t-call="web.external_layout">
+            <main>
+                <div class="page" style="margin-top:0; padding-top:0;">
+                    <table class='table table-borderless' style="width:40%; float:right;margin-top:10px;">
+                        <tbody>
+                            <tr style="background-color:#f9f9f9;">
+                                <td style="text-align:right; padding:4px;">Requested By</td>
+                                <td style="text-align:right; padding:4px;">
+                                    <t t-esc="docs[0].requested_by"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:4px;">Department</td>
+                                <td style="text-align:right; padding:4px;">
+                                    <t t-esc="docs[0].department"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding:4px;">Supervisor</td>
+                                <td style="text-align:right; padding:4px;">
+                                    <t t-esc="docs[0].supervisor"/>
+                                </td>
+                            </tr>
+                             <tr>
+                                <td style="text-align:right; padding:4px;">Vendor Reference</td>
+                                <td style="text-align:right; padding:4px;">
+                                    <t t-esc="docs[0].partner_ref"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class='table table-borderless' style="width:100%; margin:20px 0;">
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <h5 style="margin:0;">Draft Invoice</h5>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <h5 style="margin:0;">
+                                    <t t-esc="docs[0].name"/>
+                                </h5>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <h5 style="margin:0;">مسودة فاتورة</h5>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class='table table-borderless' style="width:45%; margin:20px 0; float:right;">
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <span style="margin:0;">Invoice Date:</span>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <span style="margin:0;">
+                                    <t t-esc="docs[0].date_request or ''"/>
+                                </span>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <span>:تاريخ الفاتورة</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <span style="margin:0;">Delivery Date:</span>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <span style="margin:0;">
+                                    <t t-esc="docs[0].date_planned or ''"/>
+                                </span>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <span>:تاريخ التوصيل</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <span style="margin:0;">Source:</span>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <span style="margin:0;">
+                                    <t t-esc="docs[0].origin or ''"/>
+                                </span>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <span>:رقم الإشارة</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <span style="margin:0;">Reference:</span>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <span style="margin:0;">
+                                    <t t-esc="docs[0].supervisor or ''"/>
+                                </span>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <span>:مُلاحَظة</span>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table table-sm table-bordered" style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th>Description /
+                                    <span>الوصف</span>
+                                </th>
+                                <th>Quantity /
+                                    <span>الكمية</span>
+                                </th>
+                                <th>Taxes /
+                                    <span>اﻟﻀﺮاﺋﺐ</span>
+                                </th>
+                                <th>Unit Price /
+                                    <span>سعر الوحدة</span>
+                                </th>
+                                <th>Subtotal /
+                                    <span>سعر الوحدة</span>
+                                </th>
+                                <th>Remarks /
+                                    <span>مُلاحَظة</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs[0].line_ids" t-as="l">
+                                <tr>
+                                    <td>
+                                        <t t-esc="l.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="l.quantity"/>
+                                    </td>
+                                    <td>
+                                        <span>15%</span>
+                                    </td>
+                                    <td>
+                                        <t t-esc="l.price_unit"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="l.subtotal"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="l.remarks"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <table class="table table-striped" style="width:40%; margin-top:10px; float:left;">
+                        <tbody>
+                            <tr>
+                                <td style="text-align:right;">Subtotal /
+                                    <span>الاجمالي الفرعي</span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <t t-esc="docs[0].subtotal"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right;">VAT 15% /
+                                    <span>الضريبة</span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <t t-esc="docs[0].tax_15"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right;">Total /
+                                    <span>المجموع</span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <t t-esc="docs[0].grand_total"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class='table table-borderless' style="width:100%; margin:20px 0;">
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <h6 style="margin:0;">Payment Reference:</h6>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <h6 style="margin:0;">via Bank</h6>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <h6>: رقم إشارة الدفع</h6>
+                            </td>
+                        </tr>
+                    </table>
+                    <p style="text-align:end;">Payment terms: Immediate Payment</p>
+                </div>
+            </main>
+        </t>
+    </template>
+</odoo>

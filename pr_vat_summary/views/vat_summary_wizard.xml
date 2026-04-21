@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Wizard Form -->
+    <record id="view_vat_summary_wizard" model="ir.ui.view">
+        <field name="name">vat.summary.wizard.form</field>
+        <field name="model">vat.summary.wizard</field>
+        <field name="arch" type="xml">
+            <form string="VAT Summary">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="company_id"
+                                   options="{'no_create': True, 'no_quick_create': True}"/>
+
+                            <!-- Period selector (this month / quarter / year / custom etc.) -->
+                            <field name="date_filter"/>
+
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+
+                        <group>
+                            <field name="account_ids"
+                                   widget="many2many_tags"
+                                   options="{'no_create': True, 'no_quick_create': True}" invisible="1"/>
+                            <field name="is_detailed"/>
+                        </group>
+                    </group>
+
+                    <footer>
+                        <button name="action_compute_summary" type="object"
+                                string="Compute Summary" class="btn-primary"/>
+<!--                        <button name="action_print_pdf" type="object"-->
+<!--                                string="Print PDF"-->
+<!--                                class="btn-secondary"-->
+<!--                                invisible="summary_html == False"/>-->
+                        <button name="action_export_xlsx" type="object"
+                                string="Export XLSX"
+                                class="btn-secondary"
+                                invisible="summary_html == False"/>
+                        <button string="Cancel" class="btn-link" special="cancel"/>
+                    </footer>
+
+                    <field name="summary_title"
+                           nolabel="1"
+                           readonly="1"
+                           class="oe_title"
+                           invisible="not summary_html"/>
+
+                    <field name="summary_html"
+                           widget="html"
+                           sanitize="False"
+                           sanitize_tags="False"
+                           nolabel="1"/>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_vat_summary_wizard" model="ir.actions.act_window">
+        <field name="name">VAT Summary</field>
+        <field name="res_model">vat.summary.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_vat_summary_report"
+              name="VAT Summary"
+              parent="pr_account.account_reports_main_menu"
+              action="action_vat_summary_wizard"
+              sequence="50"/>
+</odoo>

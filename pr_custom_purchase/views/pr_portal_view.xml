@@ -1,0 +1,102 @@
+<odoo>
+    <template id="portal_breadcrumbs_pr_inherit" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//li[@class='breadcrumb-item ms-1']" position="after">
+            <!-- Listing page breadcrumb -->
+            <li t-if="page_name == 'purchase_request'" class="breadcrumb-item active" aria-current="page">
+            Purchase Requests
+        </li>
+            <!-- Create PR breadcrumb -->
+            <li t-if="page_name == 'create_pr'" class="breadcrumb-item">
+                <a href="/my/purchase-request">Purchase Requests</a>
+            </li>
+            <li t-if="page_name == 'create_pr'" class="breadcrumb-item active" aria-current="page">
+            Create PR
+        </li>
+            <!-- Detail page breadcrumb -->
+            <li t-if="page_name == 'purchase_requisition_detail'" class="breadcrumb-item">
+                <a href="/my/purchase-request">Purchase Requests</a>
+            </li>
+            <li t-if="page_name == 'purchase_requisition_detail'" class="breadcrumb-item active" aria-current="page">
+                <t t-esc="pr.name"/>
+            </li>
+        </xpath>
+    </template>
+    <template id="portal_purchase_requisition_detail" name="Purchase Requisition Detail">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc">
+                <h2>Purchase Requisition:
+                    <t t-esc="pr.name"/>
+                </h2>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Date Requested</th>
+                        <td>
+                            <t t-esc="pr.date_request"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Supervisor</th>
+                        <td>
+                            <t t-esc="pr.supervisor"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Requested by</th>
+                        <td>
+                            <t t-esc="pr.requested_by"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            <t t-esc="pr.approval"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Total Amount (Excl. VAT)</th>
+                        <td>
+                            <t t-esc="pr.total_excl_vat"/>
+                        </td>
+                    </tr>
+                </table>
+                <h4>Products</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Item Description</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Unit Price</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="pr.line_ids" t-as="line">
+                            <tr>
+                                <td>
+                                    <t t-esc="line.description"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line.type"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line.quantity"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line.unit"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line.unit_price"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line.total_price"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+</odoo>

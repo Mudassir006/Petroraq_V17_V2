@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="contract_gosi_configuration_1" model="hr.contract.gosi">
+            <field name="name">GOSI Company Configuration</field>
+            <field name="citizen_employee_portion">9.75</field>
+            <field name="citizen_company_portion">11.75</field>
+            <field name="resident_employee_portion">0.0</field>
+            <field name="resident_company_portion">2.0</field>
+<!--            <field name="gosi_salary_rule_ids" eval="[(4, ref('hr_rule_basic'))]"/>-->
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="petroraq_sale_workflow.SectionSubtotalInSectionName" t-inherit="account.SectionAndNoteText" t-inherit-mode="extension">
+        <xpath expr="//t[@t-component='componentToUse']" position="after">
+            <t t-if="props.record.data.display_type === 'line_section' and props.record.data.section_subtotal_display">
+                <span class="o_section_subtotal_chip" t-raw="props.record.data.section_subtotal_display"/>
+            </t>
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="portal_employee_payslip" name="Employee Payslips" customize_show="True"
+              inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/de_hr_workspace_payroll/static/src/img/payslip_portal.png'"/>
+                <t t-set="title">Payslips</t>
+                <t t-set="url" t-value="'/my/payslips'"/>
+                <t t-set="text">Follow your payslips</t>
+                <t t-set="placeholder_count" t-value="'my_payslip_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_my_payslips" name="My Attendances">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Payslips</t>
+            </t>
+            <t t-if="not payslips">
+                <div class="alert alert-warning" role="alert">
+                    There are no payslips.
+                </div>
+            </t>
+            <t t-if="payslips">
+                <t t-call="portal.portal_table">
+                    <t t-set="loop_cycle_number" t-value="0"/>
+                    <thead>
+                        <tr class="active" style="background-color: #009879;color: #ffffff;">
+                            <th>Reference</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Net</th>
+                            <th colspan="2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="payslips" t-as="payslip"
+                            t-att-style="'background-color: #ffffff' if loop_cycle_number % 2 == 0 else 'background-color: #f2f2f2;color: #009879;'">
+                            <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1"/>
+                            <td>
+                                <span t-esc="payslip.number"/>
+                            </td>
+                            <td>
+                                <span t-field="payslip.date_from"/>
+                            </td>
+                            <td>
+                                <span t-field="payslip.date_to"/>
+                            </td>
+                            <td>
+                                <span t-field="payslip.net_wage"/>
+                            </td>
+                            <td>
+                                <span t-field="payslip.state"
+                                      style="color: #fff !important;background-color: #008080 !important;border-color: #008080 !important;border-radius: 8px !important;padding: 6px !important;"/>
+                            </td>
+                            <td>
+                                <button class="btn-info" icon="fa-eye">
+                                    <a t-attf-href="/my/payslips/#{payslip.id}">Details</a>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="employee_payslip_info_portal">
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Payslip</t>
+                </t>
+                <t t-call="portal.portal_table">
+                    <t t-set="loop_cycle_number" t-value="0"/>
+                    <thead>
+                        <tr class="active" style="background-color: #009879;color: #ffffff;">
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Rule</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="payslip_id.line_ids_filtered" t-as="line"
+                            t-att-style="'background-color: #ffffff' if loop_cycle_number % 2 == 0 else 'background-color: #f2f2f2;color: #009879;'">
+                            <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1"/>
+                            <td>
+                                <span t-esc="line.name"/>
+                            </td>
+                            <td>
+                                <span t-field="line.category_id.name"/>
+                            </td>
+                            <td>
+                                <span t-field="line.salary_rule_id.name"/>
+                            </td>
+                            <td>
+                                <span t-field="line.total"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>

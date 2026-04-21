@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="pr_account_bank_payment_view_search" model="ir.ui.view">
+        <field name="name">pr.account.bank.payment.view.search</field>
+        <field name="model">pr.account.bank.payment</field>
+        <field name="arch" type="xml">
+            <search string="Bank Payments">
+                <field name="name" string="Number"/>
+                <field name="account_id" string="Account"/>
+                <field name="company_id" string="Company"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <group expand="0" string="Group By...">
+                    <filter name="account_id" string="Account" domain="[]" context="{'group_by':'account_id'}"/>
+                    <filter name="company_id" string="Company" domain="[]" context="{'group_by':'company_id'}"/>
+                    <filter string="Accounting Date" name="accounting_date" domain="[]"
+                            context="{'group_by':'accounting_date'}"/>
+                    <filter name="state" string="Status" domain="[]" context="{'group_by':'state'}"/>
+
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="pr_account_bank_payment_view_form" model="ir.ui.view">
+        <field name="name">pr.account.bank.payment.view.form</field>
+        <field name="model">pr.account.bank.payment</field>
+        <field name="arch" type="xml">
+            <form string="Bank Payments">
+                <!-- Invisible Fields -->
+                <field name="journal_entry_id" invisible="1"/>
+                <field name="analytic_precision" invisible="1"/>
+                <field name="check_process_state" invisible="1"/>
+                <header>
+                    <button
+                            string="SUBMIT"
+                            name="action_submit"
+                            type="object"
+                            class="btn-teal-custom"
+                            invisible="state != 'draft'"
+                    />
+                    <!--                    <button-->
+                    <!--                            string="SET IN PROCESS"-->
+                    <!--                            name="action_approve_process"-->
+                    <!--                            type="object"-->
+                    <!--                            class="btn-teal-custom"-->
+                    <!--                            invisible="state != 'submit' or check_process_state == False"-->
+                    <!--                            groups="pr_account.custom_group_accounting_manager"-->
+                    <!--                    />-->
+                    <button
+                            string="Approve"
+                            name="action_finance_approve"
+                            type="object"
+                            class="btn-teal-custom"
+                            invisible="state != 'submit' or check_process_state == False"
+                            groups="account.group_account_manager"
+                    />
+                    <button
+                            string="Final Approve"
+                            name="action_post"
+                            type="object"
+                            class="btn-teal-custom"
+                            invisible="state != 'finance_approve' or check_process_state == False"
+                            groups="pr_account.custom_group_accounting_manager"
+                    />
+                    <button
+                            string="REJECT"
+                            name="action_draft"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state not in ['draft', 'finance_approve'] or check_process_state == False"
+                            groups="pr_account.custom_group_accounting_manager,account.group_account_manager"
+                    />
+                    <!--                    invisible="state != 'submit' or check_process_state == False"-->
+                    <button
+                            string="RESET TO DRAFT"
+                            name="action_draft"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state != 'posted'"
+                            groups="account.group_account_manager"
+                    />
+                    <!--                    <button-->
+                    <!--                            string="CANCEL"-->
+                    <!--                            name="action_cancel"-->
+                    <!--                            type="object"-->
+                    <!--                            class="btn-secondary"-->
+                    <!--                            invisible="state != 'draft'"-->
+                    <!--                            groups="account.group_account_manager"-->
+                    <!--                    />-->
+                    <!--                    <button-->
+                    <!--                            string="RESET ALL TO DRAFT"-->
+                    <!--                            name="make_all_draft"-->
+                    <!--                            type="object"-->
+                    <!--                            class="btn-danger"-->
+                    <!--                            groups="base.group_no_one"-->
+                    <!--                    />-->
+                    <field name="state" widget="statusbar"/>
+                    <field name="accounting_manager_state" invisible="1"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                                invisible="not journal_entry_id"
+                                name="open_journal_entry"
+                                class="oe_stat_button"
+                                icon="fa-file"
+                                type="object"
+                                string="Journal Entry"
+                        >
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="POSTED" bg_color="bg-success"
+                            invisible="state != 'posted'"/>
+                    <widget name="web_ribbon" title="DRAFT" bg_color="bg-info"
+                            invisible="state != 'draft'"/>
+                    <widget name="web_ribbon" title="CANCELLED" bg_color="bg-danger"
+                            invisible="state != 'cancel'"/>
+                    <div class="oe_title" style="margin-bottom:4px;">
+                        <label for="name" string="Number"/>
+                        <h3 style="margin:0;">
+                            <field name="name" style="color: purple;" readonly="1"/>
+                        </h3>
+                    </div>
+
+                    <group>
+                        <group>
+                            <label for="account_id" string="Code"/>
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
+                                <!-- CODE -->
+                                <field name="account_id"
+                                       readonly="state != 'draft'"
+                                       class="oe_inline"
+                                       options="{'no_create':True,'no_create_edit':True,'no_quick_create':True}"
+                                       style="font-size:15px;font-weight:bold;color:green;width:auto;"/>
+
+                                <!-- NAME LABEL -->
+                                <span style="font-weight:bold; color:#444;">Name</span>
+
+                                <!-- ACCOUNT NAME -->
+                                <field name="account_name"
+                                       class="oe_inline"
+                                       style="font-size:15px;font-weight:bold;color:green;width:auto;"
+                                       readonly="1"/>
+
+                            </div>
+                            <field name="analytic_line_ids" invisible="1"/>
+                            <field name="analytic_distribution" widget="analytic_distribution"
+                                   readonly="state != 'draft'"
+                                   string="Cost Centers" invisible="1"/>
+                            <field name="description" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="company_id"
+                                   options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                                   readonly="state != 'draft'" invisible="1"/>
+                            <field name="currency_id"
+                                   options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                                   readonly="state != 'draft'" invisible="1"/>
+
+                            <label for="accounting_date" string=""/>
+                            <div class="o_row o_date_amounts_row">
+
+                                <!-- Column 1 -->
+                                <div class="o_form_label_and_field">
+                                    <label for="accounting_date" string="Date"/>
+                                    <field name="accounting_date"
+                                           readonly="state != 'draft'"
+                                           class="oe_inline"/>
+                                </div>
+
+                                <!-- Column 2 -->
+                                <div class="o_form_label_and_field">
+                                    <label for="total_amount" string="Amount"/>
+                                    <field name="total_amount"
+                                           style="color: blue;"
+                                           widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"
+                                           class="oe_inline"/>
+                                </div>
+
+                                <!-- Column 3 -->
+                                <div class="o_form_label_and_field">
+                                    <label for="approved_amount" string="Approved Amount"/>
+                                    <field name="approved_amount"
+                                           style="color: green;"
+                                           widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"
+                                           class="oe_inline"/>
+                                </div>
+
+                                <div class="o_form_label_and_field">
+                                    <label for="rejected_amount" string="Rejected Amount"/>
+                                    <field name="rejected_amount"
+                                           style="color: red;"
+                                           widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"
+                                           class="oe_inline"/>
+                                </div>
+
+                            </div>
+                        </group>
+
+                    </group>
+                    <div>
+                        <div style="display: inline-block !important; margin-right: 50px !important;"
+
+                             >
+                            <button name="action_approve_remaining_lines" string="APPROVE REMAINING LINES" type="object"
+                                    class="btn-success"
+                                    invisible="state != 'submit' or check_process_state == True"
+                                    groups="account.group_account_manager,pr_account.custom_group_accounting_manager"
+                                    style="display: inline-block !important; width: 400px !important; margin-right: 50px !important;"/>
+                        </div>
+                        <div style="display: inline-block !important; width: 400px !important;"
+
+                             >
+                            <button name="action_reject_remaining_lines" string="REJECT REMAINING LINES" type="object"
+                                    class="btn-danger"
+                                    invisible="state != 'submit' or check_process_state == True"
+                                    groups="account.group_account_manager,pr_account.custom_group_accounting_manager"
+                                    style="display: inline-block !important; width: 400px !important;"/>
+                        </div>
+
+                    </div>
+                    <field name="bank_payment_line_ids" class="freeze-1many" widget="section_and_note_one2many"
+                           nolabel="1" readonly="state != 'draft'">
+                        <tree editable="bottom">
+                            <field name="bank_payment_id" column_invisible="True"/>
+                            <field name="company_id" column_invisible="True"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="check_cost_centers_block" column_invisible="True"/>
+                            <field name="account_id"
+                                   options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                            <button name="action_open_header_account_ledger"
+                                    type="object"
+                                    icon="fa-university"
+                                    class="oe_link"
+                            >
+                                <field name="account_name"/>
+                            </button>
+                            <field name="analytic_line_ids" column_invisible="True"/>
+                            <field name="analytic_precision" column_invisible="True"/>
+                            <field name="cs_project_id"
+                                   options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                                   force_save="1" readonly="check_cost_centers_block == False"/>
+                            <field name="analytic_distribution" widget="analytic_distribution" optional="show"
+                                   readonly="check_cost_centers_block == False" force_save="1"/>
+                            <field name="partner_id"
+                                   options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                                   string="Project Manager" force_save="1"
+                                   readonly="check_cost_centers_block == False"/>
+                            <field name="description"/>
+                            <button name="action_open_reference_record"
+                                    type="object"
+                                    icon="fa-external-link"
+                                    title=""
+                                    class="oe_link"
+                                    invisible="not reference_number"
+                                    help="Open Linked Document"/>
+                            <field name="reference_number"/>
+                            <field name="amount" decoration-warning="1" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="tax_id"
+                                   options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                            <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"
+                                   column_invisible="True"/>
+                            <field name="total_amount" decoration-success="1" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="state"
+                                   decoration-info="state == 'draft'"
+                                   decoration-warning="state ==  'submit'"
+                                   decoration-success="state ==  'approve'"
+                                   decoration-danger="state ==  'reject'"
+                            />
+                            <button name="action_line_approve" string="APPROVE" type="object" class="btn-success"
+                                    groups="account.group_account_manager,pr_account.custom_group_accounting_manager"
+                                    invisible="state != 'submit'"/>
+                            <button name="action_line_reject" string="REJECT" type="object" class="btn-danger"
+                                    groups="account.group_account_manager,pr_account.custom_group_accounting_manager"
+                                    invisible="state != 'submit'"/>
+                            <field name="reject_reason"
+                                   string="Reason"
+                                   decoration-danger="1"/>
+
+                            <field name="parent_state" column_invisible="True"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="pr_account_bank_payment_view_tree" model="ir.ui.view">
+        <field name="name">pr.account.bank.payment.view.tree</field>
+        <field name="model">pr.account.bank.payment</field>
+        <field name="arch" type="xml">
+            <tree string="Bank Payments" default_order="name desc">
+                <field name="name" decoration-warning="1" string="Number"/>
+                <field name="account_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"/>
+                <field name="account_name"/>
+                <field name="description"/>
+                <field name="accounting_date"/>
+                <field name="company_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                       column_invisible="True"/>
+                <field name="currency_id" options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                       column_invisible="True"/>
+                <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'draft'"
+                       decoration-info="state == 'submit'"
+                       decoration-success="state == 'posted'"
+                       decoration-danger="state == 'cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="pr_account_bank_payment_view_action" model="ir.actions.act_window">
+        <field name="name">Bank Payments</field>
+        <field name="res_model">pr.account.bank.payment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pr_account.pr_account_bank_payment_view_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('pr_account.pr_account_bank_payment_view_form')})]"/>
+        <field name="search_view_id" ref="pr_account_bank_payment_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create A New Bank Payment
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="pr_account_bank_payment_view_menu"
+              parent="payment_receipt_vouchers_main_menu"
+              name="Bank Payments"
+              action="pr_account_bank_payment_view_action"
+              sequence="4"/>
+</odoo>

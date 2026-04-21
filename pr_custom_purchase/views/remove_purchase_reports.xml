@@ -1,0 +1,7 @@
+<odoo>
+    <!-- Delete Purchase Order report action -->
+    <delete id="purchase.action_report_purchase_order" model="ir.actions.report"/>
+
+    <!-- Delete Request for Quotation report action -->
+    <delete id="purchase.report_purchase_quotation" model="ir.actions.report"/>
+</odoo>

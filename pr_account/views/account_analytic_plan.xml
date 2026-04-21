@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_account_view_account_analytic_plan_form_inherit" model="ir.ui.view">
+        <field name="name">pr.account.view.account.analytic.plan.form.inherit</field>
+        <field name="model">account.analytic.plan</field>
+        <field name="inherit_id" ref="analytic.account_analytic_plan_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[2]" position="inside">
+                <field name="analytic_plan_type"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+<!--    <record id="eg_asset_management_cash_receipt_view_search_inherit" model="ir.ui.view">-->
+<!--        <field name="name">eg.asset.management.cash.receipt.view.search.inherit</field>-->
+<!--        <field name="model">pr.account.cash.receipt</field>-->
+<!--        <field name="inherit_id" ref="pr_account.account_cash_receipt_view_search"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            <xpath expr="//field[@name='account_id']" position="after">-->
+<!--                <field name="asset_id" string="Asset"/>-->
+<!--            </xpath>-->
+
+<!--            <xpath expr="//filter[@name='account_id']" position="after">-->
+<!--                <filter name="asset_id" string="Asset" domain="[]" context="{'group_by':'asset_id'}"/>-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="eg_asset_management_cash_receipt_form_inherit" model="ir.ui.view">
+        <field name="name">eg.asset.management.cash.receipt.form.inherit</field>
+        <field name="model">pr.account.cash.receipt</field>
+        <field name="inherit_id" ref="pr_account.account_cash_receipt_view_form"/>
+        <field name="arch" type="xml">
+
+<!--            <xpath expr="//field[@name='analytic_distribution']" position="after">-->
+<!--                <field name="asset_id" options="{'no_create_edit': True, 'no_create': True}" readonly="state != 'draft'"/>-->
+<!--            </xpath>-->
+
+            <xpath expr="//field[@name='cash_receipt_line_ids']/tree/field[@name='description']" position="before">
+                <field name="asset_id" options="{'no_create_edit': True, 'no_create': True}" optional="show" readonly="check_cost_centers_block == False"/>
+            </xpath>
+
+        </field>
+    </record>
+
+<!--    <record id="eg_asset_management_cash_receipt_tree_inherit" model="ir.ui.view">-->
+<!--        <field name="name">eg.asset.management.cash.receipt.tree.inherit</field>-->
+<!--        <field name="model">pr.account.cash.receipt</field>-->
+<!--        <field name="inherit_id" ref="pr_account.account_cash_receipt_view_tree"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            <xpath expr="//field[@name='company_id']" position="before">-->
+<!--                <field name="asset_id" options="{'no_create_edit': True, 'no_create': True}" optional="show"/>-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
+</odoo>

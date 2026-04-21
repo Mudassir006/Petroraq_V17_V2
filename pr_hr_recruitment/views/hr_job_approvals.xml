@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="hr_job_approvals_view_tree" model="ir.ui.view">
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_view_tree_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="approval_state" string="status"
+                widget="badge"
+                       decoration-danger="approval_state == 'initialize'"
+                       decoration-info="approval_state == 'review'"
+                       decoration-success="approval_state == 'post'"
+                />
+            </xpath>
+        </field>
+    </record>
+
+<!--    <record id="hr_job_approvals_view_tree" model="ir.ui.view">-->
+<!--        <field name="name">hr.job.approvals.view.tree</field>-->
+<!--        <field name="model">hr.job</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <tree string="Recruitment Jobs" sample="1">-->
+<!--                <field name="name"/>-->
+<!--                <field name="department_id"/>-->
+<!--                <field name="no_of_recruitment"/>-->
+<!--                <field name="job_salary"/>-->
+<!--                <field name="experience_years"/>-->
+<!--                <field name="job_state" column_invisible="1"/>-->
+<!--                <field name="approval_state" string="status"-->
+<!--                widget="badge"-->
+<!--                       decoration-danger="approval_state == 'initialize'"-->
+<!--                       decoration-info="approval_state == 'review'"-->
+<!--                       decoration-success="approval_state == 'post'"-->
+<!--                />-->
+<!--            </tree>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="hr_job_approvals_view_action" model="ir.actions.act_window">
+        <field name="name">Recruitment Jobs</field>
+        <field name="res_model">hr.job</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_job_approvals_view_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('hr.view_hr_job_form')})]"/>
+        <field name="domain">[('approval_state', '=', 'review')]</field>
+        <field name="context">{'create': False,'edit': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                There Is No Recruitment Jobs To Post
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="hr_job_approvals_view_menu"
+              parent="de_hr_workspace.menu_my_employee_approvals"
+              name="Recruitment Jobs"
+              action="hr_job_approvals_view_action"
+              sequence="60"
+              groups="de_hr_workspace.group_hr_employee_approvals,hr_recruitment.group_hr_recruitment_manager"
+    />
+
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_account_view_move_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.account.view.move.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='date_maturity']" position="before">
+                <field name="cs_employee_id" options="{'no_create_edit': True, 'no_create': True}" optional="show" force_save="1" readonly="check_cost_centers_block == False"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

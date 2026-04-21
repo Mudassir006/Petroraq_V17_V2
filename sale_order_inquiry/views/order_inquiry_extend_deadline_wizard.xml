@@ -1,0 +1,23 @@
+<odoo>
+
+    <record id="view_order_inq_extend_deadline_wizard_form" model="ir.ui.view">
+        <field name="name">order.inq.extend.deadline.wizard.form</field>
+        <field name="model">order.inq.extend.deadline.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Extend Deadline" >
+                <group>
+                    <field name="inquiry_id" readonly="1"/>
+                    <field name="current_deadline" invisible="1"/>
+                    <field name="new_deadline"/>
+                </group>
+                <footer>
+                    <button string="Confirm Deadline" type="object" name="action_confirm_extend" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

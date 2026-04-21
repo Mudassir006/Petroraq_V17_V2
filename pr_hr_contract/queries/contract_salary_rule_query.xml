@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="query_hr_contract_salary_rule_pivot" model="ir.ui.view">
+            <field name="name">query.hr.contract.salary.rule.pivot</field>
+            <field name="model">query.hr.contract.salary.rule</field>
+            <field name="arch" type="xml">
+                <pivot string="Contract Salary Rule Analysis" sample="1">
+                    <field name="employee_id" type="row"/>
+                    <field name="salary_rule_id" type="col"/>
+                    <field name="contract_id" type="measure"/>
+                    <field name="amount" type="measure"/>
+                    <field name="monthly_amount" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="query_hr_contract_salary_rule_graph" model="ir.ui.view">
+            <field name="name">query.hr.contract.salary.rule.graph</field>
+            <field name="model">query.hr.contract.salary.rule</field>
+            <field name="arch" type="xml">
+                <graph string="Contract Salary Rule Analysis" sample="1">
+                    <field name="salary_rule_id"/>
+                    <field name="monthly_amount" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="report_pos_order_view_tree" model="ir.ui.view">
+            <field name="name">query.hr.contract.salary.rule.view.tree</field>
+            <field name="model">query.hr.contract.salary.rule</field>
+            <field name="arch" type="xml">
+                <tree string="Contract Salary Rule Analysis">
+                    <field name="contract_id" optional="hide"/>
+                    <field name="employee_id" optional="show"/>
+                    <field name="salary_rule_id" optional="show"/>
+                    <field name="amount_type" optional="hide"/>
+                    <field name="amount_value" optional="hide"/>
+<!--                    <field name="config_id" optional="hide"/>-->
+                    <field name="schedule_pay" optional="show"/>
+                    <field name="pay_for_period" optional="show"/>
+                    <field name="start_pay" optional="show"/>
+                    <field name="amount" optional="hide"/>
+                    <field name="monthly_amount" optional="show"/>
+                    <field name="one_time_amount" optional="show"/>
+                    <field name="pay_in_payslip" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="query_hr_contract_salary_rule_search" model="ir.ui.view">
+            <field name="name">query.hr.contract.salary.rule.search</field>
+            <field name="model">query.hr.contract.salary.rule</field>
+            <field name="arch" type="xml">
+                <search string="Contract Salary Rule Analysis">
+                    <field name="employee_id"/>
+                    <field name="salary_rule_id"/>
+                    <group expand="1" string="Group By">
+                        <filter string="Employee" name="employee_id" context="{'group_by':'employee_id'}"/>
+                        <filter string="Salary Rule" name="salary_rule_id" context="{'group_by':'salary_rule_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="query_hr_contract_salary_rule_action" model="ir.actions.act_window">
+            <field name="name">Contract Salary Rule Analysis Analysis</field>
+            <field name="res_model">query.hr.contract.salary.rule</field>
+            <field name="view_mode">graph,pivot,tree</field>
+            <field name="search_view_id" ref="query_hr_contract_salary_rule_search"/>
+            <field name="context">{'group_by_no_leaf':1,'group_by':[]}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No data yet!
+                </p>
+            </field>
+        </record>
+
+     <menuitem id="query_hr_contract_salary_rule_menu"
+              name="Salary Rule All"
+              parent="bof_hr_contract.menu_hr_contract_analysis_separator"
+              sequence="2"
+              action="query_hr_contract_salary_rule_action"/>
+
+
+</odoo>

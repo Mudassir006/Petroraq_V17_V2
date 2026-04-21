@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_budget_increase_request" model="ir.sequence">
+        <field name="name">Budget Increase Request</field>
+        <field name="code">budget.increase.request</field>
+        <field name="prefix">BIR/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="view_employee_form">
+			<field name="name">employee.form</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr_attendance.view_employee_form_inherit_hr_attendance" />
+			<field name="arch" type="xml">
+				<xpath expr="//notebook/page[last()]" position="after">
+					<page string="Unmapped Attendance Machines"
+						invisible="not unamapped_attendance_device_ids"
+						groups="hr_attendance.group_hr_attendance_officer">
+						<field name="unamapped_attendance_device_ids">
+							<tree name="unamapped_attendance_device_ids" nolabel="1"
+								create="false" delete="false" edit="false" sample="1">
+								<field name="name" />
+								<field name="ip" groups="hr_attendance.group_hr_attendance_officer" />
+								<field name="port" groups="hr_attendance.group_hr_attendance_officer" />
+								<field name="location_id" />
+								<field name="state" column_invisible="1" />
+							</tree>
+						</field>
+					</page>
+				</xpath>
+				<xpath expr="//field[@name='attendance_state']" position="after">
+					<button name="action_view_finger_template" type="object"
+						groups="pr_attendance_device.group_attendance_devices_manager"
+						class="oe_stat_button" icon="fa-address-card"
+						help="Show fingerprint templates of this employee">
+						<field name="total_finger_template_records" widget="statinfo" />
+					</button>
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_employee_tree" model="ir.ui.view">
+            <field name="name">hr.employee.tree.view</field>
+            <field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_tree" />
+            <field name="arch" type="xml">
+				<xpath expr="//field[@name='parent_id']" position="after">
+					<field name="device_user_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+				</xpath>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_employee_filter">
+			<field name="name">hr.employee.search</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//filter[@name='inactive']" position="after">
+					<separator />
+					<filter string="Created from an Attendance Machine"
+						name="created_from_attendance_device"
+						domain="[('created_from_attendance_device','=',True)]" />
+					<separator />
+					<filter string="User Protocol TCP/UDP"
+						name="user_protocol_tcp_udp"
+						domain="[('device_user_ids.device_id.protocol', 'in', ['tcp', 'udp'])]" />
+					<filter string="User Protocol Icloud-ADMS"
+						name="user_protocol_icloud_adms"
+						domain="[('device_user_ids.device_id.protocol', '=', 'icloud')]" />
+				</xpath>
+			</field>
+		</record>
+
+		<record id="action_employee_upload_tcp_udp" model="ir.actions.server" >
+			<field name="name">Upload to Attendance Machine by TCP/UDP</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_hr_employee" />
+			<field name="binding_model_id" ref="model_hr_employee" />
+			<field name="binding_view_types">form,list</field>
+			<field name="state">code</field>
+			<field name="code">action = records.action_upload_to_attendance_by_tcp_udp()</field>
+		</record>
+
+		<record id="action_employee_upload_icloud" model="ir.actions.server" >
+			<field name="name">Upload to Attendance Machine by Icloud</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_hr_employee" />
+			<field name="binding_model_id" ref="model_hr_employee" />
+			<field name="binding_view_types">form,list</field>
+			<field name="state">code</field>
+			<field name="code">action = records.action_upload_to_attendance_by_icloud()</field>
+		</record>
+
+	</data>
+</odoo>

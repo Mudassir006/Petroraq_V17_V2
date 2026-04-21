@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="petroraq_layout" inherit_id="website.layout">
+
+        <!-- Replace Entire Default Header -->
+        <xpath expr="//header" position="replace">
+
+            <header id="petroraq_header" class="petroraq-header o_not_editable">
+
+                <nav class="petroraq-navbar container petroraq-nav-links">
+
+                    <!-- LEFT: LOGO -->
+                    <div class="nav-left">
+                        <a href="/">
+                            <img src="/pr_website/static/images/logo.png"
+                                 alt="Petroraq Logo"
+                                 class="petroraq-logo"/>
+                        </a>
+                    </div>
+
+                    <!-- CENTER (Desktop Menu) -->
+                    <div class="nav-center">
+                        <ul class="nav-menu">
+                            <li><a href="/" class="nav-link">HOME</a></li>
+                            <li><a href="/about-us" class="nav-link">ABOUT</a></li>
+                            <li><a href="/contact-us" class="nav-link">CONTACT US</a></li>
+                            <li><a href="/jobs" class="nav-link">Careers</a></li>
+
+                            <!-- SERVICES DROPDOWN -->
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle">SERVICES</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/services/mechanical">Mechanical Services</a></li>
+                                    <li><a href="/services/electrical">Electrical Services</a></li>
+                                    <li><a href="/services/hvac">HVAC</a></li>
+                                    <li><a href="/services/procurement">Procurement</a></li>
+                                    <li><a href="/services/construction">Construction</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- RIGHT (Desktop Button) -->
+                    <div class="nav-right">
+                        <a href="/contact-us" class="btn-quote">GET A QUOTE</a>
+                    </div>
+
+                    <!-- MOBILE HAMBURGER -->
+                    <div class="nav-mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                </nav>
+
+                <!-- MOBILE MENU -->
+                <div class="mobile-menu">
+                    <ul>
+                        <li><a href="/">HOME</a></li>
+                        <li><a href="/about-us">ABOUT</a></li>
+                        <li><a href="/contact-us">CONTACT US</a></li>
+
+                        <li class="mobile-dropdown">
+                            <a href="#">SERVICES</a>
+                            <ul>
+                                <li><a href="/services/mechanical">Mechanical Services</a></li>
+                                <li><a href="/services/electrical">Electrical Services</a></li>
+                                <li><a href="/services/hvac">HVAC</a></li>
+                                <li><a href="/services/procurement">Procurement</a></li>
+                                <li><a href="/services/construction">Construction</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+            </header>
+
+        </xpath>
+
+        <!-- JS TOGGLE SCRIPT -->
+        <xpath expr="//body" position="inside">
+            <script type="text/javascript">
+                document.addEventListener("DOMContentLoaded", function () {
+
+                    const toggle = document.querySelector(".nav-mobile-toggle");
+                    const mobMenu = document.querySelector(".mobile-menu");
+
+                    if (toggle) {
+                        toggle.addEventListener("click", function () {
+                            mobMenu.style.display =
+                                mobMenu.style.display === "block" ? "none" : "block";
+                        });
+                    }
+
+                    document.querySelectorAll(".mobile-dropdown > a").forEach(item => {
+                        item.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            this.parentElement.classList.toggle("active");
+                        });
+                    });
+
+                });
+            </script>
+        </xpath>
+
+    </template>
+</odoo>

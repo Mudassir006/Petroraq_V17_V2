@@ -1,0 +1,361 @@
+<!--<templates xml:space="preserve">-->
+<!--    <t t-name="de_hr_workspace_timeoff.CustomLeaveDashboard">-->
+<!--        <style>-->
+<!--        body {-->
+<!--            font-family: 'Segoe UI', sans-serif !important;-->
+<!--        }-->
+
+<!--        .sidebar {-->
+<!--            height: 100vh;-->
+<!--            background-color: #0f172a;-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .sidebar a {-->
+<!--            color: white;-->
+<!--            text-decoration: none;-->
+<!--            display: block;-->
+<!--            padding: 10px 20px;-->
+<!--        }-->
+
+<!--        .sidebar a:hover,-->
+<!--        .sidebar .active {-->
+<!--            background-color: #1e293b;-->
+<!--        }-->
+
+<!--        .card {-->
+<!--            border: none;-->
+<!--            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);-->
+<!--        }-->
+
+<!--        .status-badge {-->
+<!--            background-color: #ffe6cc;-->
+<!--            color: #ff8c00;-->
+<!--            padding: 3px 8px;-->
+<!--            border-radius: 8px;-->
+<!--            font-size: 0.8rem;-->
+<!--        }-->
+<!--    </style>-->
+<!--        <div class="container-fluid">-->
+<!--            <div class="row">-->
+<!--                &lt;!&ndash; Sidebar &ndash;&gt;-->
+<!--                <nav class="col-md-2 sidebar d-flex flex-column py-4 bg-dark text-white" style="height: 100vh;">-->
+<!--                    <h5 class="text-center mb-4">Logo</h5>-->
+<!--                    <a href="#" class="text-white px-3 py-2 bg-secondary">Leave Management</a>-->
+<!--                    <ul class="ps-4">-->
+<!--                        <li><a href="#" class="text-white">Dashboard</a></li>-->
+<!--                    </ul>-->
+<!--                </nav>-->
+
+<!--                &lt;!&ndash; Main Content &ndash;&gt;-->
+<!--                <main class="col-md-10 p-4 bg-light">-->
+<!--                    &lt;!&ndash; Summary Cards &ndash;&gt;-->
+<!--                    <div class="row g-3 mb-4">-->
+<!--                        <t t-if="state.summary and state.summary.length">-->
+<!--                            <t t-foreach="state.summary" t-as="leave_type" t-key="leave_type.leave_name">-->
+<!--                                <div class="col-md-3">-->
+<!--                                    <div class="card p-3">-->
+<!--                                        <h6><t t-esc="leave_type.leave_name"/></h6>-->
+<!--                                        <t t-if="leave_type.requires_allocation === 'yes'">-->
+<!--                                            <span style="width: 29%;display: inline-block;"><span t-esc="leave_type.leave_days"/></span><span style="width: 29%;display: inline-block;">/</span><span style="width: 29%;display: inline-block;"><span t-esc="leave_type.allocation_days"/></span>-->
+<!--                                        </t>-->
+<!--                                        <t t-else="">-->
+<!--                                            <span><t t-esc="leave_type.leave_days"/></span>-->
+<!--                                        </t>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </t>-->
+<!--                        </t>-->
+<!--                        <t t-else="">-->
+<!--                            <p><strong>There Are No Leave Types</strong></p>-->
+<!--                        </t>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; Chart + Upcoming Leaves &ndash;&gt;-->
+<!--                    <div class="row g-3 mb-4">-->
+<!--                        <div class="col-md-6">-->
+<!--                            <div class="card p-3">-->
+<!--                                <h6>Leave Trend</h6>-->
+<!--                                <canvas id="leaveChart" height="200"></canvas>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <t t-if="state.upcomingLeaves and state.upcomingLeaves.length">-->
+<!--                            <div class="col-md-6">-->
+<!--                            <div class="card p-3">-->
+<!--                                <h6>Upcoming Leaves</h6>-->
+<!--                                <table class="table table-sm mt-3">-->
+<!--                                    <thead>-->
+<!--                                        <tr>-->
+<!--                                            <th>Employee</th>-->
+<!--                                            <th>Leave Type</th>-->
+<!--                                            <th>From</th>-->
+<!--                                            <th>To</th>-->
+<!--                                            <th>Days</th>-->
+<!--                                        </tr>-->
+<!--                                    </thead>-->
+<!--                                    <tbody>-->
+<!--                                        <tr t-foreach="state.upcomingLeaves" t-as="leave" t-key="leave.employee" >-->
+<!--                                            <t t-if="leave">-->
+<!--                                                <td><t t-esc="leave.employee"/></td>-->
+<!--                                                <td><t t-esc="leave.leave_type"/></td>-->
+<!--                                                <td><t t-esc="leave.from"/></td>-->
+<!--                                                <td><t t-esc="leave.to"/></td>-->
+<!--                                                <td><t t-esc="leave.days"/></td>-->
+<!--                                            </t>-->
+<!--                                        </tr>-->
+<!--                                    </tbody>-->
+<!--                                </table>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        </t>-->
+<!--                        <t t-else="">-->
+<!--                            <div class="col-md-6" >-->
+<!--                                <p><strong>There Are No Upcoming Leaves</strong></p>-->
+<!--                            </div>-->
+<!--                        </t>-->
+
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; Pending Approvals &ndash;&gt;-->
+<!--                    <t t-if="state.pendingApprovals and state.pendingApprovals.length">-->
+<!--                        <div class="card p-3">-->
+<!--                        <h6>Pending Approvals</h6>-->
+<!--                        <table class="table table-hover mt-3">-->
+<!--                            <thead>-->
+<!--                                <tr>-->
+<!--                                    <th>Employee</th>-->
+<!--                                    <th>Leave Type</th>-->
+<!--                                    <th>From</th>-->
+<!--                                    <th>To</th>-->
+<!--                                    <th>Days</th>-->
+<!--                                    <th>Status</th>-->
+<!--                                </tr>-->
+<!--                            </thead>-->
+<!--                            <tbody>-->
+<!--                                <tr t-foreach="state.pendingApprovals" t-as="leave" t-key="leave.employee">-->
+<!--                                    <t t-if="leave">-->
+<!--                                        <td><t t-esc="leave.employee"/></td>-->
+<!--                                        <td><t t-esc="leave.leave_type"/></td>-->
+<!--                                        <td><t t-esc="leave.from"/></td>-->
+<!--                                        <td><t t-esc="leave.to"/></td>-->
+<!--                                        <td><t t-esc="leave.days"/></td>-->
+<!--                                        <td><span class="badge bg-warning"><t t-esc="leave.status"/></span></td>-->
+<!--                                    </t>-->
+<!--                                </tr>-->
+<!--                            </tbody>-->
+<!--                        </table>-->
+<!--                    </div>-->
+<!--                    </t>-->
+<!--                    <t  t-else="">-->
+<!--                        <div class="card p-3">-->
+<!--                            <p><strong>There Are No Pending Leaves</strong></p>-->
+<!--                        </div>-->
+<!--                    </t>-->
+
+<!--                </main>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </t>-->
+<!--</templates>-->
+
+
+
+<templates xml:space="preserve">
+    <t t-name="de_hr_workspace_timeoff.CustomLeaveDashboard">
+        <style>
+            body {
+                font-family: 'Segoe UI', sans-serif !important;
+                background-color: #f8fafc;
+            }
+
+            .sidebar {
+                height: 135vh;
+                background-color: #1e293b;
+                color: white;
+                padding: 20px 10px;
+            }
+
+            .sidebar h5 {
+                color: #e2e8f0;
+                font-weight: 600;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+
+            .sidebar a {
+                color: #cbd5e1;
+                text-decoration: none;
+                padding: 12px 20px;
+                border-radius: 6px;
+                display: block;
+                transition: background-color 0.2s;
+            }
+
+            .sidebar a:hover,
+            .sidebar .active {
+                background-color: #334155;
+                color: #fff;
+            }
+
+            .main-content {
+                padding: 30px;
+                background-color: #f8fafc;
+                min-height: 135vh;
+            }
+
+            .card {
+                border: none;
+                border-radius: 12px;
+                background-color: white;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                padding: 20px;
+            }
+
+            .card h6 {
+                font-weight: 600;
+                margin-bottom: 10px;
+            }
+
+            .status-badge {
+                background-color: #fff4e5;
+                color: #d97706;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 0.75rem;
+            }
+
+            .table th,
+            .table td {
+                vertical-align: middle;
+            }
+
+            .card p {
+                margin-bottom: 0;
+            }
+            .even-row {
+                background-color: white;
+                color: #4071c1;
+            }
+            .odd-row {
+                background-color: #white;
+                color: #4071c1;
+            }
+        </style>
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <nav class="col-md-2 sidebar d-flex flex-column">
+                    <h5>🌿 Leave Management</h5>
+                    <a href="#" class="active">Dashboard</a>
+<!--                    <ul class="list-unstyled ps-3 mt-2">-->
+<!--                        <li><a href="#">Dashboard</a></li>-->
+<!--                    </ul>-->
+                </nav>
+
+                <!-- Main Content -->
+                <main class="col-md-10 main-content">
+                    <!-- Summary Cards -->
+                    <div class="row g-4 mb-4">
+                        <t t-if="state.summary and state.summary.length">
+                            <t t-foreach="state.summary" t-as="leave_type" t-key="leave_type.leave_name">
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <h6><t t-esc="leave_type.leave_name" /></h6>
+                                        <div class="fs-5 fw-bold text-primary">
+                                            <t t-if="leave_type.requires_allocation === 'yes'">
+                                                <t t-esc="leave_type.leave_days" /> / <t t-esc="leave_type.allocation_days" />
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="leave_type.leave_days" />
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <p><strong>There Are No Leave Types</strong></p>
+                        </t>
+                    </div>
+
+                    <!-- Chart and Upcoming Leaves -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <h6>Taken Leaves</h6>
+                                <canvas t-ref="leaveChart" id="leaveChart" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card">
+                                <h6>Pending Leaves</h6>
+                                <t t-if="state.pendingApprovals and state.pendingApprovals.length">
+                                    <table class="table table-sm mt-3">
+                                        <t t-set="loop_cycle_number" t-value="0" />
+<!--                                        <thead class="table-light">-->
+                                        <thead>
+                                            <tr style="background-color: #2e3f5b; color: white;width: 100%;">
+                                                <th>Leave Type</th>
+                                                <th>From</th>
+                                                <th>To</th>
+                                                <th>Days</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="state.pendingApprovals" t-as="leave" t-key="leave.leave_type" t-att-class="loop_cycle_number % 2 === 0 ? 'even-row' : 'odd-row'">
+                                                <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1" />
+                                                <td><t t-esc="leave.leave_type" /></td>
+                                                <td><t t-esc="leave.from" /></td>
+                                                <td><t t-esc="leave.to" /></td>
+                                                <td><t t-esc="leave.days" /></td>
+                                                <td><span class="badge bg-warning text-dark"><t t-esc="leave.status" /></span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <p>No Pending Leaves.</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Approvals -->
+                    <div class="card mb-4">
+                        <h6>Leave History</h6>
+                        <t t-if="state.LeavesHistory and state.LeavesHistory.length">
+                            <table class="table table-hover mt-3">
+                                <t t-set="loop_cycle_number" t-value="0" />
+<!--                                <thead class="table-light">-->
+                                <thead>
+                                    <tr style="background-color: #2e3f5b !important; color: white;width: 100%;">
+                                        <th>Leave Type</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Days</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.LeavesHistory" t-as="leave" t-key="leave.leave_type" t-att-class="loop_cycle_number % 2 === 0 ? 'even-row' : 'odd-row'">
+                                        <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1" />
+                                        <td><t t-esc="leave.leave_type" /></td>
+                                        <td><t t-esc="leave.from" /></td>
+                                        <td><t t-esc="leave.to" /></td>
+                                        <td><t t-esc="leave.days" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <p>No Taken Leaves Founded.</p>
+                        </t>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </t>
+</templates>
+

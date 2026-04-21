@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="pr_hr_payroll_hr_salary_attachment_view_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.payroll.hr.salary.attachment.view.form.inherit</field>
+        <field name="model">hr.salary.attachment</field>
+        <field name="inherit_id" ref="hr_payroll.hr_salary_attachment_view_form"/>
+        <field name="arch" type="xml">
+
+            <button name="action_done" position="after">
+                <field name="payment_state" invisible="1"/>
+                <field name="paid_move_id" invisible="1"/>
+                <field name="bank_payment_id" invisible="1"/>
+<!--                <button name="action_pay" string="PAY" class="btn-success" type="object" invisible="payment_state == 'paid'"/>-->
+                <button name="action_request" string="REQUEST" class="btn-success" type="object" invisible="bank_payment_id != False or state != 'draft'"/>
+            </button>
+
+        </field>
+    </record>
+
+</odoo>

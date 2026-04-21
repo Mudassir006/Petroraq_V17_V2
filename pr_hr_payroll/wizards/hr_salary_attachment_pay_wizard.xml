@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record model="ir.ui.view" id="hr_salary_attachment_pay_wizard_wizard_view">
+        <field name="name">Advance Allowances Payment</field>
+        <field name="model">hr.salary.attachment.pay.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Advance Allowances Payment">
+                <group>
+                    <group>
+                        <!--    Invisible Fields    -->
+                        <field name="salary_attachment_id" invisible="1"/>
+                        <label for="account_id" string="Account Code"/>
+                        <div class="o_row">
+                            <field name="account_id" width="40%"
+                                   class="oe_inline"
+                                   options="{'no_create':True, 'no_create_edit':True, 'no_quick_create':True}"
+                                   style="font-size:16;font-weight:bold;color:green;" string="Code"/>
+                            <span><strong>Account Name</strong></span>
+                            <field name="account_name" width="40%"
+                                   class="oe_inline" string="Account Name" style="font-size:16;font-weight:bold;color:green;"/>
+                        </div>
+                        <field name="accounting_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_paid" string="PAY" type="object" class="btn-success"/>
+                    <button string="CANCEL" special="cancel" class="btn-danger"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_requisition_user,purchase.requisition user,model_purchase_requisition,base.group_user,1,1,1,1
+access_purchase_requisition_line_user,purchase.requisition.line user,model_purchase_requisition_line,base.group_user,1,1,1,1
+access_purchase_order_custom_line_stock_manager,purchase.order.custom.line stock manager,model_purchase_order_custom_line,base.group_user,1,1,1,1

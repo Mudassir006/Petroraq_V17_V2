@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_pr_expense_bucket_tree" model="ir.ui.view">
+        <field name="name">pr.expense.bucket.tree</field>
+        <field name="model">pr.expense.bucket</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="scope"/>
+                <field name="expense_type" required="1"/>
+                <field name="department_id"/>
+                <field name="budget_amount"/>
+                <field name="cost_center_budget_total"/>
+                <field name="budget_left"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'rejected'"
+                       decoration-warning="state in ('draft','pm_approval','accounts_approval','md_approval')"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_budget_form_inherit_expense_type" model="ir.ui.view">
+        <field name="name">budget.form.inherit.expense.type</field>
+        <field name="model">crossovered.budget</field>
+        <field name="inherit_id" ref="account_budget.crossovered_budget_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="can_pm_approve" invisible="1"/>
+                <field name="can_accounts_approve" invisible="1"/>
+                <field name="can_md_approve" invisible="1"/>
+                <button name="action_pm_approve" type="object" string="PM Approve" class="btn-primary"
+                        invisible="state != 'confirm' or approval_state != 'pm_approval' or not can_pm_approve"/>
+                <button name="action_accounts_approve" type="object" string="Accounts Approve" class="btn-primary"
+                        invisible="state != 'confirm' or approval_state != 'accounts_approval' or not can_accounts_approve"/>
+                <field name="approval_state" widget="statusbar"
+                       statusbar_visible="draft,pm_approval,accounts_approval,md_approval,approved,rejected"/>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="budget_sequence" />
+                <field name="expense_type" required="1"/>
+                <field name="department_id"/>
+                <field name="department_manager_user_id" readonly="1"/>
+            </xpath>
+
+            <xpath expr="//button[@name='action_budget_validate']" position="attributes">
+                <attribute name="invisible">state != 'confirm' or approval_state != 'md_approval' or not can_md_approve</attribute>
+            </xpath>
+
+        </field>
+    </record>
+    <record id="view_budget_tree_inherit_expense_type" model="ir.ui.view">
+        <field name="name">budget.tree.inherit.expense.type</field>
+        <field name="model">crossovered.budget</field>
+        <field name="inherit_id" ref="account_budget.crossovered_budget_view_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="expense_type" required="1"/>
+                <field name="department_id"/>
+                <field name="budget_sequence" />
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_pr_expense_bucket_form" model="ir.ui.view">
+        <field name="name">pr.expense.bucket.form</field>
+        <field name="model">pr.expense.bucket</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="can_pm_approve" invisible="1"/>
+                    <field name="can_accounts_approve" invisible="1"/>
+                    <field name="can_md_approve" invisible="1"/>
+                    <field name="can_reject" invisible="1"/>
+                    <button name="action_submit" type="object" string="Submit" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_pm_approve" type="object" string="Approve" class="btn-primary"
+                            invisible="state != 'pm_approval' or not can_pm_approve"/>
+                    <button name="action_accounts_approve" type="object" string="Accounts Approve" class="btn-primary"
+                            invisible="state != 'accounts_approval' or not can_accounts_approve"/>
+                    <button name="action_md_approve" type="object" string="Approve" class="btn-primary"
+                            invisible="state != 'md_approval' or not can_md_approve"/>
+                    <button name="action_reject" type="object" string="Reject" class="btn-secondary"
+                            invisible="not can_reject"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" class="btn-secondary"
+                            invisible="state == 'draft'"
+                            groups="pr_custom_purchase.project_manager,account.group_account_manager,account.group_account_user,pr_custom_purchase.managing_director"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,pm_approval,accounts_approval,md_approval,approved,rejected"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="state != 'draft'"/>
+                            <field name="scope" readonly="state != 'draft'"/>
+                            <field name="expense_type" readonly="state != 'draft'"/>
+                            <field name="department_id" invisible="scope != 'department'"
+                                   required="scope == 'department'" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="budget_amount" readonly="state != 'draft'"/>
+                            <field name="cost_center_budget_total" readonly="1"/>
+                            <field name="budget_left" readonly="1"/>
+                            <field name="rejection_reason" readonly="1" invisible="not rejection_reason"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Cost Centers">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <tree editable="bottom">
+                                    <field name="cost_center_id"/>
+                                    <!--                                    <field name="budget_code" readonly="1"/>-->
+                                    <field name="budget_type"/>
+                                    <field name="budget_allowance"/>
+                                    <field name="budget_left" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pr_expense_bucket_reject_wizard_form" model="ir.ui.view">
+        <field name="name">pr.expense.bucket.reject.wizard.form</field>
+        <field name="model">pr.expense.bucket.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Expense">
+                <group>
+                    <field name="bucket_id" readonly="1"/>
+                    <field name="rejection_reason"/>
+                </group>
+                <footer>
+                    <button name="action_confirm_reject" type="object" string="Reject" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pr_expense_bucket" model="ir.actions.act_window">
+        <field name="name">Budgets</field>
+        <field name="res_model">crossovered.budget</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <menuitem id="menu_pr_expense_bucket"
+              name="Budgets"
+              parent="pr_custom_purchase.menu_purchase_requisition"
+              action="action_pr_expense_bucket"
+              sequence="30"/>
+</odoo>

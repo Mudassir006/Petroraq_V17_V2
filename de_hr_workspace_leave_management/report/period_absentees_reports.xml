@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="period_absentees_pdf_report_action" model="ir.actions.report">
+        <field name="name">Period Absentees PDF</field>
+        <field name="model">hr.leave</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">de_hr_workspace_leave_management.period_absentees_pdf</field>
+        <field name="report_file">de_hr_workspace_leave_management.period_absentees_pdf</field>
+    </record>
+
+    <record id="period_absentees_xlsx_report_action" model="ir.actions.report">
+        <field name="name">Period Absentees XLSX</field>
+        <field name="model">hr.leave</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">de_hr_workspace_leave_management.period_absentees_xlsx</field>
+        <field name="report_file">period_absentees</field>
+    </record>
+</odoo>

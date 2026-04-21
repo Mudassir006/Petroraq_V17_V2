@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="work_entry_type_attendance_sheet_saudi_gosi"
+                model="hr.work.entry.type">
+            <field name="name">Attendance Sheet Sadui GOSI</field>
+            <field name="code">GOSI</field>
+            <field name="color">3</field>
+            <field name="is_leave">False</field>
+            <field name="round_days">HALF</field>
+            <field name="round_days_type">DOWN</field>
+        </record>
+
+        <record id="hr_salary_rule_saudi_gosi" model="hr.salary.rule">
+            <field name="code">GOSI</field>
+            <field name="name">GOSI</field>
+            <field name="category_id" ref="hr_payroll.DED"/>
+            <field name="struct_id"
+                   ref="hr_payroll.structure_worker_001"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = ((payslip.attendance_sheet_id.attendance_amount * .0975 * -1) or 0) or False</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (payslip.attendance_sheet_id.attendance_amount*-1*.0975 or 0)</field>
+            <field name="sequence" eval="45"/>
+            <field name="note">Deduction Of GOSI</field>
+        </record>
+
+        <record id="hr_salary_rule_saudi_gosi_allow" model="hr.salary.rule">
+            <field name="code">GOSIALLOW</field>
+            <field name="name">GOSI</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="struct_id"
+                   ref="hr_payroll.structure_worker_001"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = ((payslip.attendance_sheet_id.attendance_amount * .0975 * -1) or 0) or False</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (payslip.attendance_sheet_id.attendance_amount*-1*.0975 or 0)</field>
+            <field name="sequence" eval="44"/>
+            <field name="note">Allowance Of GOSI</field>
+        </record>
+
+        <record id="hr_salary_rule_other_payments" model="hr.salary.rule">
+            <field name="code">OTHER</field>
+            <field name="name">Other Payments</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="struct_id"
+                   ref="hr_payroll.structure_worker_001"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = ((payslip.other_amount) or 0) or False</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (payslip.other_amount or 0)</field>
+            <field name="sequence" eval="45"/>
+            <field name="note">Other Payment</field>
+        </record>
+
+    </data>
+</odoo>

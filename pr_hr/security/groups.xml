@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="res.groups" id="group_user_has_signature">
+            <field name="name">Has Authorized Signature</field>
+        </record>
+    </data>
+</odoo>

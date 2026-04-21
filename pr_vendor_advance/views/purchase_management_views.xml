@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<odoo>
+    <record id="purchase_order_view_form" model="ir.ui.view">
+        <field name="name">purchase.order.view.form.inherit.purchase.down.payment</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath
+            expr="//button[@name='action_create_invoice'][hasclass('oe_highlight')]"
+            position="attributes"
+        >
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath
+            expr="//button[@name='action_create_invoice'][2]"
+            position="attributes"
+        >
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//button[@name='action_create_invoice']" position="before">
+                <button name="%(pr_vendor_advance.action_purchase_bill_advance)d"
+                        string="Create Bill"
+                        invisible="invoice_status != 'to invoice'"
+                        type="action" data-hotkey="w"/>
+        </xpath>
+        <xpath expr="//button[@name='action_create_invoice']" position="before">
+                        <button name="%(pr_vendor_advance.action_purchase_bill_advance)d"
+                        string="Create Bill"
+                        invisible="state not in ('purchase', 'done') or invoice_status not in ('no','invoiced')"
+                        context="{'default_advance_payment_method': 'percentage'}"
+                        type="action" data-hotkey="w"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Hide the Create Bills button in RFQ List view and Purchase Order list view-->
+    <record id="purchase_order_view_tree" model="ir.ui.view">
+        <field name="name">purchase.order.view.tree.inherit.hide.button</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_create_invoice']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_kpis_tree" model="ir.ui.view">
+        <field name="name">purchase.rfq.view.tree.inherit.hide.button</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_create_invoice']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

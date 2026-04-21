@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_sale_estimation_manager_approvals_action" model="ir.actions.act_window">
+        <field name="name">Estimation Manager Approvals</field>
+        <field name="res_model">petroraq.estimation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('approval_state', '=', 'to_manager')]</field>
+        <field name="context">{'create': False, 'edit': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No estimations are pending manager approval.
+            </p>
+        </field>
+    </record>
+
+    <record id="pr_sale_estimation_md_approvals_action" model="ir.actions.act_window">
+        <field name="name">Estimation MD Approvals</field>
+        <field name="res_model">petroraq.estimation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('approval_state', '=', 'to_md')]</field>
+        <field name="context">{'create': False, 'edit': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No estimations are pending MD approval.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="estimation_manager_approvals_view_menu"
+              parent="menu_my_sales_approvals"
+              name="Estimations"
+              action="pr_sale_estimation_manager_approvals_action"
+              sequence="3"
+              groups="petroraq_sale_workflow.group_sale_approval_manager"/>
+
+    <menuitem id="estimation_md_approvals_view_menu"
+              parent="menu_my_sales_approvals"
+              name="Estimations"
+              action="pr_sale_estimation_md_approvals_action"
+              sequence="4"
+              groups="petroraq_sale_workflow.group_sale_approval_md"/>
+</odoo>

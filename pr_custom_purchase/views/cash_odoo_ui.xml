@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Action for Cash PRs -->
+    <record id="action_purchase_requisition_cash" model="ir.actions.act_window">
+        <field name="name">Cash Purchase Requisitions</field>
+        <field name="res_model">purchase.requisition</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('pr_type', '=', 'cash')]</field>
+    </record>
+
+    <!-- Menu item under Purchase -->
+    <!-- <menuitem id="menu_purchase_requisition_cash"
+              name="Cash PRs"
+              parent="purchase.menu_purchase_root"
+              action="action_purchase_requisition_cash"
+              sequence="135"/> -->
+</odoo>

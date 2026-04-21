@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="leave_request_template">
+        <style>
+            .get-in-touch {
+              max-width: 800px;
+              margin: 50px auto;
+              position: relative;
+
+            }
+            .get-in-touch .title {
+              text-align: center;
+              text-transform: uppercase;
+              letter-spacing: 3px;
+              font-size: 3.2em;
+              line-height: 48px;
+              padding-bottom: 48px;
+                 color: #5543ca;
+                background: #5543ca;
+                background: -moz-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
+                background: -webkit-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
+                background: linear-gradient(to right,#f4524d  0%,#5543ca  100%) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+            }
+
+            .contact-form {
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 20px; /* space between fields */
+            }
+
+            .contact-form .form-field {
+              position: relative;
+              margin: 32px 0;
+                flex: 1 1 calc(50% - 20px); /* two columns with spacing */
+                min-width: 250px;
+            }
+
+            .contact-form .form-field.full-width {
+              flex: 1 1 100%;
+            }
+
+            .contact-form .input-text {
+              display: block;
+              width: 100%;
+              height: 36px;
+              border-width: 0 0 2px 0;
+              border-color: #5543ca;
+              font-size: 18px;
+              line-height: 26px;
+              font-weight: 400;
+            }
+            .contact-form .input-text:focus {
+              outline: none;
+            }
+            .contact-form .input-text:focus + .label,
+            .contact-form .input-text.not-empty + .label {
+              -webkit-transform: translateY(-24px);
+                      transform: translateY(-24px);
+            }
+            .contact-form .label {
+              position: absolute;
+              left: 20px;
+              bottom: 11px;
+              font-size: 18px;
+              line-height: 26px;
+              font-weight: 400;
+              color: #5543ca;
+              cursor: text;
+              transition: -webkit-transform .2s ease-in-out;
+              transition: transform .2s ease-in-out;
+              transition: transform .2s ease-in-out,
+              -webkit-transform .2s ease-in-out;
+                -webkit-transform: translateY(-24px);
+                      transform: translateY(-24px);
+            }
+            .contact-form .submit-btn {
+              display: inline-block;
+              background-color: #000;
+               background-image: linear-gradient(125deg,#a72879,#064497);
+              color: #fff;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              font-size: 16px;
+              padding: 8px 16px;
+              border: none;
+              width:200px;
+              cursor: pointer;
+            }
+
+
+        </style>
+        <section class="get-in-touch">
+            <h1 class="title">Leave Request</h1>
+            <t t-if="error_message">
+                <div class="alert alert-danger" role="alert" style="margin: 0 0 20px 0;">
+                    <t t-out="error_message"/>
+                </div>
+            </t>
+            <form class="contact-form row" action="/leave_request/create" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <t t-set="holiday_status_ids" t-value="request.env['hr.leave.type'].search([])"/>
+                <div class="form-field col-lg-6">
+                    <select id="employee_id" class="input-text js-input" name="employee_id" size="1" required="1">
+                        <t>
+                            <option t-att-value="current_employee_id.id">
+                                <t t-esc="current_employee_id.name"/>
+                            </option>
+                        </t>
+                    </select>
+                    <label class="label" for="employee_id">Name</label>
+                </div>
+                <div class="form-field col-lg-6">
+                    <select id="leave_type_id" class="input-text js-input" name="leave_type_id" size="1" required="1">
+                        <t t-foreach="holiday_status_ids" t-as="leave_type">
+                            <option t-att-value="leave_type.id"
+                                    t-att-selected="str(leave_type.id) == str(form_values.get('leave_type_id', '')) and 'selected' or None">
+                                <t t-esc="leave_type.name"/>
+                            </option>
+                        </t>
+                    </select>
+                    <label class="label" for="leave_type_id">Leave Type</label>
+                </div>
+
+                <div class="form-field col-lg-6 ">
+                    <input id="date_from" class="input-text js-input" type="date" name="date_from"
+                           t-att-value="form_values.get('date_from', '')" required="1"/>
+                    <label class="label" for="date_from">Date From</label>
+                </div>
+                <div class="form-field col-lg-6 ">
+                    <input id="date_to" class="input-text js-input" type="date" name="date_to"
+                           t-att-value="form_values.get('date_to', '')" required="1"/>
+                    <label class="label" for="date_to">Date To</label>
+                </div>
+                <div class="form-field col-lg-6 ">
+                    <input type="file" role="button" name="attachment_ids" multiple="multiple" id="attachment_ids" class="input-text js-input" />
+                   <label class="label" for="attachment_ids">Attachments</label>
+                </div>
+                <div class="form-field col-lg-12 full-width">
+                    <input id="message" class="input-text js-input" name="message" type="text"
+                           t-att-value="form_values.get('message', '')"/>
+                    <label class="label" for="message">Notes</label>
+                </div>
+                <div class="form-field col-lg-12">
+                    <input class="submit-btn" type="submit" value="Submit"/>
+                </div>
+            </form>
+        </section>
+    </template>
+</odoo>

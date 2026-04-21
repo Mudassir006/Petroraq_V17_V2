@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="portal_employee_leaves_dashboard" name="Leaves Dashboard" customize_show="True"
+              inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/de_hr_workspace_timeoff/static/src/img/leave_dashboard.png'"/>
+                <t t-set="title">Leaves Dashboard</t>
+                <t t-set="url" t-value="'/my/leaves_dashboard'"/>
+                <t t-set="text">Follow your leaves</t>
+                <t t-set="placeholder_count" t-value="'my_leave_dashboard_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_my_leaves_dashboard" name="Leaves Dashboard">
+        <t t-call="portal.portal_layout">
+
+            <style>
+                body {
+                font-family: 'Segoe UI', sans-serif !important;
+                background-color: #f8fafc;
+                }
+
+                .sidebar {
+                height: 135vh;
+                background-color: #1e293b;
+                color: white;
+                padding: 20px 10px;
+                }
+
+                .sidebar h5 {
+                color: #e2e8f0;
+                font-weight: 600;
+                margin-bottom: 30px;
+                text-align: center;
+                }
+
+                .sidebar a {
+                color: #cbd5e1;
+                text-decoration: none;
+                padding: 12px 20px;
+                border-radius: 6px;
+                display: block;
+                transition: background-color 0.2s;
+                }
+
+                .sidebar a:hover,
+                .sidebar .active {
+                background-color: #334155;
+                color: #fff;
+                }
+
+                .main-content {
+                padding: 30px;
+                background-color: #f8fafc;
+                min-height: 135vh;
+                }
+
+                .card {
+                border: none;
+                border-radius: 12px;
+                background-color: white;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                padding: 20px;
+                }
+
+                .card h6 {
+                font-weight: 600;
+                margin-bottom: 10px;
+                }
+
+                .status-badge {
+                background-color: #fff4e5;
+                color: #d97706;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 0.75rem;
+                }
+
+                .table th,
+                .table td {
+                vertical-align: middle;
+                }
+
+                .card p {
+                margin-bottom: 0;
+                }
+                .even-row {
+                background-color: white;
+                color: #4071c1;
+                }
+                .odd-row {
+                background-color: #white;
+                color: #4071c1;
+                }
+            </style>
+
+            <div class="container-fluid">
+                <div class="row">
+<!--                    &lt;!&ndash; Sidebar &ndash;&gt;-->
+<!--                    <nav class="col-md-2 sidebar d-flex flex-column">-->
+<!--                        <h5>🌿 Leave Management</h5>-->
+<!--                        <a href="#" class="active">Dashboard</a>-->
+<!--                    </nav>-->
+
+                    <!-- Main Content -->
+                    <main class="col-md-10 main-content">
+                        <!-- Summary Cards -->
+                        <div class="row g-4 mb-4">
+                            <t t-if="leaves_dashboard_summary">
+                                <t t-foreach="leaves_dashboard_summary" t-as="summ">
+                                    <div class="col-md-3">
+                                        <div class="card text-center" style="background-color: #7388a9 !important; color: white !important;">
+                                            <h6>
+                                                <t t-esc="summ['leave_name']"/>
+                                            </h6>
+                                            <div class="fs-5 fw-bold text-primary">
+                                                <t t-if="summ['requires_allocation'] == 'yes'">
+                                                    <t t-esc="summ['leave_days']"/>
+                                                    /
+                                                    <t t-esc="summ['allocation_days']"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="summ['leave_days']"/>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p>
+                                    <strong>There Are No Leave Types</strong>
+                                </p>
+                            </t>
+                        </div>
+
+                        <!-- Chart and Upcoming Leaves -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <h6>Pending Leaves</h6>
+                                    <t t-if="leaves_dashboard_pending and leaves_dashboard_pending">
+                                        <table class="table table-sm mt-3">
+                                            <t t-set="loop_cycle_number" t-value="0"/>
+                                            <thead>
+                                                <tr style="background-color: #2e3f5b; color: white;width: 100%;">
+                                                    <th>Leave Type</th>
+                                                    <th>From</th>
+                                                    <th>To</th>
+                                                    <th>Days</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="leaves_dashboard_pending" t-as="pending_l"
+                                                    t-att-style="'background-color: white; color: #4071c1' if loop_cycle_number % 2 == 0 else 'background-color: white;color: #4071c1;'">
+                                                    <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1"/>
+                                                    <td>
+                                                        <t t-esc="pending_l['leave_type']"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="pending_l['from']"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="pending_l['to']"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="pending_l['days']"/>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-warning text-dark">
+                                                            <t t-esc="pending_l['status']"/>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </t>
+                                    <t t-else="">
+                                        <p>No Pending Leaves.</p>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Approvals -->
+                        <div class="card mb-4">
+                            <h6>Leave History</h6>
+                            <t t-if="leaves_dashboard_all_leaves">
+                                <table class="table table-hover mt-3">
+                                    <t t-set="loop_cycle_number" t-value="0"/>
+                                    <thead>
+                                        <tr style="background-color: #2e3f5b !important; color: white;width: 100%;">
+                                            <th>Leave Type</th>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Days</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="leaves_dashboard_all_leaves" t-as="all_leave"
+                                            t-att-style="'background-color: white; color: #4071c1' if loop_cycle_number % 2 == 0 else 'background-color: white;color: #4071c1;'">
+
+                                            <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1"/>
+                                            <td>
+                                                <t t-esc="all_leave['leave_type']"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="all_leave['from']"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="all_leave['to']"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="all_leave['days']"/>
+                                            </td>
+                                            <td>
+                                                <span t-attf-class="badge #{'bg-success' if all_leave['status'] == 'Approved' else ('bg-danger' if all_leave['status'] in ['Refused', 'Cancelled'] else 'bg-secondary')}">
+                                                    <t t-esc="all_leave['status']"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </t>
+                            <t t-else="">
+                                <p>No Taken Leaves Founded.</p>
+                            </t>
+                        </div>
+                    </main>
+                </div>
+            </div>
+
+        </t>
+    </template>
+</odoo>

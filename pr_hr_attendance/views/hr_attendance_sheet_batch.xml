@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_attendance_attendance_sheet_batch_form_view_inherit" model="ir.ui.view">
+            <field name="name">pr.hr.attendance.attendance.sheet.batch.form.view.inherit</field>
+            <field name="model">attendance.sheet.batch</field>
+            <field name="inherit_id" ref="gs_hr_attendance_sheet.attendance_sheet_batch_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='type']" position="before">
+                    <div class="oe_button_box" name="button_box">
+                        <button name="open_related_attendance_sheets" type="object" class="oe_stat_button" icon="fa-calendar-check-o"
+                                invisible="att_sheet_ids_count == 0"
+                                help="Attendance Sheets">
+                            <field name="att_sheet_ids_count" widget="statinfo" string="Attendance Sheets" />
+                        </button>
+
+                        <button name="open_related_payslips" type="object" class="oe_stat_button" icon="fa-money"
+                                invisible="att_sheet_ids_count == 0 or state != 'done'"
+                                help="Payslips">
+                            <field name="att_sheet_ids_count" widget="statinfo" string="Payslips" />
+                        </button>
+
+                        <button name="open_related_payslip_batch" type="object" class="oe_stat_button" icon="fa-money"
+                                invisible="payslip_batch_id == False" string="Payslip Batch"
+                                help="Payslip Batch">
+                        </button>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='att_sheet_ids']/tree/field[@name='name']" position="attributes">
+                    <attribute name="string">Name</attribute>
+                </xpath>
+                <xpath expr="//field[@name='att_sheet_ids']/tree/field[@name='employee_id']" position="replace">
+                    <field name="employee_code" string="Employee ID"/>
+                </xpath>
+                <xpath expr="//field[@name='att_sheet_ids']/tree/field[@name='payslip_id']" position="attributes">
+                    <attribute name="string">Employee Payslip</attribute>
+                </xpath>
+
+            </field>
+        </record>
+</odoo>

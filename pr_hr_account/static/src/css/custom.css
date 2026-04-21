@@ -1,0 +1,24 @@
+
+.btn-teal-custom {
+
+  color: #fff !important;
+  background-color: #008080 !important;
+  border-color: #008080 !important;
+
+}
+
+
+.btn-teal-custom:hover {
+  color: #fff;
+  background-color: #0ea9a9;
+  border-color: #0ea9a9;
+}
+
+/*
+.btn-teal-custom, .btn-teal-custom:focus {
+  color: #fff;
+  background-color: #008080;
+  border-color: #008080;
+  box-shadow: 0 0 0 0.25rem rgba(0, 128, 128, 0.5);
+}
+*/

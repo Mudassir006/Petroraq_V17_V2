@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- MAIN FORM VIEW -->
+    <record id="view_account_ledger_result_form" model="ir.ui.view">
+        <field name="name">account.ledger.result.form</field>
+        <field name="model">account.ledger.result</field>
+        <field name="arch" type="xml">
+            <form string="Ledger Result">
+                <header>
+                    <button name="action_export_pdf" type="object"
+                            string="Print PDF" class="btn btn-primary"/>
+                    <button name="action_export_xlsx" type="object"
+                            string="Export Excel" class="btn btn-secondary"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title"/>
+                    <div style="display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-row-gap: 10px;
+            grid-column-gap: 20px;
+            background: #f4f6fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #173b76;
+            margin-bottom: 15px;">
+
+                        <div>
+                            <span style="color:#173b76; font-weight:600;">Company:</span>
+                            <field name="header_company" readonly="1"/>
+                        </div>
+
+                        <div>
+                            <span style="color:#173b76; font-weight:600;">Account:</span>
+                            <field name="header_account" readonly="1"/>
+                        </div>
+
+                        <div>
+                            <span style="color:#173b76; font-weight:600;">Date Range:</span>
+                            <field name="header_date_range" readonly="1"/>
+                        </div>
+
+
+                    </div>
+
+
+                    <separator string="Ledger Lines"/>
+
+
+                    <div class="oe_full">
+                        <field name="line_ids" class="freeze-1many" nolabel="1">
+                            <tree create="false" delete="false" editable="false" limit="100">
+                                <!--                                <field name="transaction_ref" string="Transaction Ref"/>-->
+                                <field name="reference" string="Reference"/>
+                                <field name="date" string="Date"/>
+                                <field name="label" string="Description"/>
+                                <field name="debit" string="Debit"/>
+                                <field name="credit" string="Credit"/>
+                                <field name="balance" string="Balance"/>
+                                <field name="is_total" column_invisible="True"/>
+                            </tree>
+                        </field>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="action_account_ledger_result" model="ir.actions.act_window">
+        <field name="name">Ledger Result</field>
+        <field name="res_model">account.ledger.result</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

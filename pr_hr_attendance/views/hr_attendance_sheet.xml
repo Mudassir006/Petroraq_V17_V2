@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_attendance_attendance_sheet_form_view_inherit" model="ir.ui.view">
+            <field name="name">pr.hr.attendance.attendance.sheet.form.view.inherit</field>
+            <field name="model">attendance.sheet</field>
+            <field name="inherit_id" ref="gs_hr_attendance_sheet.attendance_sheet_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='state']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+
+<!--                <header position="inside">-->
+<!--                    <button name="send_notification" string="no" type="object"/>-->
+<!--                </header>-->
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='act_late_in']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='late_in']" position="after">
+                    <field name="late_in_minutes" sum="Total" optional="hide"/>
+                    <field name="early_check_out" widget="float_time" sum="Total"/>
+                    <field name="early_check_out_minutes" optional="hide" sum="Total"/>
+                    <field name="early_check_out_amount" sum="Total" optional="hide" decoration-danger="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='tot_late_amount']" position="before">
+                    <field name="tot_late_in_minutes"/>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='act_overtime']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='overtime']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='act_diff_time']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='diff_time']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='status']" position="replace">
+                    <field name="status" widget="badge"
+                    decoration-danger="status == 'ab'"
+                    decoration-warning="status == 'weekend'"
+                    decoration-success="status == 'ph'"
+                    decoration-info="status == 'leave'"
+                    />
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree" position="attributes">
+                    <attribute name="decoration-success">status not in ['ab', 'weekend', 'ph', 'leave']</attribute>
+                    <attribute name="decoration-warning">status == 'weekend'</attribute>
+                    <attribute name="decoration-danger">status == 'ab'</attribute>
+                    <attribute name="decoration-info">status == 'leave'</attribute>
+                </xpath>
+
+                <xpath expr="//group[@name='late_in_group']" position="after">
+                    <group>
+                        <group string="Early Check Out" name="early_check_out_group">
+                            <field name="no_early_checkout"/>
+                            <field name="tot_early_checkout" widget="float_time"/>
+                            <field name="early_check_out_minutes" />
+                            <field name="tot_early_checkout_amount" style="color: red;" string="Total ECO. Amount"/>
+                        </group>
+                    </group>
+
+                </xpath>
+
+            </field>
+        </record>
+</odoo>

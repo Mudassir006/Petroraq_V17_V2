@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pr_hr_account_view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">pr.hr.account.view.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//notebook" position="inside">
+                <page name="accounting_settings" string="Accounting Settings">
+                    <group>
+                        <group>
+                            <field name="department_cost_center_id" options="{'no_create_edit': True, 'no_create': True}" required="1"/>
+                            <field name="section_cost_center_id" options="{'no_create_edit': True, 'no_create': True}" required="1"/>
+                            <field name="project_cost_center_id" options="{'no_create_edit': True, 'no_create': True}" />
+                            <field name="employee_cost_center_id" options="{'no_create_edit': True, 'no_create': True}" required="1"/>
+                            <field name="employee_account_id" options="{'no_create_edit': True, 'no_create': True}" required="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="purchase.purchase_order_kpis_tree" model="ir.actions.act_window">
+        <field name="context">
+            { 'search_default_draft': 1,
+            'search_default_cancel': 1,
+            'search_default_sent': 1,}
+        </field>
+    </record>
+
+</odoo>

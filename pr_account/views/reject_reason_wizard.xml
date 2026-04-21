@@ -1,0 +1,18 @@
+<odoo>
+    <record id="view_reject_reason_wizard" model="ir.ui.view">
+        <field name="name">reject.reason.wizard.form</field>
+        <field name="model">cash.payment.reject.reason.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Line">
+                <group>
+                    <field name="reason"/>
+                </group>
+                <footer>
+                    <button string="Confirm" type="object" name="action_confirm"
+                            class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

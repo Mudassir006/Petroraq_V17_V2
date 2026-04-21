@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_pr_work_order_costing_report_tree" model="ir.ui.view">
+        <field name="name">pr.work.order.costing.report.tree</field>
+        <field name="model">pr.work.order.costing.report</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="work_order_id"/>
+                <field name="sale_order_id"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="contract_amount"/>
+                <field name="budgeted_cost"/>
+                <field name="overhead_amount"/>
+                <field name="risk_amount"/>
+                <field name="total_expected_cost"/>
+                <field name="profit_amount"/>
+                <field name="total_with_profit"/>
+                <field name="actual_cost"/>
+                <field name="actual_margin"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('approved', 'done')"
+                       decoration-danger="state in ('rejected', 'cancel')"
+                       decoration-warning="state in ('draft', 'ops_approval', 'acc_approval', 'final_approval')"
+                       decoration-info="state in ('in_progress', 'pm_approval', 'accounts_approval', 'md_approval')"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_pr_work_order_costing_report_pivot" model="ir.ui.view">
+        <field name="name">pr.work.order.costing.report.pivot</field>
+        <field name="model">pr.work.order.costing.report</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="work_order_id" type="row"/>
+                <field name="partner_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="contract_amount" type="measure"/>
+                <field name="budgeted_cost" type="measure"/>
+                <field name="total_expected_cost" type="measure"/>
+                <field name="profit_amount" type="measure"/>
+                <field name="actual_cost" type="measure"/>
+                <field name="actual_margin" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_pr_work_order_costing_report_graph" model="ir.ui.view">
+        <field name="name">pr.work.order.costing.report.graph</field>
+        <field name="model">pr.work.order.costing.report</field>
+        <field name="arch" type="xml">
+            <graph string="Work Order Costing" type="bar">
+                <field name="work_order_id" type="row"/>
+                <field name="budgeted_cost" type="measure"/>
+                <field name="total_expected_cost" type="measure"/>
+                <field name="actual_cost" type="measure"/>
+                <field name="profit_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_pr_work_order_costing_report" model="ir.actions.act_window">
+        <field name="name">Work Order Costing</field>
+        <field name="res_model">pr.work.order.costing.report</field>
+        <field name="view_mode">tree,pivot,graph</field>
+    </record>
+
+    <record id="view_pr_work_order_costing_section_tree" model="ir.ui.view">
+        <field name="name">pr.work.order.costing.section.report.tree</field>
+        <field name="model">pr.work.order.costing.section.report</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="work_order_id"/>
+                <field name="section_name"/>
+                <field name="analytic_account_id"/>
+                <field name="estimated_cost"/>
+                <field name="actual_cost"/>
+                <field name="variance"/>
+                <field name="state"
+                       decoration-success="state in ('approved', 'done')"
+                       decoration-danger="state in ('rejected', 'cancel')"
+                       decoration-warning="state in ('draft', 'ops_approval', 'acc_approval', 'final_approval')"
+                       decoration-info="state in ('in_progress', 'pm_approval', 'accounts_approval', 'md_approval')"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_pr_work_order_costing_section_pivot" model="ir.ui.view">
+        <field name="name">pr.work.order.costing.section.report.pivot</field>
+        <field name="model">pr.work.order.costing.section.report</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="work_order_id" type="row"/>
+                <field name="section_name" type="row"/>
+                <field name="state" type="col"/>
+                <field name="estimated_cost" type="measure"/>
+                <field name="actual_cost" type="measure"/>
+                <field name="variance" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_pr_work_order_costing_section_graph" model="ir.ui.view">
+        <field name="name">pr.work.order.costing.section.report.graph</field>
+        <field name="model">pr.work.order.costing.section.report</field>
+        <field name="arch" type="xml">
+            <graph string="Costing Breakdown" type="bar">
+                <field name="section_name" type="row"/>
+                <field name="estimated_cost" type="measure"/>
+                <field name="actual_cost" type="measure"/>
+                <field name="variance" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_pr_work_order_costing_section_report" model="ir.actions.act_window">
+        <field name="name">Costing Breakdown</field>
+        <field name="res_model">pr.work.order.costing.section.report</field>
+        <field name="view_mode">tree,pivot,graph</field>
+    </record>
+</odoo>

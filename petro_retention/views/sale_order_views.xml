@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_form_petro_retention" model="ir.ui.view">
+        <field name="name">sale.order.form.petro.retention</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Put it inside "Invoicing" tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Retention">
+
+
+                    <group string="Retention">
+                        <group>
+                            <field name="retention_percent"/>
+                            <field name="retention_amount_total"/>
+                        </group>
+                        <group>
+                            <field name="retention_withheld_total" readonly="1"/>
+                            <field name="retention_remaining" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--Bridge template-->
+    <template id="custom_invoice_bridge_layout">
+        .header, .footer {
+        margin: 0 !important;
+        padding: 0 !important;
+        }
+        <!-- Multicompany -->
+        <t t-if="not o and doc">
+            <t t-set="o" t-value="doc"/>
+        </t>
+        <t t-if="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id.sudo()"/>
+        </t>
+        <t t-if="not o or not 'company_id' in o">
+            <t t-set="company" t-value="res_company"/>
+        </t>
+        <!--call to the header template--><!-- t-call = "module_name.header template id"-->
+        <t t-call="pr_tax_Invoice_report_custom.custom_invoice_header_layout"/>
+        <!--call to the body template-->
+        <div class="article">
+            <t t-raw="0"/>
+        </div><!--call to the footer template-->
+        <t t-call="pr_tax_Invoice_report_custom.custom_invoice_footer_layout"/>
+    </template>
+
+    <!--Template header-->
+    <template id="custom_invoice_header_layout">
+        <div class="header">
+            <div>
+                <img src='/pr_tax_Invoice_report_custom/static/src/img/header_custom.png' style="width:101%;"/>
+            </div>
+        </div>
+    </template>
+
+    <!--Template footer-->
+    <template id="custom_invoice_footer_layout">
+
+        <div class="footer" style="border-top:1px solid #305081">
+
+
+            <div style="border-top:1px solid #305081 !important;">
+                <div name="pager" class="list-inline no-margin text-center" style="color:rgba(18,49,96,0.91);">
+                    Page:
+                    <span class="page"/>
+                    /
+                    <span class="topage"/>
+                </div>
+
+                <img src='/pr_tax_Invoice_report_custom/static/src/img/footer.png'
+                     style="width:101%;display:inline-block;"/>
+
+            </div>
+        </div>
+    </template>
+</odoo>

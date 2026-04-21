@@ -1,0 +1,28 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custom_pr_user,access_custom_pr_user,model_custom_pr,pr_custom_purchase.group_custom_pr_end_user,1,1,1,1
+access_custom_pr_line_user,access_custom_pr_line_user,model_custom_pr_line,pr_custom_purchase.group_custom_pr_end_user,1,1,1,1
+access_custom_pr_quotation_user,access_custom_pr_quotation_user,model_custom_pr_quotation,pr_custom_purchase.group_custom_pr_end_user,1,1,1,1
+access_custom_pr_quotation_line_user,access_custom_pr_quotation_line_user,model_custom_pr_quotation_line,pr_custom_purchase.group_custom_pr_end_user,1,1,1,1
+access_grn_ses_user,access.grn.ses.user,model_grn_ses,stock.group_stock_user,1,1,1,1
+access_grn_ses_line_user,access.grn.ses.line.user,model_grn_ses_line,stock.group_stock_user,1,1,1,1
+access_grn_ses_wizard,access.grn.ses.wizard,model_grn_ses_wizard,stock.group_stock_user,1,1,1,1
+access_custom_purchase_rfq_user,custom.purchase.rfq user,model_custom_purchase_rfq,base.group_user,1,1,1,1
+access_custom_purchase_rfq_line_user,custom.purchase.rfq.line user,model_custom_purchase_rfq_line,base.group_user,1,1,1,1
+access_purchase_requisition_user,purchase.requisition user,model_purchase_requisition,base.group_user,1,1,1,1
+access_purchase_requisition_line_user,purchase.requisition.line user,model_purchase_requisition_line,base.group_user,1,1,1,1
+access_purchase_order_custom_line_stock_manager,purchase.order.custom.line stock manager,model_purchase_order_custom_line,base.group_user,1,1,1,1
+access_budget_increase_request_user,budget.increase.request user,model_budget_increase_request,base.group_user,1,1,1,1
+access_budget_increase_request_line_user,budget.increase.request.line user,model_budget_increase_request_line,base.group_user,1,1,1,1
+access_rfq_comparison_wizard_procurement_admin,access.rfq.comparison.wizard.procurement.admin,model_rfq_comparison_wizard,pr_custom_purchase.procurement_admin,1,1,1,1
+access_rfq_comparison_wizard_line_procurement_admin,access.rfq.comparison.wizard.line.procurement.admin,model_rfq_comparison_wizard_line,pr_custom_purchase.procurement_admin,1,1,1,1
+access_budget_increase_reject_wizard_user,budget.increase.reject.wizard user,model_budget_increase_reject_wizard,base.group_user,1,1,1,1
+access_custom_pr_all_user_read,access.custom.pr.all.user.read,model_custom_pr,base.group_user,1,0,0,0
+access_custom_pr_line_all_user_read,access.custom.pr.line.all.user.read,model_custom_pr_line,base.group_user,1,0,0,0
+access_purchase_requisition_reject_wizard_user,purchase.requisition.reject.wizard user,model_purchase_requisition_reject_wizard,base.group_user,1,1,1,1
+access_pr_expense_bucket_user,pr.expense.bucket user,model_pr_expense_bucket,base.group_user,1,1,1,1
+access_pr_expense_bucket_line_user,pr.expense.bucket.line user,model_pr_expense_bucket_line,base.group_user,1,1,1,1
+access_pr_expense_bucket_reject_wizard_user,pr.expense.bucket.reject.wizard user,model_pr_expense_bucket_reject_wizard,base.group_user,1,1,1,1
+access_rfq_comparison_selection_wizard_procurement_admin,access.rfq.comparison.selection.wizard.procurement.admin,model_rfq_comparison_selection_wizard,pr_custom_purchase.procurement_admin,1,1,1,1
+access_rfq_comparison_wizard_quote_procurement_admin,access.rfq.comparison.wizard.quote.procurement.admin,model_rfq_comparison_wizard_quote,pr_custom_purchase.procurement_admin,1,1,1,1
+access_stock_picking_reject_wizard_inventory_admin,stock.picking.reject.wizard inventory admin,model_stock_picking_reject_wizard,pr_custom_purchase.inventory_admin,1,1,1,1
+access_purchase_order_reject_wizard_user,purchase.order.reject.wizard user,model_purchase_order_reject_wizard,base.group_user,1,1,1,1

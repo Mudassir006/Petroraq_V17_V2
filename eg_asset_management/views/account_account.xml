@@ -1,0 +1,12 @@
+<odoo>
+    <record id="eg_asset_management_account_account_form_inherit" model="ir.ui.view">
+        <field name="name">eg.asset.management.account.account.form.inherit</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <button name="make_employee_asset_cost_center" string="Cost Centers" type="object" groups="base.group_no_one"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

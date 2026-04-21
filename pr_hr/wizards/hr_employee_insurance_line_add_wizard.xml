@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="hr_employee_medical_insurance_line_add_wizard_view_form" model="ir.ui.view">
+            <field name="name">hr.employee.medical.insurance.line.add.wizard.view.form</field>
+            <field name="model">hr.employee.medical.insurance.line.add.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Insurance">
+                    <group>
+                        <group>
+                            <field name="insurance_id" invisible="1"/>
+                            <field name="check_renews" invisible="1"/>
+                            <field name="employee_id"/>
+                            <field name="relation_id" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="identification_id"/>
+                        </group>
+                        <group>
+                            <label for="from_date" string="Date Range"/>
+                            <div>
+                                <field name="from_date" style="width:45%%"/>
+                                <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon" title="Arrow"/>
+                                <field name="to_date" style="width:45%%"/>
+                            </div>
+                            <field name="insurance_company"/>
+                            <field name="insurance_category"/>
+                            <field name="expiry_date"/>
+                            <field name="expiry_date_hijri"/>
+                            <field name="amount" style="color: green;"/>
+                            <field name="check_self_relation" invisible="1"/>
+                        </group>
+                        <group invisible="check_self_relation == True">
+                            <field name="birthday"/>
+                            <field name="age"/>
+                            <field name="phone" widget="phone"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button
+                            name="action_renew"
+                            string="RENEW"
+                            type="object"
+                            class="btn-info"
+                            icon="fa-plus-square"
+                            invisible="check_renews == False"
+                        />
+                    <button
+                            name="action_renew"
+                            string="RELEASE"
+                            type="object"
+                            class="btn-info"
+                            icon="fa-plus-square"
+                            invisible="check_renews == True"
+                        />
+                        <button string="CANCEL" class="btn-danger" special="cancel" data-hotkey="x" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+</odoo>

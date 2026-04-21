@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="pr_hr_view_employee_form_inherit" model="ir.ui.view">
+            <field name="name">pr.hr.view.employee.form.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+<!--                <field name="tz" position="replace">-->
+<!--                    <field name="tz" readonly="state != 'new'"/>-->
+<!--                </field>-->
+                <xpath expr="//header" position="inside">
+                    <button name="set_in_service" string="SET IN SERVICE" type="object" groups="hr.group_hr_user"
+                            invisible="state != 'new'" class="oe_highlight"/>
+                    <field name="employee_type" invisible="1"/>
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,in_service,in_leave,out_service,escaped"/>
+                </xpath>
+
+                <div name="button_box" position="inside">
+                    <button type="object" name="open_related_iqamas" class="oe_stat_button" icon="fa-address-card">
+                        <field name="iqama_count" widget="statinfo" string="IQAMA"
+                               help="Show IQAMAS linked to this Employee"/>
+                    </button>
+                    <button type="object" name="open_related_insurance" class="oe_stat_button" icon="fa-hospital-o">
+                        <field name="insurance_count" widget="statinfo" string="Medical Insurance"
+                               help="Show Medical Insurance linked to this Employee"/>
+                    </button>
+                </div>
+
+                <field name="resource_calendar_id" position="attributes">
+                    <attribute name="readonly">state != 'new'</attribute>
+                    <attribute name="force_save">1</attribute>
+                </field>
+
+                <xpath expr="//field[@groups='base.group_multi_company']" position="attributes">
+                    <attribute name="readonly">state != 'new'</attribute>
+                </xpath>
+
+                <xpath expr="//group[@name='active_group']//field[@name='employee_type']" position="attributes">
+                    <attribute name="readonly">state != 'new'</attribute>
+                </xpath>
+                <xpath expr="//group[@name='active_group']//field[@name='user_id']" position="attributes">
+                    <attribute name="readonly">state != 'new'</attribute>
+                </xpath>
+
+<!--                <div name="button_box" position="after">-->
+<!--                    <widget name="web_ribbon" title="NEW" bg_color="bg-info" invisible="state != 'new'"/>-->
+<!--                    <widget name="web_ribbon" title="IN SERVICE" bg_color="bg-success"-->
+<!--                            invisible="state != 'in_service'"/>-->
+<!--                    <widget name="web_ribbon" title="IN LEAVE" bg_color="bg-danger" invisible="state != 'in_leave'"/>-->
+<!--                    <widget name="web_ribbon" title="HOLD" bg_color="bg-warning" invisible="state != 'out_service'"/>-->
+<!--                    <widget name="web_ribbon" title="OUT SERVICE" bg_color="bg-danger"-->
+<!--                            invisible="state != 'out_service'"/>-->
+<!--                    <widget name="web_ribbon" title="ESCAPED" bg_color="bg-danger" invisible="state != 'escaped'"/>-->
+<!--                </div>-->
+                <field name="job_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <h1 position="before">
+                    <h1>
+                        <field name="code" style="color: green;" nolabel="1"
+                               placeholder="Employee's Code"
+                               class="oe_inline"/>
+                    </h1>
+                </h1>
+
+                <field name="name" position="attributes">
+                    <attribute name="readonly">state != 'new'</attribute>
+                </field>
+
+                <field name="job_title" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="parent_id" position="attributes">
+                    <attribute name="readonly">state != 'new'</attribute>
+                    <attribute name="force_save">1</attribute>
+                </field>
+                <field name="department_id" position="before">
+                    <field name="job_id" options="{'no_create': True, 'no_edit': True}"
+                           placeholder="Job Position"/>
+                </field>
+
+                <field name="parent_id" position="after">
+                    <field name="has_subrules" invisible="1"/>
+                    <field name="subrule_department_domain" invisible="1"/>
+                    <field name="subrule_department_id"
+                           options="{'no_create': True, 'no_edit': True}"
+                           domain="subrule_department_domain"
+                           invisible="has_subrules == False"/>
+                    <field name="subrule_parent_id"
+                           options="{'no_create': True, 'no_edit': True}"
+                           force_save="1"
+                           invisible="has_subrules == False"
+                    />
+                </field>
+
+                <field name="department_id" position="attributes">
+                    <attribute name="readonly">state != 'new'</attribute>
+                    <attribute name="options">{'no_create': True, 'no_edit': True}</attribute>
+                    <attribute name="force_save">1</attribute>
+                </field>
+
+                <field name="category_ids" position="replace"/>
+
+<!--                <field name="mobile_phone" position="replace">-->
+<!--                    <field name="mobile_phone" widget="phone" readonly="state != 'new'"/>-->
+<!--                </field>-->
+
+<!--                <field name="work_phone" position="replace">-->
+<!--                    <field name="work_phone" widget="phone" readonly="state != 'new'"/>-->
+<!--                </field>-->
+
+                <field name="work_email" position="replace">
+                    <field name="work_email" widget="email" required="0"/>
+                </field>
+
+
+
+                <field name="country_id" position="attributes">
+                    <attribute name="required">0</attribute>
+                </field>
+
+                <field name="identification_id" position="attributes">
+                    <attribute name="required">0</attribute>
+                </field>
+
+                <xpath expr="//page[@name='personal_information']/group/group[2]/field[@name='children']"
+                       position="after">
+                    <separator name="emergency" string="Emergency"/>
+                    <field name="emergency_contact"/>
+                    <field name="emergency_phone" class="o_force_ltr"/>
+                </xpath>
+
+                <xpath expr="//group[@name='emergency']" position="replace">
+
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="pr_hr_hr_employee_search_inherit" model="ir.ui.view">
+            <field name="name">pr.hr.hr.employee.search.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="replace">
+                    <field name="name" string="Employee"
+                           filter_domain="['|', '|', ('work_email', 'ilike', self), ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                    <field name="code" filter_domain="[('code','ilike',self)]" string="Code"/>
+                </field>
+
+                <field name="department_id" position="after">
+                    <field name="state" icon="fa-bars" enable_counters="1"/>
+                </field>
+
+                <filter name="group_category_ids" position="before">
+                    <filter name="group_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
+                </filter>
+
+                <field name="department_id" position="after">
+                    <field name="subrule_department_id" icon="fa-users" enable_counters="1"/>
+                </field>
+                <filter name="group_department" position="after">
+                    <filter name="group_subrule_department" string="Subrule" domain="[]" context="{'group_by': 'subrule_department_id'}"/>
+                </filter>
+
+            </field>
+        </record>
+
+
+         <record id="pr_hr_view_employee_tree_inherit" model="ir.ui.view">
+             <field name="name">pr.hr.hr.employee.list.inherit</field>
+             <field name="model">hr.employee</field>
+             <field name="inherit_id" ref="hr.view_employee_tree"/>
+             <field name="arch" type="xml">
+                 <field name="name" position="before">
+                     <field name="code" string="Code"/>
+                 </field>
+             </field>
+         </record>
+
+        <record id="pr_hr_kanban_view_employees_inherit_code" model="ir.ui.view">
+             <field name="name">pr.hr.hr.employee.kanban.inherit</field>
+             <field name="model">hr.employee</field>
+             <field name="inherit_id" ref="hr.hr_kanban_view_employees"/>
+            <field name="arch" type="xml">
+                <span class="o_kanban_record_subtitle" position="before">
+                    <span t-if="record.code.raw_value" class="o_kanban_record_subtitle">
+                        <i class="fa fa-fw me-2 fa-address-card text-primary" title="Employee Code"/>
+                        <field name="code" style="color:green"/>
+                    </span>
+                </span>
+
+                <field name="job_title" position="before">
+                    <i class="fa fa-fw me-2 fa-briefcase text-primary" title="Employee Job"/>
+                </field>
+            </field>
+        </record>
+
+
+        <record id="act_employee_from_department_subrule" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="hr.view_employee_filter"/>
+            <field name="context">{
+                "searchpanel_default_subrule_department_id": active_id,
+                "default_subrule_department_id": active_id,
+                "search_default_group_subrule_department": 1,
+                "search_default_subrule_department_id": active_id,
+                "expand": 1}
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new employee
+                </p><p>
+                    With just a quick glance on the Odoo employee screen, you
+                    can easily find all the information you need for each person;
+                    contact data, job position, availability, etc.
+                </p>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

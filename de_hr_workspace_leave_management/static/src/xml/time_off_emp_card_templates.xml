@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+<!--    The template defines a card to display employee information such as name, job position, -->
+    <!--    working hours, department, and company. -->
+    <!--    It also includes the employee's image and contact information like email and phone number.-->
+    <div t-name="de_hr_workspace_leave_management.TimeOffEmpCard" owl="1" style="width:22%;"
+         class="o_timeoff_card py-3 text-odoo de-employee-profile-card">
+        <t t-set="id" t-value="props.id"/>
+        <t t-set="name" t-value="props.name"/>
+        <t t-set="work_email" t-value="props.work_email"/>
+        <t t-set="work_phone" t-value="props.work_phone"/>
+        <t t-set="department_id" t-value="props.department_id"/>
+        <t t-set="resource_calendar_id" t-value="props.resource_calendar_id"/>
+        <t t-set="company" t-value="props.company"/>
+        <t t-set="employee_code" t-value="props.employee_code"/>
+        <t t-set="joining_date" t-value="props.joining_date"/>
+        <t t-set="job_position" t-value="props.job_position"/>
+        <t t-set="child_ids" t-value="props.child_ids"/>
+        <t t-set="child_count" t-value="props.child_count"/>
+        <t t-set="image" t-value="props.image_1920"/>
+        <div class="de-profile-header">
+            <div class="employee_image de-avatar">
+              <t t-if="image">
+                  <img style="width: 64px; height: 64px;"
+                       t-attf-src="data:image/png;base64,{{image}}"/>
+              </t>
+              <t t-else="">
+                  <i class="fa fa-user"/>
+              </t>
+            </div>
+            <div>
+                <div class="employee_name de-employee-name"><t t-esc="name"/></div>
+                <div class="de-employee-subtitle"><t t-esc="job_position"/></div>
+            </div>
+        </div>
+        <div class="employee_details de-profile-grid" style="width:100%;">
+            <div class="de-info-tile">
+                <i class="fa fa-briefcase"/>
+                <div><span>Job Position</span><strong><t t-esc="job_position or '-'"/></strong></div>
+            </div>
+            <div class="de-info-tile">
+                <i class="fa fa-clock-o"/>
+                <div><span>Working Hours</span><strong><t t-esc="resource_calendar_id or '-'"/></strong></div>
+            </div>
+            <div class="de-info-tile de-info-wide">
+                <i class="fa fa-envelope-o"/>
+                <div><span>Email</span><strong><t t-esc="work_email or '-'"/></strong></div>
+            </div>
+            <div class="de-info-tile">
+                <i class="fa fa-phone"/>
+                <div><span>Phone</span><strong><t t-esc="work_phone or '-'"/></strong></div>
+            </div>
+            <div class="de-info-tile">
+                <i class="fa fa-sitemap"/>
+                <div><span>Department</span><strong><t t-esc="department_id or '-'"/></strong></div>
+            </div>
+            <div class="de-info-tile">
+                <i class="fa fa-id-badge"/>
+                <div><span>Employee ID</span><strong><t t-esc="employee_code or '-'"/></strong></div>
+            </div>
+            <div class="de-info-tile">
+                <i class="fa fa-calendar"/>
+                <div><span>Date of Joining</span><strong><t t-esc="joining_date or '-'"/></strong></div>
+            </div>
+            <div class="de-info-tile de-info-wide">
+                <i class="fa fa-building-o"/>
+                <div><span>Company</span><strong><t t-esc="company or '-'"/></strong></div>
+            </div>
+        </div>
+    </div>
+</templates>

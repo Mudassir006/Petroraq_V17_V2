@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <record id="account_invoice_form_view" model="ir.ui.view">
+        <field name="name">account.invoice.form.view</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <field name="payment_reference" position="after">
+                <field name="amount_tax" invisible="1" force_save="1"/>
+                <field name="custom_qr_image" widget="image" style="width:100px;height:100px;" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="inherit_customer_form_id" model="ir.ui.view">
+        <field name="name">Customer Form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//span[@name='address_name']" position="before">
+                <field name="arabic_name"/>
+            </xpath>
+
+            <xpath expr="//div[hasclass('o_address_format')]" position="after">
+                <label for="arabic_street" string="Arabic Address"/>
+                <div class="o_address_format">
+                    <field name="arabic_street" placeholder="Street..." class="o_address_street"/>
+                    <field name="arabic_street2" placeholder="Street 2..." class="o_address_street"/>
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

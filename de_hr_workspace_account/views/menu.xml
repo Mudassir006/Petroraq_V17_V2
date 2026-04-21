@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_my_financial_accounting_approvals"
+          name="Accounting Approvals"
+          parent="de_hr_workspace.menu_my_employee_approvals"
+          sequence="40"
+          groups="pr_account.custom_group_accounting_manager"/>
+
+</odoo>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_petroraq_estimation_tree" model="ir.ui.view">
+        <field name="name">petroraq.estimation.tree</field>
+        <field name="model">petroraq.estimation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="total_amount"/>
+                <field name="total_with_profit"/>
+                <field name="sale_order_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_petroraq_estimation_form" model="ir.ui.view">
+        <field name="name">petroraq.estimation.form</field>
+        <field name="model">petroraq.estimation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="sale_order_state" invisible="1"/>
+                    <field name="quotation_approval_state" invisible="1"/>
+                    <field name="is_locked_for_edit" invisible="1"/>
+                    <field name="current_revision_id" invisible="1"/>
+                    <field name="has_old_revisions" invisible="1"/>
+                    <button name="create_revision"
+                            type="object"
+                            string="New Revision"
+                            class="btn-secondary"
+                            invisible="not sale_order_id"/>
+                    <button name="action_view_revisions"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-history"
+                            invisible="not has_old_revisions or revision_count == 0">
+                        <field name="revision_count" widget="statinfo" string="Prev. revisions"/>
+                    </button>
+                    <button name="action_create_sale_order"
+                            type="object"
+                            string="Create Quotation"
+                            class="btn-primary"
+                            invisible="sale_order_id"/>
+                    <button name="action_create_sale_order"
+                            type="object"
+                            string="Open Quotation"
+                            class="btn-secondary"
+                            invisible="not sale_order_id"/>
+                    <button name="action_create_work_order"
+                            type="object"
+                            string="Create Work Order"
+                            class="btn-primary"
+                            invisible="work_order_id or sale_order_state != 'sale'"/>
+                    <button name="action_create_work_order"
+                            type="object"
+                            string="Open Work Order"
+                            class="btn-secondary"
+                            invisible="not work_order_id"/>
+                </header>
+                <sheet>
+                    <group readonly="is_locked_for_edit">
+                        <field name="name" readonly="1"/>
+                        <field name="partner_id"/>
+                        <field name="date"/>
+                        <field name="sale_order_id" readonly="1"/>
+                        <field name="work_order_id" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Material">
+                            <field name="material_line_ids" readonly="is_locked_for_edit"
+                                   context="{'default_section_type':'material'}">
+                                <tree editable="bottom">
+                                    <field name="section_type" column_invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="qty_available" optional="show"/>
+                                    <field name="virtual_available" optional="show"/>
+                                    <field name="free_qty" optional="show"/>
+                                    <field name="unit_cost"/>
+                                    <field name="subtotal" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Labor">
+                            <field name="labor_line_ids" readonly="is_locked_for_edit"
+                                   context="{'default_section_type':'labor'}">
+                                <tree editable="bottom">
+                                    <field name="section_type" column_invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="resource_count"/>
+                                    <field name="days"/>
+                                    <field name="hours_per_day" readonly="1"/>
+                                    <field name="quantity_hours" readonly="1"/>
+                                    <field name="uom_id"/>
+                                    <field name="qty_available" optional="show"/>
+                                    <field name="virtual_available" optional="show"/>
+                                    <field name="free_qty" optional="show"/>
+                                    <field name="unit_cost"/>
+                                    <field name="subtotal" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Equipment">
+                            <field name="equipment_line_ids" readonly="is_locked_for_edit"
+                                   context="{'default_section_type':'equipment'}">
+                                <tree editable="bottom">
+                                    <field name="section_type" column_invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="resource_count"/>
+                                    <field name="days"/>
+                                    <field name="hours_per_day" readonly="1"/>
+                                    <field name="quantity_hours" readonly="1"/>
+                                    <field name="uom_id"/>
+                                    <field name="unit_cost"/>
+                                    <field name="qty_available" optional="show"/>
+                                    <field name="virtual_available" optional="show"/>
+                                    <field name="free_qty" optional="show"/>
+                                    <field name="subtotal" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Sub Contract / TPS">
+                            <field name="subcontract_line_ids" readonly="is_locked_for_edit"
+                                   context="{'default_section_type':'subcontract'}">
+                                <tree editable="bottom">
+                                    <field name="section_type" column_invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="qty_available" optional="show"/>
+                                    <field name="virtual_available" optional="show"/>
+                                    <field name="free_qty" optional="show"/>
+                                    <field name="unit_cost"/>
+                                    <field name="subtotal" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group col="4" class="oe_subtotal_footer" colspan="2" readonly="is_locked_for_edit">
+                        <field name="material_total" readonly="1"/>
+                        <field name="labor_total" readonly="1"/>
+                        <field name="equipment_total" readonly="1"/>
+                        <field name="subcontract_total" readonly="1"/>
+                        <field name="total_amount" readonly="1"/>
+                        <field name="overhead_percent"/>
+                        <field name="overhead_amount" readonly="1"/>
+                        <field name="risk_percent"/>
+                        <field name="risk_amount" readonly="1"/>
+                        <field name="buffer_total_amount" readonly="1"/>
+                        <field name="profit_percent"/>
+                        <field name="profit_amount" readonly="1"/>
+                        <field name="total_with_profit" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_petroraq_estimation" model="ir.actions.act_window">
+        <field name="name">Estimations</field>
+        <field name="res_model">petroraq.estimation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_petroraq_estimation_root"
+              name="Estimations"
+              parent="sale.sale_order_menu"
+              action="action_petroraq_estimation"
+              sequence="15"/>
+</odoo>
