@@ -12,8 +12,6 @@
         <t t-set="department_id" t-value="props.department_id"/>
         <t t-set="resource_calendar_id" t-value="props.resource_calendar_id"/>
         <t t-set="company" t-value="props.company"/>
-        <t t-set="employee_code" t-value="props.employee_code"/>
-        <t t-set="joining_date" t-value="props.joining_date"/>
         <t t-set="job_position" t-value="props.job_position"/>
         <t t-set="child_ids" t-value="props.child_ids"/>
         <t t-set="child_count" t-value="props.child_count"/>
@@ -53,14 +51,6 @@
             <div class="de-info-tile">
                 <i class="fa fa-sitemap"/>
                 <div><span>Department</span><strong><t t-esc="department_id or '-'"/></strong></div>
-            </div>
-            <div class="de-info-tile">
-                <i class="fa fa-id-badge"/>
-                <div><span>Employee ID</span><strong><t t-esc="employee_code or '-'"/></strong></div>
-            </div>
-            <div class="de-info-tile">
-                <i class="fa fa-calendar"/>
-                <div><span>Date of Joining</span><strong><t t-esc="joining_date or '-'"/></strong></div>
             </div>
             <div class="de-info-tile de-info-wide">
                 <i class="fa fa-building-o"/>

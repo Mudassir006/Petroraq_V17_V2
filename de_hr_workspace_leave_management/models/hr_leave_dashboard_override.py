@@ -6,39 +6,6 @@ from odoo import api, fields, models
 class HrLeaveDashboardOverride(models.Model):
     _inherit = 'hr.leave'
 
-    def _get_employee_joining_date(self, employee):
-        joining_date = False
-        if 'hr.contract' in self.env:
-            contract = self.env['hr.contract'].sudo().search([
-                ('employee_id', '=', employee.id),
-                ('state', '!=', 'cancel'),
-                ('date_start', '!=', False),
-            ], order='date_start asc', limit=1)
-            joining_date = contract.date_start
-        return fields.Date.to_string(joining_date) if joining_date else False
-
-    def _get_employee_current_contract_start_date(self, employee):
-        contract_start = False
-        if 'hr.contract' in self.env:
-            today = fields.Date.context_today(self)
-            contract = self.env['hr.contract'].sudo().search([
-                ('employee_id', '=', employee.id),
-                ('state', '!=', 'cancel'),
-                ('date_start', '!=', False),
-                ('date_start', '<=', today),
-                '|',
-                ('date_end', '=', False),
-                ('date_end', '>=', today),
-            ], order='date_start desc', limit=1)
-            if not contract:
-                contract = self.env['hr.contract'].sudo().search([
-                    ('employee_id', '=', employee.id),
-                    ('state', '!=', 'cancel'),
-                    ('date_start', '!=', False),
-                ], order='date_start desc', limit=1)
-            contract_start = contract.date_start
-        return fields.Date.to_string(contract_start) if contract_start else False
-
     @api.model
     def _get_period_date_range(self, duration):
         today = fields.Date.context_today(self)
@@ -83,8 +50,6 @@ class HrLeaveDashboardOverride(models.Model):
             'id': current_employee.id,
             'code': current_employee.code,
             'name': current_employee.name,
-            'employee_code': current_employee.code or current_employee.barcode or '',
-            'joining_date': self._get_employee_joining_date(current_employee),
             'job_id': current_employee.job_id.id,
             'image_1920': current_employee.image_1920,
             'work_email': current_employee.work_email,
@@ -299,11 +264,7 @@ class HrLeaveDashboardOverride(models.Model):
         employees = self.env['hr.employee'].sudo().search([('active', '=', True)], order='name asc')
         leave_types = self.env['hr.leave.type'].sudo().search([('active', '=', True)], order='name asc')
         return {
-            'employees': [{
-                'id': emp.id,
-                'name': emp.name,
-                'code': emp.code or emp.barcode or '',
-            } for emp in employees],
+            'employees': [{'id': emp.id, 'name': emp.name} for emp in employees],
             'leave_types': [{'id': leave_type.id, 'name': leave_type.name} for leave_type in leave_types],
         }
 
@@ -426,42 +387,22 @@ class HrLeaveDashboardOverride(models.Model):
         } for leave_type in leave_types]
 
     @api.model
-    def get_employee_leave_simple_summary(self, employee_id=None, duration='current_contract', date_from=False, date_to=False):
+    def get_employee_leave_simple_summary(self, employee_id=None):
         employee = self.env['hr.employee'].browse(employee_id) if employee_id else self.env.user.employee_id
         if not employee:
             return {'employee_id': False, 'employee_name': '', 'lines': []}
         leave_types = self.env['hr.leave.type'].sudo().search([('active', '=', True)])
-        today = fields.Date.context_today(self)
-        current_contract_start = self._get_employee_current_contract_start_date(employee)
-        start = False
-        end = today
-
-        if duration == 'custom' and date_from and date_to:
-            start = fields.Date.to_date(date_from)
-            end = fields.Date.to_date(date_to)
-        elif duration == 'this_year':
-            start = today.replace(month=1, day=1)
-        elif duration == 'this_month':
-            start = today.replace(day=1)
-        else:
-            start = fields.Date.to_date(current_contract_start) if current_contract_start else today.replace(month=1, day=1)
 
         allocations = self.env['hr.leave.allocation'].sudo().search([
             ('state', '=', 'validate'),
             ('employee_id', '=', employee.id),
             ('holiday_status_id', 'in', leave_types.ids),
         ])
-        leaves_domain = [
+        leaves = self.env['hr.leave'].sudo().search([
             ('state', '=', 'validate'),
             ('employee_id', '=', employee.id),
             ('holiday_status_id', 'in', leave_types.ids),
-        ]
-        if start and end:
-            leaves_domain += [
-                ('request_date_from', '<=', end),
-                ('request_date_to', '>=', start),
-            ]
-        leaves = self.env['hr.leave'].sudo().search(leaves_domain)
+        ])
 
         allocated = {}
         used = {}
@@ -477,7 +418,6 @@ class HrLeaveDashboardOverride(models.Model):
             'leave_type': leave_type.name,
             'used_days': round(used.get(leave_type.id, 0.0), 2),
             'allocated_days': round(allocated.get(leave_type.id, 0.0), 2),
-            'requires_allocation': leave_type.requires_allocation == 'yes',
         } for leave_type in leave_types]
 
         return {
@@ -486,11 +426,11 @@ class HrLeaveDashboardOverride(models.Model):
             'employee_profile': {
                 'id': employee.id,
                 'name': employee.name,
-                'employee_code': employee.code or employee.barcode or '',
-                'joining_date': self._get_employee_joining_date(employee),
-                'current_contract_start_date': self._get_employee_current_contract_start_date(employee),
                 'job_position': employee.job_title or '',
+                'work_email': employee.work_email or '',
+                'work_phone': employee.work_phone or '',
                 'department': employee.department_id.name or '',
+                'resource_calendar': employee.resource_calendar_id.name or '',
                 'company': employee.company_id.name or '',
                 'image_1920': employee.image_1920 or False,
             },

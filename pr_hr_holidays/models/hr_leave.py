@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import calendar
 from odoo.tools import date_utils
-from collections import defaultdict  # make sure this import exists at top
 
 
 class HrHolidays(models.Model):
@@ -27,16 +26,6 @@ class HrHolidays(models.Model):
         tracking=True)
     leave_amount = fields.Float(string="Amount", compute="compute_leave_amount", store=True)
     leave_request_id = fields.Many2one("pr.hr.leave.request", string="Leave Request", readonly=True)
-    allocation_override_applied = fields.Boolean(
-        string="Allocation Override Applied",
-        default=False,
-        readonly=True,
-        help="Checked when this leave was approved using allocation-limit override.",
-    )
-    allocation_override_note = fields.Text(
-        string="Allocation Override Note",
-        readonly=True,
-    )
     # leave_amount = fields.Float(string="Amount")
 
     # endregion [Fields]
@@ -207,93 +196,4 @@ class HrHolidays(models.Model):
         if self.employee_id:
             self.employee_ids = self.employee_id.ids
 
-    def _is_allocation_override_enabled(self):
-        return (
-                self.env.context.get("pr_leave_allocation_override")
-                or self.env.user.has_group('pr_hr_holidays.group_leave_allocation_limit_override')
-        )
-
-    @staticmethod
-    def _is_allocation_validation_error(error):
-        message = (error.args[0] if error.args else "")
-        if not isinstance(message, str):
-            message = str(message)
-        lowered_message = message.lower()
-
-        exact_markers = (
-            "there is no valid allocation to cover that request.",
-            "you do not have any allocation for this time off type.",
-        )
-        if any(marker in lowered_message for marker in exact_markers):
-            return True
-        return False
-
     # endregion [Onchange Methods]
-
-    @api.constrains('holiday_status_id', 'request_date_from')
-    def _check_annual_leave_start_date(self):
-        today = fields.Date.context_today(self)
-        for leave in self:
-            if not leave.holiday_status_id or not leave.request_date_from:
-                continue
-            if leave.holiday_status_id.leave_type == 'annual_leave' and leave.request_date_from <= today:
-                raise ValidationError(_("Annual Leave requests must start from tomorrow onward."))
-
-    def _check_holidays(self):
-        try:
-            return super()._check_holidays()
-        except ValidationError as error:
-            if not self._is_allocation_override_enabled():
-                raise
-
-            if self._is_allocation_validation_error(error):
-                return
-            raise
-
-    def _check_validity(self):
-        if not self._is_allocation_override_enabled():
-            return super()._check_validity()
-
-        # Allocation override flow:
-        # Keep all standard validations from parent _check_holidays (date/order/overlap/etc.)
-        # but bypass allocation-cap checks only.
-        sorted_leaves = defaultdict(lambda: self.env['hr.leave'])
-        for leave in self:
-            sorted_leaves[(leave.holiday_status_id, leave.date_from.date())] |= leave
-
-        for (leave_type, date_from), leaves in sorted_leaves.items():
-            if leave_type.requires_allocation == 'no':
-                continue
-
-            employees = self.env['hr.employee']
-            for leave in leaves:
-                employees |= leave._get_employees_from_holiday_type()
-
-            leave_data = leave_type.get_allocation_data(employees, date_from)
-
-            # Community/Enterprise variants:
-            # - one variant raises when not leave_data[employee]
-            # - another variant skips that raise.
-            # For this override group/context, both "missing allocation" and
-            # "insufficient remaining allocation" checks are intentionally bypassed.
-            if leave_type.allows_negative:
-                continue
-
-            previous_leave_data = leave_type.with_context(
-                ignored_leave_ids=leaves.ids
-            ).get_allocation_data(employees, date_from)
-
-            for employee in employees:
-                previous_emp_data = previous_leave_data[employee] and previous_leave_data[employee][0][1].get(
-                    'virtual_excess_data')
-                emp_data = leave_data[employee] and leave_data[employee][0][1].get('virtual_excess_data')
-
-                if not previous_emp_data and not emp_data:
-                    continue
-
-                # Standard behavior would raise "There is no valid allocation..."
-                # Skip for the dedicated override group/context only.
-                if previous_emp_data != emp_data and len(emp_data or []) >= len(previous_emp_data or []):
-                    continue
-
-        return

@@ -25,7 +25,7 @@ class ApprovalDashboard extends Component {
     async loadTiles() {
         this.state.loading = true;
         const tiles = await this.orm.call("de.hr.approval.dashboard.service", "get_tiles", []);
-        this.state.tiles = tiles;
+        this.state.tiles = tiles.map((tile) => ({ ...tile, gradient: this.randomGradient() }));
         this.state.loading = false;
     }
 
@@ -58,13 +58,32 @@ class ApprovalDashboard extends Component {
     }
 
 
-    tileClass(tile) {
-        const hasPending = (tile.count || 0) > 0 ? "de-dashboard-tile-pending" : "";
-        return `de-dashboard-tile de-dashboard-tile-${tile.tone || "primary"} ${hasPending}`.trim();
+    randomGradient() {
+        const gradients = [
+            ["#2F4858", "#122AA0"],
+            ["#2C302E", "#474A48"],
+            ["#07004D", "#2D82B7"],
+            ["#1B4079", "#4D7C8A"],
+            ["#122AA0", "#657153"],
+            ["#5CC8FF", "#122AA0"],
+            ["#1D2F6F", "#F88DAD"],
+            ["#4D5057", "#4E6E5D"],
+            ["#593C8F", "#171738"],
+            ["#122AA0", "#2AB7CA"],
+            ["#122AA0", "#AF7A6D"],
+            ["#B33951", "#54494B"],
+            ["#4C2A85", "#253C78"],
+        ];
+        const [fromColor, toColor] = gradients[Math.floor(Math.random() * gradients.length)];
+        return `linear-gradient(135deg, ${fromColor}, ${toColor})`;
     }
 
-    iconBoxClass(tile) {
-        return `de-dashboard-icon-box de-tone-${tile.tone || "primary"}`;
+    tileStyle(tile) {
+        return tile.gradient ? `background: ${tile.gradient};` : "";
+    }
+
+    tileClass(tile) {
+        return `de-dashboard-tile de-dashboard-tile-${tile.tone || "primary"}`;
     }
 }
 

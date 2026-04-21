@@ -109,20 +109,11 @@
                             <field name="no_overtime"/>
                             <field name="tot_overtime" widget="float_time"/>
                             <field name="tot_overtime_amount" style="color: green;"/>
-                            <field name="approved_overtime_hours" widget="float_time"/>
-                            <field name="approved_overtime_amount"/>
                         </group>
                         <group string="Late In" name="late_in_group">
                             <field name="no_late"/>
                             <field name="tot_late" widget="float_time"/>
-                            <field name="tot_late_in_minutes"/>
                             <field name="tot_late_amount" style="color: red;"/>
-                        </group>
-                        <group string="Early Check Out" name="early_check_out_group">
-                            <field name="no_early_checkout"/>
-                            <field name="tot_early_checkout" widget="float_time"/>
-                            <field name="early_check_out_minutes"/>
-                            <field name="tot_early_checkout_amount" style="color: red;" string="Total ECO. Amount"/>
                         </group>
                         <group string="Absence">
                             <field name="no_absence"/>
@@ -141,7 +132,6 @@
                             <field name="carry_forward_diff_amount" style="color: red;"/>
                             <field name="carry_forward_overtime_amount" style="color: green;"/>
                             <field name="carry_forward_early_checkout_amount" style="color: red;"/>
-                            <field name="carry_forward_deduction" style="color: red;"/>
                         </group>
 
                     </group>

@@ -103,26 +103,15 @@ class PurchaseRequisition(models.Model):
         compute="_compute_show_request_budget_increase_button", store=False
     )
     project_id = fields.Many2one("project.project", string="Project")
-    expense_bucket_id = fields.Many2one("crossovered.budget", string="Expense")
-    allowed_cost_center_ids = fields.Many2many(
-        "account.analytic.account",
-        compute="_compute_allowed_cost_center_ids",
-        store=False,
-    )
+    expense_bucket_id = fields.Many2one("pr.expense.bucket", string="Expense")
     expense_scope = fields.Selection(
-        [("department", "Department"), ("project", "Project"),("trading", "Trading")],
+        [("department", "Department"), ("project", "Project")],
         string="Expense Scope",
     )
     expense_type = fields.Selection(
         [("opex", "Opex"), ("capex", "Capex")],
         string="Expense Type",
     )
-
-    @api.depends("expense_bucket_id", "expense_bucket_id.crossovered_budget_line",
-                 "expense_bucket_id.crossovered_budget_line.analytic_account_id")
-    def _compute_allowed_cost_center_ids(self):
-        for rec in self:
-            rec.allowed_cost_center_ids = rec.expense_bucket_id.crossovered_budget_line.mapped("analytic_account_id")
 
     def _required_date_from_priority(self, priority):
         today = fields.Date.context_today(self)
@@ -806,15 +795,13 @@ class PurchaseRequisitionLine(models.Model):
     unit_price = fields.Float(string="Unit Cost")
     cost_center_id = fields.Many2one(
         "account.analytic.account", string="Cost Center", required=True,
-        domain="[('id', 'in', requisition_id.allowed_cost_center_ids)]",
+        domain="[('expense_bucket_id', '=', requisition_id.expense_bucket_id)]",
     )
 
     @api.constrains("cost_center_id", "requisition_id")
     def _check_cost_center_matches_bucket(self):
         for rec in self:
-            bucket = rec.requisition_id.expense_bucket_id
-            allowed = bucket.crossovered_budget_line.mapped("analytic_account_id")
-            if rec.cost_center_id and bucket and rec.cost_center_id not in allowed:
+            if rec.cost_center_id and rec.requisition_id.expense_bucket_id and rec.cost_center_id.expense_bucket_id != rec.requisition_id.expense_bucket_id:
                 raise ValidationError(_("Selected cost center must belong to the selected expense bucket."))
 
     total_price = fields.Float(string="Total", compute="_compute_total", store=True)
@@ -874,53 +861,6 @@ class PurchaseRequisitionLine(models.Model):
             "section_name": wo_cc.section_name,
         }
 
-    def _get_trading_sale_product_caps(self):
-        self.ensure_one()
-
-        requisition = self.requisition_id
-        bucket = requisition.expense_bucket_id
-        if not bucket or bucket.scope != "trading" or not bucket.sale_order_id:
-            return False
-        if not self.cost_center_id or not self.description:
-            return False
-
-        sale_order = bucket.sale_order_id.sudo()
-        so_lines = sale_order.order_line.filtered(
-            lambda l: not l.display_type and l.product_id and l.product_id.id == self.description.id
-        )
-        if not so_lines:
-            return {
-                "sale_order": sale_order,
-                "allowed_qty": 0.0,
-                "allowed_unit_price": 0.0,
-                "allowed_amount": 0.0,
-            }
-
-        relevant_lines = self.env["sale.order.line"]
-        for line in so_lines:
-            distribution = line.analytic_distribution or {}
-            line_cc_ids = {int(key) for key in distribution.keys() if str(key).isdigit()}
-            if line_cc_ids:
-                if self.cost_center_id.id in line_cc_ids:
-                    relevant_lines |= line
-            elif len(requisition.allowed_cost_center_ids) == 1 and self.cost_center_id in requisition.allowed_cost_center_ids:
-                relevant_lines |= line
-
-        if not relevant_lines:
-            return {
-                "sale_order": sale_order,
-                "allowed_qty": 0.0,
-                "allowed_unit_price": 0.0,
-                "allowed_amount": 0.0,
-            }
-
-        return {
-            "sale_order": sale_order,
-            "allowed_qty": sum(relevant_lines.mapped("product_uom_qty")),
-            "allowed_unit_price": max(relevant_lines.mapped("price_unit") or [0.0]),
-            "allowed_amount": sum(relevant_lines.mapped("price_subtotal")),
-        }
-
     @api.constrains("cost_center_id", "description", "quantity", "unit_price", "requisition_id")
     def _check_work_order_product_limits(self):
         for rec in self:
@@ -964,75 +904,6 @@ class PurchaseRequisitionLine(models.Model):
                                           "allowed": caps["allowed_amount"],
                                           "requested": total_requested_amount,
                                       })
-
-    @api.constrains("cost_center_id", "description", "quantity", "unit_price", "requisition_id")
-    def _check_trading_sale_order_product_limits(self):
-        for rec in self:
-            if not rec.cost_center_id or not rec.description or not rec.requisition_id:
-                continue
-
-            caps = rec._get_trading_sale_product_caps()
-            if not caps:
-                continue
-
-            if not caps["allowed_qty"]:
-                raise ValidationError(_(
-                    "Product '%(product)s' is not available in Sale Order '%(so)s' for cost center '%(cc)s'."
-                ) % {
-                    "product": rec.description.display_name,
-                    "so": caps["sale_order"].display_name,
-                    "cc": rec.cost_center_id.display_name,
-                })
-
-            current_req_lines = rec.requisition_id.line_ids.filtered(
-                lambda l: l.cost_center_id.id == rec.cost_center_id.id
-                and l.description.id == rec.description.id
-            )
-            current_req_qty = sum(current_req_lines.mapped("quantity"))
-            current_req_amount = sum(current_req_lines.mapped("total_price"))
-
-            other_pr_lines = self.env["purchase.requisition.line"].sudo().search([
-                ("id", "not in", rec.requisition_id.line_ids.ids),
-                ("cost_center_id", "=", rec.cost_center_id.id),
-                ("description", "=", rec.description.id),
-                ("requisition_id.expense_bucket_id", "=", rec.requisition_id.expense_bucket_id.id),
-                ("requisition_id.approval", "!=", "rejected"),
-            ])
-            total_requested_qty = current_req_qty + sum(other_pr_lines.mapped("quantity"))
-            total_requested_amount = current_req_amount + sum(other_pr_lines.mapped("total_price"))
-
-            if total_requested_qty > caps["allowed_qty"]:
-                raise ValidationError(_(
-                    "Requested quantity for '%(product)s' exceeds Sale Order '%(so)s' quantity for cost center '%(cc)s'. Allowed: %(allowed)s, Requested (including other PRs): %(requested)s."
-                ) % {
-                    "product": rec.description.display_name,
-                    "so": caps["sale_order"].display_name,
-                    "cc": rec.cost_center_id.display_name,
-                    "allowed": caps["allowed_qty"],
-                    "requested": total_requested_qty,
-                })
-
-            if rec.unit_price > caps["allowed_unit_price"]:
-                raise ValidationError(_(
-                    "Unit cost for '%(product)s' cannot exceed Sale Order '%(so)s' unit price for cost center '%(cc)s'. Allowed max: %(allowed)s, Entered: %(entered)s."
-                ) % {
-                    "product": rec.description.display_name,
-                    "so": caps["sale_order"].display_name,
-                    "cc": rec.cost_center_id.display_name,
-                    "allowed": caps["allowed_unit_price"],
-                    "entered": rec.unit_price,
-                })
-
-            if total_requested_amount > caps["allowed_amount"]:
-                raise ValidationError(_(
-                    "Requested amount for '%(product)s' exceeds Sale Order '%(so)s' amount for cost center '%(cc)s'. Allowed: %(allowed)s, Requested (including other PRs): %(requested)s."
-                ) % {
-                    "product": rec.description.display_name,
-                    "so": caps["sale_order"].display_name,
-                    "cc": rec.cost_center_id.display_name,
-                    "allowed": caps["allowed_amount"],
-                    "requested": total_requested_amount,
-                })
 
 
 class PurchaseQuotation(models.Model):

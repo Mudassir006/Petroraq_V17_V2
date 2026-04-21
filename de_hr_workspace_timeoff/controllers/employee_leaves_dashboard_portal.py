@@ -117,21 +117,12 @@ class EmployeeLeaveDashboardPortal(CustomerPortal):
                 ('employee_id', '=', current_employee_id.id)
             ], limit=5, order='request_date_from asc')
 
-            status_labels = {
-                'draft': 'To Submit',
-                'confirm': 'To Approve',
-                'validate1': 'Second Approval',
-                'validate': 'Approved',
-                'refuse': 'Refused',
-                'cancel': 'Cancelled',
-            }
             all_leaves = [{
                 'employee': l.employee_id.name,
                 'leave_type': l.holiday_status_id.name,
                 'from': l.request_date_from.strftime('%d/%m/%Y'),
                 'to': l.request_date_to.strftime('%d/%m/%Y'),
                 'days': l.number_of_days_display,
-                'status': status_labels.get(l.state, l.state),
             } for l in leaves_history]
 
             pending = [{

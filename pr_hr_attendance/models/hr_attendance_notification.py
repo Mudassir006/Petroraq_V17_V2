@@ -192,23 +192,11 @@ class HrAttendanceNotification(models.Model):
             mail_id.sudo().send()
 
     @api.model
-    def _get_notification_worked_hours_threshold(self):
-        value = self.env['ir.config_parameter'].sudo().get_param(
-            'pr_hr_attendance.notification_worked_hours_threshold',
-            default='8.0',
-        )
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            return 8.0
-
-    @api.model
     def cron_send_daily_attendance_notifications(self):
         """Send same-day attendance alerts directly from hr.attendance records."""
         today = fields.Date.context_today(self)
         companies = self.env['res.company'].search([])
         attendance_obj = self.env['hr.attendance']
-        worked_hours_threshold = self._get_notification_worked_hours_threshold()
         for company in companies:
             notification = self.search(
                 [('date', '=', today), ('company_id', '=', company.id)],
@@ -235,7 +223,6 @@ class HrAttendanceNotification(models.Model):
                 expected_hours = self._get_employee_expected_hours_for_date(employee, today)
                 if expected_hours <= 0:
                     continue
-                required_hours_for_alert = min(expected_hours, worked_hours_threshold)
                 attendances = attendance_obj.search([
                     ('employee_id', '=', employee.id),
                     ('check_in', '>=', fields.Datetime.to_string(start_dt)),
@@ -245,7 +232,7 @@ class HrAttendanceNotification(models.Model):
                 self._send_daily_attendance_email(
                     employee=employee,
                     target_date=today,
-                    expected_hours=required_hours_for_alert,
+                    expected_hours=expected_hours,
                     worked_hours=worked_hours,
                 )
 

@@ -2,7 +2,7 @@
 import { registry } from "@web/core/registry";
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
-import { TimeOffEmpCard, EmpDepartmentCard, SimpleLeaveSummaryCard } from "./time_off_emp_card";
+import { TimeOffEmpCard, EmpDepartmentCard, SimpleLeaveSummaryCard, LeaveRequestCountCard } from "./time_off_emp_card";
 
 export class LeaveManagementDashboardAction extends Component {
     setup() {
@@ -26,6 +26,6 @@ export class LeaveManagementDashboardAction extends Component {
 }
 
 LeaveManagementDashboardAction.template = "de_hr_workspace_leave_management.LeaveManagementDashboardAction";
-LeaveManagementDashboardAction.components = { TimeOffEmpCard, EmpDepartmentCard, SimpleLeaveSummaryCard };
+LeaveManagementDashboardAction.components = { TimeOffEmpCard, EmpDepartmentCard, SimpleLeaveSummaryCard, LeaveRequestCountCard };
 
 registry.category("actions").add("de_hr_workspace_leave_management.leave_dashboard", LeaveManagementDashboardAction);

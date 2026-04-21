@@ -48,27 +48,17 @@ class PRWorkOrder(models.Model):
             if rec.state == "draft":
                 continue
 
-            rec._remove_linked_expense_bucket()
+            if rec.expense_bucket_id and rec.expense_bucket_id.state != "approved":
+                linked_pr_count = self.env["custom.pr"].sudo().search_count([
+                    ("expense_bucket_id", "=", rec.expense_bucket_id.id)
+                ])
+                if not linked_pr_count:
+                    rec.expense_bucket_id.sudo().unlink()
+                    rec.expense_bucket_id = False
 
             rec.write({"state": "draft"})
             rec._reset_approval_metadata()
             rec.message_post(body=_("Work Order has been reset to draft."))
-
-    def _remove_linked_expense_bucket(self):
-        for rec in self:
-            if not rec.expense_bucket_id:
-                continue
-            linked_pr_count = self.env["custom.pr"].sudo().search_count([
-                ("expense_bucket_id", "=", rec.expense_bucket_id.id)
-            ])
-            if linked_pr_count:
-                raise UserError(
-                    _(
-                        "Cannot delete expense bucket %s because it is already linked to Purchase Requisitions."
-                    ) % rec.expense_bucket_id.display_name
-                )
-            rec.expense_bucket_id.sudo().unlink()
-            rec.expense_bucket_id = False
 
     name = fields.Char(
         string="Work Order",
@@ -99,14 +89,10 @@ class PRWorkOrder(models.Model):
     project_id = fields.Many2one("project.project", string="Construction Project", ondelete="restrict")
     analytic_account_id = fields.Many2one("account.analytic.account", string="Cost Center", ondelete="restrict")
     expense_bucket_id = fields.Many2one(
-        "crossovered.budget",
+        "pr.expense.bucket",
         string="Expense Bucket",
         copy=False,
         readonly=True,
-    )
-    expense_bucket_count = fields.Integer(
-        string="Expense Bucket Count",
-        compute="_compute_expense_bucket_count",
     )
     cost_center_ids = fields.One2many(
         "pr.work.order.cost.center",
@@ -293,24 +279,6 @@ class PRWorkOrder(models.Model):
             if not rec.boq_attachment_ids:
                 raise ValidationError(_("Please upload at least one BOQ attachment."))
 
-    @api.depends("expense_bucket_id")
-    def _compute_expense_bucket_count(self):
-        for rec in self:
-            rec.expense_bucket_count = 1 if rec.expense_bucket_id else 0
-
-    def action_view_expense_bucket(self):
-        self.ensure_one()
-        if not self.expense_bucket_id:
-            return False
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Budget"),
-            "res_model": "crossovered.budget",
-            "view_mode": "form",
-            "res_id": self.expense_bucket_id.id,
-            "target": "current",
-        }
-
     @api.depends("contract_amount", "budgeted_cost")
     def _compute_budgeted_margin(self):
         for rec in self:
@@ -450,9 +418,8 @@ class PRWorkOrder(models.Model):
             rec._ensure_project_expense_bucket(sync_budget=True)
 
     def _ensure_project_expense_bucket(self, sync_budget=False):
-        Budget = self.env["crossovered.budget"].sudo()
-        BudgetLine = self.env["crossovered.budget.lines"].sudo()
-        today = fields.Date.context_today(self)
+        ExpenseBucket = self.env["pr.expense.bucket"].sudo()
+        ExpenseBucketLine = self.env["pr.expense.bucket.line"].sudo()
 
         for rec in self:
             cost_centers = rec.cost_center_ids.mapped("analytic_account_id").filtered(lambda a: a)
@@ -462,16 +429,12 @@ class PRWorkOrder(models.Model):
             total_budget = sum(cost_centers.mapped("budget_allowance"))
 
             if not rec.expense_bucket_id:
-                bucket = Budget.create({
-                    "name": _("%s - CAPEX Budget") % rec.name,
+                bucket = ExpenseBucket.create({
+                    "name": _("%s - CAPEX Bucket") % rec.name,
                     "scope": "project",
                     "expense_type": "capex",
                     "work_order_id": rec.id,
-                    "source_budget_limit": total_budget,
-                    "date_from": rec.date_start or today,
-                    "date_to": rec.date_end or today,
-                    "company_id": rec.company_id.id,
-                    "user_id": self.env.user.id,
+                    "budget_amount": total_budget,
                 })
                 rec.sudo().write({"expense_bucket_id": bucket.id})
             else:
@@ -479,22 +442,17 @@ class PRWorkOrder(models.Model):
                 if bucket.work_order_id != rec:
                     bucket.write({"work_order_id": rec.id})
 
-            existing_cc_ids = set(bucket.crossovered_budget_line.mapped("analytic_account_id").ids)
+            existing_cc_ids = set(bucket.line_ids.mapped("cost_center_id").ids)
             for analytic in cost_centers:
                 if analytic.id in existing_cc_ids:
                     continue
-                BudgetLine.create({
-                    "crossovered_budget_id": bucket.id,
-                    "analytic_account_id": analytic.id,
-                    "date_from": bucket.date_from or today,
-                    "date_to": bucket.date_to or today,
-                    "planned_amount": analytic.budget_allowance or 0.0,
+                ExpenseBucketLine.create({
+                    "bucket_id": bucket.id,
+                    "cost_center_id": analytic.id,
                 })
 
-            if sync_budget and not bucket.source_budget_limit:
-                bucket.write({
-                    "source_budget_limit": rec.budgeted_cost or total_budget,
-                })
+            if sync_budget:
+                bucket.write({"budget_amount": rec.budgeted_cost or total_budget})
 
     def action_acc_approve(self):
         for rec in self:
@@ -549,7 +507,6 @@ class PRWorkOrder(models.Model):
 
     def action_cancel(self):
         for rec in self:
-            rec._remove_linked_expense_bucket()
             rec.state = "cancel"
 
 

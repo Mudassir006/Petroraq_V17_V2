@@ -1,7 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError, ValidationError
-from odoo.osv import expression
 
 import logging
 
@@ -73,12 +72,6 @@ class PurchaseOrder(models.Model):
     show_pm_approved = fields.Boolean(compute="_compute_show_approvals", store=False)
     show_od_approved = fields.Boolean(compute="_compute_show_approvals", store=False)
     show_md_approved = fields.Boolean(compute="_compute_show_approvals", store=False)
-    is_current_user_approver = fields.Boolean(
-        string="Is Current User Approver",
-        compute="_compute_is_current_user_approver",
-        search="_search_is_current_user_approver",
-        store=False,
-    )
     subtotal = fields.Float(
         string="Subtotal", compute="_compute_amount_untaxed_custom", store=True
     )
@@ -525,56 +518,6 @@ class PurchaseOrder(models.Model):
                 order.show_od_approved = True
             elif required_stage == "md" and user.has_group("pr_custom_purchase.managing_director"):
                 order.show_md_approved = True
-
-    def _compute_is_current_user_approver(self):
-        for order in self:
-            order.is_current_user_approver = any([
-                order.show_pe_approved,
-                order.show_pm_approved,
-                order.show_od_approved,
-                order.show_md_approved,
-            ])
-
-    def _search_is_current_user_approver(self, operator, value):
-        if operator not in ("=", "!=") or not isinstance(value, bool):
-            raise ValidationError(_("Unsupported search operation for current approver filter."))
-
-        user = self.env.user
-        stage_domains = []
-
-        if user.has_group("pr_custom_purchase.project_engineer"):
-            stage_domains.append([("pe_approved", "=", False)])
-        if user.has_group("pr_custom_purchase.project_manager"):
-            stage_domains.append([
-                ("subtotal", ">", 10000),
-                ("pe_approved", "=", True),
-                ("pm_approved", "=", False),
-            ])
-        if user.has_group("pr_custom_purchase.operations_director"):
-            stage_domains.append([
-                ("subtotal", ">", 100000),
-                ("pe_approved", "=", True),
-                ("pm_approved", "=", True),
-                ("od_approved", "=", False),
-            ])
-        if user.has_group("pr_custom_purchase.managing_director"):
-            stage_domains.append([
-                ("subtotal", ">", 500000),
-                ("pe_approved", "=", True),
-                ("pm_approved", "=", True),
-                ("od_approved", "=", True),
-                ("md_approved", "=", False),
-            ])
-
-        if stage_domains:
-            approval_domain = expression.OR(stage_domains)
-            matching_domain = expression.AND([[("state", "=", "pending")], approval_domain])
-        else:
-            matching_domain = [("id", "=", 0)]
-
-        if (operator == "=" and value) or (operator == "!=" and not value):
-            return matching_domain
-        return expression.NOT(matching_domain)
 
     def action_reset_to_draft(self):
         for order in self:

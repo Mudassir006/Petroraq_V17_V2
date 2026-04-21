@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+      <record id="account_report_tax_view_new" model="ir.ui.view">
+        <field name="name">Tax Reports</field>
+        <field name="model">account.tax.report.wizard</field>
+        <field name="inherit_id" ref="accounting_pdf_reports.accounting_tax_report_view"/>
+        <field name="arch" type="xml">
+        <data>
+            <button name='check_report' position="attributes">
+                <attribute name="string">PRINT PDF</attribute>
+            </button>
+            <button name='check_report' position="after">
+                <button name="check_report_excel" string="PRINT EXCEL" type="object" class="btn-info"/>
+            </button>
+        </data>
+        </field>
+    </record>
+    </data>
+</odoo>

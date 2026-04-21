@@ -5,10 +5,5 @@
             <field name="name">HR Holidays Supervisor</field>
             <field name="implied_ids" eval="[(4, ref('hr_holidays.group_hr_holidays_user'))]"/>
         </record>
-
-        <record id="group_leave_allocation_limit_override" model="res.groups">
-            <field name="name">Leave Allocation Limit Override</field>
-            <field name="implied_ids" eval="[(4, ref('hr_holidays.group_hr_holidays_user'))]"/>
-        </record>
     </data>
 </odoo>

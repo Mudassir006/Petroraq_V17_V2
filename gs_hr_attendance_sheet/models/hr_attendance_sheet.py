@@ -713,15 +713,13 @@ class AttendanceSheet(models.Model):
                         sheet.employee_id.resource_calendar_id.hours_per_day,
                         sheet.employee_id.add_overtime
                     )
+                sheet.tot_overtime = tot_overtime_hours_from_calc_def
                 if sheet.employee_id.add_overtime:
-                    approved_overtime_lines = overtime_lines.filtered(
-                        lambda l: l.overtime_approval_state == 'approved'
-                    )
-                    sheet.tot_overtime = sum(approved_overtime_lines.mapped('approved_overtime_hours'))
-                    sheet.tot_overtime_amount = sum(approved_overtime_lines.mapped('approved_overtime_amount'))
+                    basic_salary = sheet.employee_id.contract_id.wage or 0
+                    hourly_rate = (basic_salary / 30 / 8) * 1.5
+                    sheet.tot_overtime_amount = sheet.tot_overtime * hourly_rate
                 else:
-                    sheet.tot_overtime = 0.0
-                    sheet.tot_overtime_amount = 0.0
+                    sheet.tot_overtime_amount = 0
             else:
                 overtime_lines = sheet.line_ids.filtered(
                     lambda l: l.worked_hours > overtime_min_worked_hours or (l.pl_sign_in == 0 and l.ac_sign_in > 0))
@@ -736,18 +734,18 @@ class AttendanceSheet(models.Model):
                         sheet.employee_id.add_overtime
                     )
 
-                if sheet.employee_id.add_overtime:
-                    approved_overtime_lines = overtime_lines.filtered(
-                        lambda l: l.overtime_approval_state == 'approved'
-                    )
-                    sheet.tot_overtime = sum(approved_overtime_lines.mapped('approved_overtime_hours'))
-                    sheet.tot_overtime_amount = sum(approved_overtime_lines.mapped('approved_overtime_amount'))
+                sheet.tot_overtime = tot_overtime_hours_from_calc_def if sheet.employee_id.add_overtime else 0.0
+
+                if sheet.employee_id.add_overtime and sheet.tot_overtime:
+                    wage = sheet.employee_id.contract_id.wage or 0.0
+                    hours_per_day = sheet.employee_id.contract_id.resource_calendar_id.hours_per_day or 8.0
+                    hourly_rate = (wage / 30.0) / hours_per_day
+                    sheet.tot_overtime_amount = sheet.tot_overtime * hourly_rate * 1.5
                 else:
-                    sheet.tot_overtime = 0.0
                     sheet.tot_overtime_amount = 0.0
 
             # sheet.tot_overtime_amount = (((tot_overtime_custom * 1.5) * sheet.employee_id.contract_id.wage) / 208) if sheet.employee_id.add_overtime else 0
-            sheet.no_overtime = len(overtime_lines.filtered(lambda l: l.overtime_approval_state == 'approved'))
+            sheet.no_overtime = len(overtime_lines)
             # Compute Total Late In
             late_lines = sheet.line_ids.filtered(lambda l: l.late_in > 0)
             sheet.tot_late = sum([l.late_in for l in late_lines])
@@ -1368,7 +1366,7 @@ class AttendanceSheet(models.Model):
         carry_overtime_amount = 0.0
         carry_early_checkout_amount = 0.0
         carry_amount = 0.0
-        previous_sheet = self.search([
+        previous_sheets = self.search([
             ('employee_id', '=', self.employee_id.id),
             ('state', '=', 'done'),
             ('id', '!=', self.id),
@@ -1376,46 +1374,47 @@ class AttendanceSheet(models.Model):
             ('predictive_cutoff_date', '!=', False),
             ('date_to', '<', self.date_from),
             ('carry_forward_settled_sheet_id', '=', False),
-        ], order='date_to desc', limit=1)
+        ], order='date_to asc')
 
-        if previous_sheet:
-            if not previous_sheet.predictive_cutoff_date or previous_sheet.predictive_cutoff_date >= previous_sheet.date_to:
-                previous_sheet.write({
+        for prev_sheet in previous_sheets:
+            if not prev_sheet.predictive_cutoff_date or prev_sheet.predictive_cutoff_date >= prev_sheet.date_to:
+                prev_sheet.write({
                     'carry_forward_processed': True,
                     'carry_forward_run_date': fields.Date.context_today(self),
                     'carry_forward_amount': 0.0,
                     'carry_forward_settled_sheet_id': self.id,
                 })
+                continue
+
+            # Rebuild prior period with actual attendance (no projection) to get true late/absence deductions.
+            prev_sheet.with_context(force_actual_attendance=True).get_attendances()
+            pending_lines = prev_sheet.line_ids.filtered(
+                lambda l: l.date and l.date > prev_sheet.predictive_cutoff_date
+            )
+            source_absence_amount = sum(pending_lines.mapped('absence_amount'))
+            source_late_amount = sum(pending_lines.mapped('late_in_amount'))
+            source_diff_amount = sum(pending_lines.mapped('diff_amount'))
+            source_early_checkout_amount = sum(pending_lines.mapped(
+                'early_check_out_amount')) if 'early_check_out_amount' in pending_lines._fields else 0.0
+            if prev_sheet.employee_id.add_overtime:
+                source_overtime_amount = sum([v for v in pending_lines.mapped('overtime_amount') if v > 0])
             else:
-                # Rebuild only the latest finalized predictive period with actual attendance.
-                previous_sheet.with_context(force_actual_attendance=True).get_attendances()
-                pending_lines = previous_sheet.line_ids.filtered(
-                    lambda l: l.date and previous_sheet.predictive_cutoff_date < l.date < self.date_from
-                )
-                source_absence_amount = sum(pending_lines.mapped('absence_amount'))
-                source_late_amount = sum(pending_lines.mapped('late_in_amount'))
-                source_diff_amount = sum(pending_lines.mapped('diff_amount'))
-                source_early_checkout_amount = sum(pending_lines.mapped(
-                    'early_check_out_amount')) if 'early_check_out_amount' in pending_lines._fields else 0.0
-                if previous_sheet.employee_id.add_overtime:
-                    source_overtime_amount = sum(pending_lines.mapped('approved_overtime_amount'))
-                else:
-                    source_overtime_amount = 0.0
-                source_amount = source_absence_amount + source_late_amount + source_diff_amount + source_early_checkout_amount - source_overtime_amount
+                source_overtime_amount = 0.0
+            source_amount = source_absence_amount + source_late_amount + source_diff_amount + source_early_checkout_amount - source_overtime_amount
 
-                carry_absence_amount += source_absence_amount
-                carry_late_amount += source_late_amount
-                carry_diff_amount += source_diff_amount
-                carry_early_checkout_amount += source_early_checkout_amount
-                carry_overtime_amount += source_overtime_amount
-                carry_amount += source_amount
+            carry_absence_amount += source_absence_amount
+            carry_late_amount += source_late_amount
+            carry_diff_amount += source_diff_amount
+            carry_early_checkout_amount += source_early_checkout_amount
+            carry_overtime_amount += source_overtime_amount
+            carry_amount += source_amount
 
-                previous_sheet.write({
-                    'carry_forward_processed': True,
-                    'carry_forward_run_date': fields.Date.context_today(self),
-                    'carry_forward_amount': source_amount,
-                    'carry_forward_settled_sheet_id': self.id,
-                })
+            prev_sheet.write({
+                'carry_forward_processed': True,
+                'carry_forward_run_date': fields.Date.context_today(self),
+                'carry_forward_amount': source_amount,
+                'carry_forward_settled_sheet_id': self.id,
+            })
 
         carry_absence_amount += (self.opening_carry_absence_amount or 0.0)
         carry_late_amount += (self.opening_carry_late_amount or 0.0)

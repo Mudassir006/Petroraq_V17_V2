@@ -1,6 +1,6 @@
 {
     "name": "Petroraq Retention (Progress Invoice Deduction)",
-    "version": "17.0.1.0.1",
+    "version": "17.0.1.0.0",
     "category": "Sales",
     "summary": "Deduct retention % from each invoice like downpayment deduction.",
     "depends": ["sale", "account"],

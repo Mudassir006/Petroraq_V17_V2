@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Human Resources/Attendance',
-    'version': '17.0.1.0.3',
+    'version': '17.0.1.0.0',
     # any module necessary for this one to work correctly
     'depends': ['pr_hr_contract', 'gs_hr_attendance_sheet'],
 

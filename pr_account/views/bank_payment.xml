@@ -259,7 +259,6 @@
                             <button name="action_open_reference_record"
                                     type="object"
                                     icon="fa-external-link"
-                                    title=""
                                     class="oe_link"
                                     invisible="not reference_number"
                                     help="Open Linked Document"/>

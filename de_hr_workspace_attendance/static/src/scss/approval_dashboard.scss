@@ -6,9 +6,8 @@
   gap: 10px;
   padding: 18px 20px;
   border-radius: 12px;
-  background: #f6f1e8;
-  border: 1px solid #e4dccf;
-  color: #1f2937;
+  background: linear-gradient(135deg, #0b5ed7, #0dcaf0);
+  color: #fff;
 
   .de-dashboard-greeting {
     font-size: 14px;
@@ -27,7 +26,7 @@
 
   .de-dashboard-subtitle {
     font-size: 14px;
-    opacity: 0.9;
+    opacity: 0.92;
   }
 
   .de-dashboard-hero-left {
@@ -39,22 +38,19 @@
   }
 
   .de-dashboard-refresh {
-    border: 1px solid #d5cabb;
+    border: 0;
     font-weight: 600;
-    color: #1f2937;
-    background: #fff;
+    color: #0b5ed7;
   }
 }
 
 .de-dashboard-grid {
   .de-dashboard-tile {
-    position: relative;
-    border: 1px solid #e8e8e8;
-    background: #fff;
+    border: none;
     width: 100%;
-    min-height: 120px;
+    min-height: 150px;
     border-radius: 14px;
-    color: #111827;
+    color: #fff;
     text-align: left;
     padding: 18px;
     display: flex;
@@ -69,50 +65,17 @@
     }
   }
 
-  .de-dashboard-tile-pending {
-    border-color: #f5b5b5;
-    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.12);
-  }
-
-  .de-dashboard-pending-dot {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 12px;
-    height: 12px;
-    border-radius: 999px;
-    background: #dc2626;
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55);
-    animation: de-pulse-red 1.8s infinite;
-  }
+  .de-dashboard-tile-primary { background: linear-gradient(135deg, #0d6efd, #0b5ed7); }
+  .de-dashboard-tile-success { background: linear-gradient(135deg, #198754, #157347); }
+  .de-dashboard-tile-warning { background: linear-gradient(135deg, #fd7e14, #dc6a0f); }
+  .de-dashboard-tile-danger { background: linear-gradient(135deg, #dc3545, #bb2d3b); }
+  .de-dashboard-tile-info { background: linear-gradient(135deg, #0dcaf0, #31b0d5); }
 
   .de-dashboard-icon {
-    width: 54px;
+    font-size: 28px;
+    width: 48px;
     text-align: center;
-    flex-shrink: 0;
-  }
-
-  .de-dashboard-icon-box {
-    width: 54px;
-    height: 54px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    background: #f8f5ef;
-    border: 1px solid #ece4d8;
-  }
-
-  .de-tone-primary { color: #2563eb; }
-  .de-tone-success { color: #15803d; }
-  .de-tone-warning { color: #d97706; }
-  .de-tone-danger { color: #dc2626; }
-  .de-tone-info { color: #0891b2; }
-
-  .de-dashboard-info {
-    color: #111827;
+    opacity: 0.9;
   }
 
   .de-dashboard-count {
@@ -129,13 +92,7 @@
 
   .de-dashboard-hint {
     font-size: 13px;
-    opacity: 0.7;
+    opacity: 0.9;
     margin-top: 6px;
   }
-}
-
-@keyframes de-pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55); }
-  70% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }

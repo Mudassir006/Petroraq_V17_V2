@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="pr_sale_budget_increase_request_action" model="ir.actions.act_window">
-        <field name="name">Budget Requests</field>
+        <field name="name">Budget Increase Requests</field>
         <field name="res_model">budget.increase.request</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('state', 'in', ['pm_approval', 'accounts_approval', 'md_approval'])]</field>
+        <field name="domain">[('state', '=', 'md_approval')]</field>
         <field name="context">{'create': False, 'edit': False}</field>
     </record>
 
@@ -13,6 +13,6 @@
               name="Budget Requests"
               action="pr_sale_budget_increase_request_action"
               sequence="3"
-              groups="pr_custom_purchase.project_manager,account.group_account_manager,account.group_account_user,pr_custom_purchase.managing_director"/>
+              groups="pr_custom_purchase.managing_director"/>
 
 </odoo>

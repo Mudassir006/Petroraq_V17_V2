@@ -34,7 +34,7 @@
         <field name="name">hr.attendance.tree.workspace</field>
         <field name="model">hr.attendance</field>
         <field name="arch" type="xml">
-            <tree string="Employee attendances" decoration-success="color == 10" decoration-danger="color == 1" sample="1" duplicate="false" default_order="check_in desc">
+            <tree string="Employee attendances" decoration-success="color == 10" decoration-danger="color == 1" sample="1" duplicate="false">
                 <field name="employee_id" widget="many2one_avatar_user"/>
                 <field name="check_in"/>
                 <field name="check_out" options="{}"/>
@@ -44,33 +44,16 @@
             </tree>
         </field>
     </record>
-
-    <record id="hr_attendance_workspace_search_view" model="ir.ui.view">
-        <field name="name">hr.attendance.search.workspace</field>
-        <field name="model">hr.attendance</field>
-        <field name="arch" type="xml">
-            <search string="Attendances">
-                <filter name="today_attendances"
-                        string="Today"
-                        domain="[('check_in', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('check_in', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
-                <separator/>
-                <filter name="group_by_day"
-                        string="Daily"
-                        context="{'group_by': 'check_in:day'}"/>
-            </search>
-        </field>
-    </record>
-
+     
     <record id="action_my_attendance" model="ir.actions.act_window">
         <field name="name">Attendances</field>
         <field name="res_model">hr.attendance</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="hr_attendance_workspace_search_view"/>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_attendance_workspace_tree_view')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('hr_attendance_workspace_form_view')})]"/>
         <field name="domain">['|', ('employee_id.user_id', '=', uid), ('employee_id.parent_id.user_id', '=', uid)]</field>
-        <field name="context">{'create': False, 'edit': False, 'search_default_today_attendances': 1, 'search_default_group_by_day': 1}</field>
+        <field name="context">{'create': False,'edit': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
                 No attendance records to display
@@ -79,14 +62,14 @@
             </p>
         </field>
     </record>
-
+    
     <menuitem id="menu_my_attendance"
               name="Attendance"
               parent="de_hr_workspace.menu_my_workspace"
               sequence="30"
               groups="de_hr_workspace.group_hr_employee_workspace"/>
-
+    
     <menuitem id="menu_my_attendance_attendance"
               name="My Attendance" parent="menu_my_attendance" action="action_my_attendance" sequence="10" groups="de_hr_workspace.group_hr_employee_workspace"/>
-
+   
 </odoo>

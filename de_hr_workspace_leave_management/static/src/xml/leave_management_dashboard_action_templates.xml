@@ -6,8 +6,6 @@
                 <div class="w-100 d-flex flex-wrap gap-2">
                     <TimeOffEmpCard name="currentEmployee.data.name"
                                     id="currentEmployee.data.id"
-                                    employee_code="currentEmployee.data.employee_code"
-                                    joining_date="currentEmployee.data.joining_date"
                                     work_email="currentEmployee.data.work_email"
                                     work_phone="currentEmployee.data.work_phone"
                                     image_1920="currentEmployee.data.image_1920"
@@ -28,6 +26,9 @@
                 <div class="w-100 d-flex flex-wrap gap-2">
                     <SimpleLeaveSummaryCard id="currentEmployee.data.id"
                                             employees="currentEmployee.data.children"/>
+                </div>
+                <div class="w-100 d-flex flex-wrap gap-2">
+                    <LeaveRequestCountCard id="currentEmployee.data.id"/>
                 </div>
             </div>
         </div>

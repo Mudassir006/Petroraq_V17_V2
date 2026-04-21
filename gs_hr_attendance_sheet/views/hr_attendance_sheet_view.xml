@@ -133,11 +133,11 @@
                         <field name="carry_forward_diff_amount" readonly="1"/>
                         <field name="carry_forward_overtime_amount" readonly="1"/>
                         <field name="carry_forward_early_checkout_amount" readonly="1"/>
-                        <field name="opening_carry_absence_amount" readonly="state  != 'draft'" invisible="1"/>
-                        <field name="opening_carry_late_amount" readonly="state  != 'draft'" invisible="1"/>
-                        <field name="opening_carry_diff_amount" readonly="state  != 'draft'" invisible="1"/>
-                        <field name="opening_carry_early_checkout_amount" readonly="state  != 'draft'" invisible="1"/>
-                        <field name="opening_carry_overtime_amount" readonly="state  != 'draft'" invisible="1"/>
+                        <field name="opening_carry_absence_amount" readonly="state  != 'draft'"/>
+                        <field name="opening_carry_late_amount" readonly="state  != 'draft'"/>
+                        <field name="opening_carry_diff_amount" readonly="state  != 'draft'"/>
+                        <field name="opening_carry_early_checkout_amount" readonly="state  != 'draft'"/>
+                        <field name="opening_carry_overtime_amount" readonly="state  != 'draft'"/>
                         <field name="contract_id"/>
                         <field name="has_overtime" invisible="1"/>
                         <field name="predictive_mode"
@@ -271,7 +271,7 @@
                                     <field name="carry_forward_deduction" style="color: red;"/>
                                 </group>
 
-                                <group string="Opening Carry (Manual)" invisible="1">
+                                <group string="Opening Carry (Manual)">
                                     <field name="opening_carry_absence_amount" style="color: red;"/>
                                     <field name="opening_carry_late_amount" style="color: red;"/>
                                     <field name="opening_carry_diff_amount" style="color: red;"/>

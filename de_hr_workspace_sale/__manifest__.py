@@ -9,7 +9,7 @@
     """,
     'author': 'Mudassir',
     'website': 'https://www.petroraq.com',
-    'version': '0.3',
+    'version': '0.1',
     'category': 'Human Resources',
 
     # any module necessary for this one to work correctly

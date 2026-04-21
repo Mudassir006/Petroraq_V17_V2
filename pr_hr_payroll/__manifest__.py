@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Human Resources/Payroll',
-    'version': '17.0.1.0.2',
+    'version': '17.0.1.0.0',
     # any module necessary for this one to work correctly
     'depends': ['pr_hr_contract'],
 
@@ -24,7 +24,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/hr_contract.xml',
-        'views/hr_employee.xml',
         'views/hr_salary_rule.xml',
         'views/hr_salary_attachment_type.xml',
         'views/hr_payslip_hold_views.xml',

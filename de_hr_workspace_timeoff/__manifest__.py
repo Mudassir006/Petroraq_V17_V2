@@ -9,7 +9,7 @@
     """,
     'author': 'Dynexcel',
     'website': 'https://www.dynexcel.com',
-    'version': '0.1.2',
+    'version': '0.1.1',
     'category': 'Human Resources',
 
     # any module necessary for this one to work correctly

@@ -9,8 +9,6 @@ class HrPayslip(models.Model):
     def _get_workday_lines(self):
         for rec in self:
             if not rec.is_bool:
-                if rec.attendance_sheet_id:
-                    rec.attendance_sheet_id._mark_late_checkins_as_absent()
                 self.ensure_one()
                 rec.worked_days_line_ids = [(5, 0, 0)]
                 work_entry_obj = self.env['hr.work.entry.type']
@@ -50,18 +48,18 @@ class HrPayslip(models.Model):
                     'number_of_days': rec.attendance_sheet_id.paid_leave,
                     'number_of_hours': total_paid_leave_hours,
                 }]
-                approved_overtime_hours = rec.attendance_sheet_id.approved_overtime_hours or 0.0
-                overtime = []
-                if approved_overtime_hours > 0:
-                    overtime = [{
-                        'name': "Overtime",
-                        'code': 'OVT',
-                        'work_entry_type_id': overtime_work_entry[0].id,
-                        'sequence': 30,
-                        'number_of_days': approved_overtime_hours / rec.employee_id.contract_id.resource_calendar_id.hours_per_day,
-                        'number_of_hours': approved_overtime_hours,
-                        'amount': (rec.attendance_sheet_id.approved_overtime_amount + rec.attendance_sheet_id.carry_forward_overtime_amount) if rec.employee_id.add_overtime else 0.0,
-                    }]
+                overtime = [{
+                    'name': "Overtime",
+                    'code': 'OVT',
+                    'work_entry_type_id': overtime_work_entry[0].id,
+                    'sequence': 30,
+                    # 'number_of_days': 0,
+                    'number_of_days': rec.attendance_sheet_id.approved_overtime_hours / rec.employee_id.contract_id.resource_calendar_id.hours_per_day,
+                    'number_of_hours': rec.attendance_sheet_id.approved_overtime_hours,
+                    'amount': (rec.attendance_sheet_id.approved_overtime_amount + rec.attendance_sheet_id.carry_forward_overtime_amount) if rec.employee_id.add_overtime else 0.0,
+                }]
+                # if not rec.attendance_sheet_id.overtime_approved:
+                #     overtime = []
                 if not attendances and not leave_ids:
                     num_weekend = 0
                     weekend_amount = 0

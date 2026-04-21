@@ -85,6 +85,6 @@
               parent="de_hr_workspace.menu_my_employee_approvals"
               action="action_my_leave_request_approvals"
               sequence="30"
-              groups="de_hr_workspace.group_hr_employee_workspace,de_hr_workspace.group_hr_employee_approvals,hr_holidays.group_hr_holidays_manager,pr_hr_holidays.custom_group_hr_holidays_supervisor"/>
+              groups="de_hr_workspace.group_hr_employee_approvals"/>
 
 </odoo>

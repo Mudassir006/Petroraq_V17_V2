@@ -77,14 +77,6 @@
                                 string="Employee Leave" type="object"
                                 icon="fa-calendar" invisible="leave_id == False"/>
                     </div>
-                    <div class="alert alert-danger"
-                         role="alert"
-                         invisible="not allocation_override_applied and not allocation_bypassed">
-                        <i class="fa fa-exclamation-triangle me-1"/>
-                        <strong>Advance Allocation: There is no Leave Allocation to Cover this request.</strong>
-                        <field name="allocation_override_note" readonly="1" nolabel="1"
-                               placeholder="Requested days exceed allocation. Approval will use advance allocation override."/>
-                    </div>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1>
@@ -112,10 +104,6 @@
                                        class="oe_inline" readonly="state  != 'draft'"/>
                             </div>
                             <field name="requested_days" readonly="1"/>
-                            <field name="allocation_override_applied" invisible="1"/>
-                            <field name="allocation_bypassed" invisible="1"/>
-                            <field name="allocation_override_note" invisible="1"/>
-
                         </group>
                         <group>
                             <field name="company_id" readonly="state  != 'draft'" string="Company"

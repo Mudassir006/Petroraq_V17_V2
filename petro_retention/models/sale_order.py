@@ -15,7 +15,7 @@ class SaleOrder(models.Model):
     retention_amount_total = fields.Monetary(
         string="Retention Amount",
         currency_field="currency_id",
-        compute_sudo="_compute_retention_totals",
+        compute="_compute_retention_totals",
         inverse="_inverse_retention_amount_total",
         store=True,
         copy=False,
@@ -25,7 +25,7 @@ class SaleOrder(models.Model):
     retention_withheld_total = fields.Monetary(
         string="Retention Withheld",
         currency_field="currency_id",
-        compute_sudo="_compute_retention_totals",
+        compute="_compute_retention_totals",
         store=False,
         copy=False,
     )
@@ -33,7 +33,7 @@ class SaleOrder(models.Model):
     retention_remaining = fields.Monetary(
         string="Retention Remaining",
         currency_field="currency_id",
-        compute_sudo="_compute_retention_totals",
+        compute="_compute_retention_totals",
         store=False,
         copy=False,
     )

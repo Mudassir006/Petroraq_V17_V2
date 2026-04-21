@@ -93,11 +93,6 @@
         </style>
         <section class="get-in-touch">
             <h1 class="title">Shortage Request</h1>
-            <t t-if="error_message">
-                <div class="alert alert-danger" style="margin-bottom: 20px;">
-                    <t t-esc="error_message"/>
-                </div>
-            </t>
             <form class="contact-form row" action="/shortage_request/create" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                 <div class="form-field col-lg-6">
@@ -140,53 +135,9 @@
                     <label class="label" for="message">Reason</label>
                 </div>
                 <div class="form-field col-lg-12">
-                    <input class="submit-btn" id="submit_shortage" type="submit" value="Submit" t-att-disabled="'disabled' if not has_attendance else None"/>
+                    <input class="submit-btn" type="submit" value="Submit"/>
                 </div>
             </form>
         </section>
-        <script type="text/javascript">
-            document.addEventListener("DOMContentLoaded", function () {
-                const employeeInput = document.getElementById("employee_id");
-                const dateInput = document.getElementById("date");
-                const checkInInput = document.getElementById("checkin");
-                const checkOutInput = document.getElementById("checkout");
-                const shortageInput = document.getElementById("shortage");
-                const submitButton = document.getElementById("submit_shortage");
-
-                const fetchAttendanceByDate = async () => {
-                    if (!employeeInput || !dateInput || !dateInput.value) {
-                        return;
-                    }
-                    const queryParams = new URLSearchParams({
-                        employee_id: employeeInput.value,
-                        date: dateInput.value,
-                    });
-                    const response = await fetch(`/shortage_request/attendance_info?${queryParams.toString()}`, {
-                        method: "GET",
-                        headers: {
-                            "Accept": "application/json",
-                        },
-                    });
-                    if (!response.ok) {
-                        return;
-                    }
-                    const data = await response.json();
-                    checkInInput.value = data.check_in || "";
-                    checkOutInput.value = data.check_out || "";
-                    if (data.shortage_text) {
-                        shortageInput.value = data.shortage_text;
-                    } else {
-                        shortageInput.value = "";
-                    }
-                    if (submitButton) {
-                        submitButton.disabled = !data.has_attendance;
-                    }
-                };
-
-                if (dateInput) {
-                    dateInput.addEventListener("change", fetchAttendanceByDate);
-                }
-            });
-        </script>
     </template>
 </odoo>

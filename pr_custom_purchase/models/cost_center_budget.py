@@ -23,7 +23,6 @@ class AccountAnalyticAccount(models.Model):
     @api.depends("budget_allowance", "budget_code", "budget_type")
     def _compute_budget_metrics(self):
         PurchaseOrder = self.env["purchase.order"].sudo()
-        BudgetLine = self.env["crossovered.budget.lines"].sudo()
         for rec in self:
             spent = 0.0
             if rec.id:
@@ -43,18 +42,8 @@ class AccountAnalyticAccount(models.Model):
                             continue
                         spent += (line.price_subtotal or 0.0) * (percentage / 100.0)
 
-            effective_allowance = rec.budget_allowance or 0.0
-            if rec.id and BudgetLine:
-                approved_lines = BudgetLine.search([
-                    ("analytic_account_id", "=", rec.id),
-                    ("crossovered_budget_id.state", "in", ["validate", "done"]),
-                ])
-                approved_allowance = sum(approved_lines.mapped("planned_amount"))
-                if approved_allowance > 0.0:
-                    effective_allowance = approved_allowance
-
             rec.budget_spent = spent
-            rec.budget_left = effective_allowance - spent
+            rec.budget_left = (rec.budget_allowance or 0.0) - spent
 
     @api.model
     def get_cost_center_budget(self, budget_type, budget_code):

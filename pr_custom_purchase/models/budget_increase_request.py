@@ -129,7 +129,6 @@ class BudgetIncreaseRequest(models.Model):
         )
 
     def action_md_approve(self):
-        BudgetLine = self.env["crossovered.budget.lines"].sudo()
         for rec in self:
             if rec.state != "md_approval":
                 continue
@@ -137,11 +136,6 @@ class BudgetIncreaseRequest(models.Model):
                 raise UserError(_("Only Managing Director can approve at this stage."))
             for line in rec.line_ids:
                 line.cost_center_id.sudo().budget_allowance += line.requested_increase
-                budget_lines = BudgetLine.search([
-                    ("analytic_account_id", "=", line.cost_center_id.id),
-                ])
-                for budget_line in budget_lines:
-                    budget_line.planned_amount = (budget_line.planned_amount or 0.0) + line.requested_increase
             rec.state = "approved"
 
     def action_reset_to_draft(self):

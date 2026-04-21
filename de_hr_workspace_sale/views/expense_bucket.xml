@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="pr_sale_expense_bucket_approvals_action" model="ir.actions.act_window">
-        <field name="name">Budgets</field>
-        <field name="res_model">crossovered.budget</field>
+    <record id="pr_sale_expense_bucket_md_approvals_action" model="ir.actions.act_window">
+        <field name="name">Expense Bucket MD Approvals</field>
+        <field name="res_model">pr.expense.bucket</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('state', '=', 'confirm'), ('approval_state', 'in', ['pm_approval', 'accounts_approval', 'md_approval'])]</field>
+        <field name="domain">[('state', '=', 'md_approval')]</field>
         <field name="context">{'create': False, 'edit': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No budgets are pending your approval.
+                No expense buckets are pending MD approval.
             </p>
         </field>
     </record>
 
-    <menuitem id="expense_bucket_approvals_view_menu"
+    <menuitem id="expense_bucket_md_approvals_view_menu"
               parent="menu_my_purchase_approvals"
-              name="Budgets"
-              action="pr_sale_expense_bucket_approvals_action"
-              sequence="6"
-              groups="de_hr_workspace.group_hr_employee_approvals,pr_custom_purchase.project_manager,account.group_account_manager,account.group_account_user,pr_custom_purchase.managing_director"/>
+              name="Expense Buckets"
+              action="pr_sale_expense_bucket_md_approvals_action"
+              sequence="2"
+              groups="pr_custom_purchase.managing_director"/>
 </odoo>

@@ -7,7 +7,7 @@
     'author': 'info@odooclinic.com',
     "website": "Www.odooclinic.com",
     'category': 'hr',
-    'version': '17.0.1.2',
+    'version': '17.0.1.1',
     'images': ['static/description/bannar.jpg'],
     'depends': ['base',
                 'hr',

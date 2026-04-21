@@ -50,12 +50,6 @@ class ExpenseBucket(models.Model):
         string="Budget Left",
         compute="_compute_budget_left",
     )
-    native_budget_id = fields.Many2one(
-        "crossovered.budget",
-        string="Analytic Budget",
-        copy=False,
-        readonly=True,
-    )
 
     can_pm_approve = fields.Boolean(compute="_compute_role_flags")
     can_accounts_approve = fields.Boolean(compute="_compute_role_flags")
@@ -188,54 +182,7 @@ class ExpenseBucket(models.Model):
             for rec in self:
                 if rec.state != "draft":
                     raise UserError(_("Submitted expense bucket cannot be edited."))
-        res = super().write(vals)
-        if any(field in vals for field in {"name", "budget_amount", "line_ids"}):
-            self._sync_native_budget()
-        return res
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        records._sync_native_budget()
-        return records
-
-    def _sync_native_budget(self):
-        Budget = self.env["crossovered.budget"].sudo()
-        BudgetLine = self.env["crossovered.budget.lines"].sudo()
-        today = fields.Date.context_today(self)
-        for rec in self:
-            if not rec.native_budget_id:
-                rec.native_budget_id = Budget.create({
-                    "name": _("Budget - %s") % (rec.name or rec.display_name),
-                    "company_id": self.env.company.id,
-                    "date_from": today,
-                    "date_to": today,
-                    "user_id": self.env.user.id,
-                }).id
-            budget = rec.native_budget_id.sudo()
-
-            existing = {line.analytic_account_id.id: line for line in budget.crossovered_budget_line}
-            wanted = {}
-            for bucket_line in rec.line_ids.filtered("cost_center_id"):
-                amount = bucket_line.budget_allowance or 0.0
-                analytic = bucket_line.cost_center_id
-                wanted[analytic.id] = wanted.get(analytic.id, 0.0) + amount
-
-            for analytic_id, planned in wanted.items():
-                if analytic_id in existing:
-                    existing[analytic_id].write({"planned_amount": planned})
-                else:
-                    BudgetLine.create({
-                        "crossovered_budget_id": budget.id,
-                        "analytic_account_id": analytic_id,
-                        "date_from": budget.date_from or today,
-                        "date_to": budget.date_to or today,
-                        "planned_amount": planned,
-                    })
-
-            for analytic_id, line in existing.items():
-                if analytic_id not in wanted:
-                    line.unlink()
+        return super().write(vals)
 
     def action_submit(self):
         for rec in self:
@@ -311,14 +258,6 @@ class ExpenseBucket(models.Model):
             "context": {"default_bucket_id": self.id},
         }
 
-    def unlink(self):
-        budgets = self.mapped("native_budget_id").sudo()
-        res = super().unlink()
-        for budget in budgets:
-            if budget.exists():
-                budget.unlink()
-        return res
-
 
 class ExpenseBucketLine(models.Model):
     _name = "pr.expense.bucket.line"
@@ -351,7 +290,6 @@ class ExpenseBucketLine(models.Model):
         records = super().create(vals_list)
         for rec in records:
             rec.cost_center_id.expense_bucket_id = rec.bucket_id.id
-            rec.bucket_id._sync_native_budget()
         return records
 
     def write(self, vals):
@@ -359,7 +297,6 @@ class ExpenseBucketLine(models.Model):
             for rec in self:
                 if rec.bucket_id.state != "draft":
                     raise UserError(_("Submitted expense bucket cannot be edited."))
-        buckets = self.mapped("bucket_id")
         previous = {rec.id: rec.cost_center_id.id for rec in self}
         res = super().write(vals)
         for rec in self:
@@ -370,19 +307,15 @@ class ExpenseBucketLine(models.Model):
                 old_cc = self.env["account.analytic.account"].browse(previous_id)
                 if old_cc.exists() and old_cc.expense_bucket_id == rec.bucket_id:
                     old_cc.expense_bucket_id = False
-        (buckets | self.mapped("bucket_id"))._sync_native_budget()
         return res
 
     def unlink(self):
-        buckets = self.mapped("bucket_id")
         for rec in self:
             if rec.bucket_id.state != "draft":
                 raise UserError(_("Submitted expense bucket cannot be edited."))
             if rec.cost_center_id and rec.cost_center_id.expense_bucket_id == rec.bucket_id:
                 rec.cost_center_id.expense_bucket_id = False
-        res = super().unlink()
-        buckets._sync_native_budget()
-        return res
+        return super().unlink()
 
     @api.onchange("cost_center_id")
     def _onchange_cost_center_id(self):

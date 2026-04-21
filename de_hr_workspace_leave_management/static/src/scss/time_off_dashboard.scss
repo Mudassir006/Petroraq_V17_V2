@@ -94,55 +94,12 @@
 }
 
 .de_leave_mgmt_dashboard .de-summary-select {
-    min-width: 180px;
-    max-width: 220px;
+    min-width: 280px;
     background: #ffffff;
     border: 1px solid #cbd5e1;
     color: #0f172a;
-    min-height: 34px !important;
-    height: 34px;
-    padding: 4px 10px;
-    font-size: 0.88rem;
-    border-radius: 8px;
-    box-shadow: none;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-controls {
-    align-items: center;
-    gap: 8px !important;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-filter-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(200px, 1fr));
-    gap: 8px;
-    align-items: center;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-filter-grid .de-summary-select {
-    min-width: 0;
-    max-width: 100%;
-    width: 100%;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-filter-grid .de-summary-select:first-child {
-    min-width: 0;
-    max-width: 100%;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-controls:not(.de-simple-summary-filter-grid) .de-summary-select:first-child {
-    min-width: 240px;
-    max-width: 280px;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-controls:not(.de-simple-summary-filter-grid) input[type="date"].de-summary-select {
-    min-width: 140px;
-    max-width: 160px;
-}
-
-.de_leave_mgmt_dashboard .de-summary-select:focus {
-    border-color: #94a3b8;
-    box-shadow: 0 0 0 0.08rem rgba(100, 116, 139, 0.15);
+    min-height: 40px !important;
+    font-size: 0.98rem;
 }
 
 .de_leave_mgmt_dashboard .de-leave-tiles-grid {
@@ -448,20 +405,5 @@
 @media (max-width: 575px) {
     .de_leave_mgmt_dashboard .de-summary-strip-col {
         border-right: 0;
-    }
-
-    .de_leave_mgmt_dashboard .de-simple-summary-controls {
-        width: 100%;
-    }
-
-    .de_leave_mgmt_dashboard .de-simple-summary-filter-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .de_leave_mgmt_dashboard .de-simple-summary-controls .de-summary-select,
-    .de_leave_mgmt_dashboard .de-simple-summary-controls .de-summary-select:first-child,
-    .de_leave_mgmt_dashboard .de-simple-summary-controls input[type="date"].de-summary-select {
-        min-width: 100%;
-        max-width: 100%;
     }
 }

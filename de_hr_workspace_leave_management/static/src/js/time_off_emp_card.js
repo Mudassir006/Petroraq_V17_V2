@@ -4,7 +4,7 @@ import { Component, onWillStart, useState } from "@odoo/owl";
 export class TimeOffEmpCard extends Component {}
 TimeOffEmpCard.template = 'de_hr_workspace_leave_management.TimeOffEmpCard';
 TimeOffEmpCard.props = ['name', 'id', 'department_id', 'job_position',
-'children', 'image_1920', 'work_email', 'work_phone', 'company', 'resource_calendar_id', 'employee_code', 'joining_date'];
+'children', 'image_1920', 'work_email', 'work_phone', 'company', 'resource_calendar_id'];
 //Exports a class TimeOffEmpOrgChart that extends the Component class.
 //It is a custom component used for managing an employee organization
 //chart in the context of time off and holidays.
@@ -224,7 +224,6 @@ export class LeaveRequestCountCard extends Component {
         this.state = useState({
             duration: 'this_month',
             employee_id: '',
-            employee_search: '',
             leave_type_id: '',
             date_from: '',
             date_to: '',
@@ -241,11 +240,6 @@ export class LeaveRequestCountCard extends Component {
             this.state.leave_types = options.leave_types || [];
             await this.loadMetrics();
         });
-    }
-
-    employeeLabel(employee) {
-        const code = employee?.code || employee?.employee_code || '';
-        return code ? `${code} - ${employee.name}` : (employee?.name || '');
     }
 
     async loadMetrics() {
@@ -275,25 +269,6 @@ export class LeaveRequestCountCard extends Component {
         await this.loadMetrics();
     }
 
-    async onEmployeeSearchInput(ev) {
-        const value = (ev.target.value || '').trim();
-        this.state.employee_search = value;
-        if (!value) {
-            this.state.employee_id = '';
-            await this.loadMetrics();
-            return;
-        }
-        const normalized = value.toLowerCase();
-        const matchedEmployee = this.state.employees.find((employee) => {
-            const code = (employee.code || '').toLowerCase();
-            return this.employeeLabel(employee).toLowerCase() === normalized || code === normalized;
-        });
-        if (matchedEmployee) {
-            this.state.employee_id = matchedEmployee.id;
-            await this.loadMetrics();
-        }
-    }
-
     async onLeaveTypeChange(ev) {
         this.state.leave_type_id = ev.target.value;
         await this.loadMetrics();
@@ -319,30 +294,17 @@ export class SimpleLeaveSummaryCard extends Component {
         this.actionService = useService("action");
         this.state = useState({
             employee_id: this.props.id,
-            employee_search: '',
-            duration: 'current_contract',
-            date_from: '',
-            date_to: '',
             lines: [],
             employee_name: '',
             employee_profile: {},
         });
         onWillStart(async () => {
-            const selected = this.employeeOptions.find((employee) => employee.id === this.state.employee_id);
-            if (selected) {
-                this.state.employee_search = this.employeeLabel(selected);
-            }
             await this.loadSummary();
         });
     }
 
     get employeeOptions() {
         return this.props.employees || [];
-    }
-
-    employeeLabel(employee) {
-        const code = employee?.code || employee?.employee_code || '';
-        return code ? `${code} - ${employee.name}` : (employee?.name || '');
     }
 
     async loadSummary() {
@@ -358,12 +320,7 @@ export class SimpleLeaveSummaryCard extends Component {
         const result = await this.orm.call(
             'hr.leave',
             'get_employee_leave_simple_summary',
-            [
-                this.state.employee_id,
-                this.state.duration,
-                this.state.date_from || false,
-                this.state.date_to || false,
-            ],
+            [this.state.employee_id],
             { context: { show_all_leave_dashboard: true } }
         );
         this.state.lines = result.lines || [];
@@ -376,84 +333,9 @@ export class SimpleLeaveSummaryCard extends Component {
         await this.loadSummary();
     }
 
-    async onDurationChange(ev) {
-        this.state.duration = ev.target.value;
-        if (this.state.duration !== 'custom') {
-            this.state.date_from = '';
-            this.state.date_to = '';
-        }
-        await this.loadSummary();
-    }
-
-    async onDateFromChange(ev) {
-        this.state.date_from = ev.target.value;
-        await this.loadSummary();
-    }
-
-    async onDateToChange(ev) {
-        this.state.date_to = ev.target.value;
-        await this.loadSummary();
-    }
-
-    async onEmployeeSearchInput(ev) {
-        const value = (ev.target.value || '').trim();
-        this.state.employee_search = value;
-        if (!value) {
-            this.state.employee_id = false;
-            this.state.lines = [];
-            this.state.employee_name = '';
-            this.state.employee_profile = {};
-            return;
-        }
-        const normalized = value.toLowerCase();
-        const matchedEmployee = this.employeeOptions.find((employee) => {
-            const code = (employee.code || '').toLowerCase();
-            return this.employeeLabel(employee).toLowerCase() === normalized || code === normalized;
-        });
-        if (matchedEmployee && matchedEmployee.id !== this.state.employee_id) {
-            this.state.employee_id = matchedEmployee.id;
-            await this.loadSummary();
-        }
-    }
-
-    _todayISO() {
-        return new Date().toISOString().slice(0, 10);
-    }
-
-    _computeSummaryRange() {
-        const today = this._todayISO();
-        let start = null;
-        let end = today;
-
-        if (this.state.duration === "custom" && this.state.date_from && this.state.date_to) {
-            start = this.state.date_from;
-            end = this.state.date_to;
-        } else if (this.state.duration === "this_year") {
-            const year = new Date().getFullYear();
-            start = `${year}-01-01`;
-        } else if (this.state.duration === "this_month") {
-            const now = new Date();
-            const month = `${now.getMonth() + 1}`.padStart(2, "0");
-            start = `${now.getFullYear()}-${month}-01`;
-        } else {
-            start = this.state.employee_profile.current_contract_start_date || `${new Date().getFullYear()}-01-01`;
-        }
-
-        return { start, end };
-    }
-
     openLeaveRequests(line) {
         if (!this.state.employee_id || !line?.leave_type_id) {
             return;
-        }
-        const { start, end } = this._computeSummaryRange();
-        const domain = [
-            ["employee_id", "=", this.state.employee_id],
-            ["holiday_status_id", "=", line.leave_type_id],
-        ];
-        if (start && end) {
-            domain.push(["request_date_from", "<=", end]);
-            domain.push(["request_date_to", ">=", start]);
         }
         return this.actionService.doAction({
             type: "ir.actions.act_window",
@@ -462,7 +344,10 @@ export class SimpleLeaveSummaryCard extends Component {
             views: [[false, "list"], [false, "form"]],
             view_mode: "list,form",
             target: "current",
-            domain,
+            domain: [
+                ["employee_id", "=", this.state.employee_id],
+                ["holiday_status_id", "=", line.leave_type_id],
+            ],
             context: {
                 search_default_employee_id: this.state.employee_id,
                 default_employee_id: this.state.employee_id,

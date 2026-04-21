@@ -134,25 +134,6 @@ class AccountBankPayment(models.Model):
     # endregion [Compute Methods]
 
     # region [Actions]
-    def _check_lock_date(self):
-        for rec in self:
-            if not rec.accounting_date:
-                continue
-            company = rec.company_id
-            lock_dates = [
-                d for d in [
-                    company.fiscalyear_lock_date,
-                    company.period_lock_date,
-                    company.tax_lock_date,
-                ] if d
-            ]
-            if lock_dates and rec.accounting_date <= max(lock_dates):
-                raise ValidationError(_(
-                    "You cannot post %(voucher)s on %(date)s because the period is locked for company %(company)s.",
-                    voucher=rec.name or _("this voucher"),
-                    date=rec.accounting_date,
-                    company=company.display_name,
-                ))
 
     def make_all_draft(self):
         bank_payment_ids = self.env["pr.account.bank.payment"].sudo().search([("id", "!=", False)])
@@ -188,7 +169,6 @@ class AccountBankPayment(models.Model):
 
     def action_post(self):
         for bank_payment in self:
-            bank_payment._check_lock_date()
             if bank_payment.bank_payment_line_ids:
                 forced_journal = self.env["account.journal"].browse(3).exists()
                 if not forced_journal:

@@ -200,7 +200,6 @@
                                             <th>From</th>
                                             <th>To</th>
                                             <th>Days</th>
-                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -219,11 +218,6 @@
                                             </td>
                                             <td>
                                                 <t t-esc="all_leave['days']"/>
-                                            </td>
-                                            <td>
-                                                <span t-attf-class="badge #{'bg-success' if all_leave['status'] == 'Approved' else ('bg-danger' if all_leave['status'] in ['Refused', 'Cancelled'] else 'bg-secondary')}">
-                                                    <t t-esc="all_leave['status']"/>
-                                                </span>
                                             </td>
                                         </tr>
                                     </tbody>

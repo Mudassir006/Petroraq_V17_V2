@@ -375,27 +375,27 @@
             </div>
         </div>
     </template>
-<!--    &lt;!&ndash; replace headers &ndash;&gt;-->
-<!--    <template id="external_layout_standard" inherit_id="web.external_layout_standard">-->
-<!--        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">-->
-<!--            <t t-call="pr_custom_purchase.custom_header"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
-<!--    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed">-->
-<!--        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">-->
-<!--            <t t-call="pr_custom_purchase.custom_header"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
-<!--    <template id="external_layout_bold" inherit_id="web.external_layout_bold">-->
-<!--        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">-->
-<!--            <t t-call="pr_custom_purchase.custom_header"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
-<!--    <template id="xternal_layout_striped" inherit_id="web.external_layout_striped">-->
-<!--        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">-->
-<!--            <t t-call="pr_custom_purchase.custom_header"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
+    <!-- replace headers -->
+    <template id="external_layout_standard" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="pr_custom_purchase.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="pr_custom_purchase.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_bold" inherit_id="web.external_layout_bold">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="pr_custom_purchase.custom_header"/>
+        </xpath>
+    </template>
+    <template id="xternal_layout_striped" inherit_id="web.external_layout_striped">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="pr_custom_purchase.custom_header"/>
+        </xpath>
+    </template>
     <!-- Custom Footer Template -->
     <!--Template footer-->
     <template id="custom_footer">
@@ -425,24 +425,24 @@
         </div>
     </template>
     <!-- Footer replacements for all external layouts -->
-<!--    <template id="external_layout_standard_footer" inherit_id="web.external_layout_standard">-->
-<!--        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">-->
-<!--            <t t-call="pr_custom_purchase.custom_footer"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
-<!--    <template id="external_layout_boxed_footer" inherit_id="web.external_layout_boxed">-->
-<!--        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">-->
-<!--            <t t-call="pr_custom_purchase.custom_footer"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
-<!--    <template id="external_layout_bold_footer" inherit_id="web.external_layout_bold">-->
-<!--        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">-->
-<!--            <t t-call="pr_custom_purchase.custom_footer"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
-<!--    <template id="external_layout_striped_footer" inherit_id="web.external_layout_striped">-->
-<!--        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">-->
-<!--            <t t-call="pr_custom_purchase.custom_footer"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
+    <template id="external_layout_standard_footer" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="pr_custom_purchase.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_boxed_footer" inherit_id="web.external_layout_boxed">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="pr_custom_purchase.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_bold_footer" inherit_id="web.external_layout_bold">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="pr_custom_purchase.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_striped_footer" inherit_id="web.external_layout_striped">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="pr_custom_purchase.custom_footer"/>
+        </xpath>
+    </template>
 </odoo>

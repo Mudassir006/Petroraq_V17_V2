@@ -16,32 +16,35 @@
         </field>
     </record>
 
-    <record id="pr_sale_purchase_order_approvals_action" model="ir.actions.act_window">
-        <field name="name">Purchase Orders</field>
+    <record id="pr_sale_purchase_order_md_approvals_action" model="ir.actions.act_window">
+        <field name="name">MD Purchase Approvals</field>
         <field name="res_model">purchase.order</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[
-            ('is_current_user_approver', '=', True)
+            ('state', '=', 'pending'),
+            ('subtotal', '&gt;', 500000),
+            ('od_approved', '=', True),
+            ('md_approved', '=', False)
         ]</field>
         <field name="context">{'create': False, 'edit': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No purchase orders are pending your approval.
+                No purchase orders are pending Managing Director approval.
             </p>
         </field>
     </record>
 
-    <menuitem id="purchase_order_approvals_view_menu"
+    <menuitem id="purchase_order_md_approvals_view_menu"
               parent="menu_my_purchase_approvals"
               name="Purchase Orders"
-              action="pr_sale_purchase_order_approvals_action"
+              action="pr_sale_purchase_order_md_approvals_action"
               sequence="1"
-              groups="pr_custom_purchase.project_engineer,pr_custom_purchase.project_manager,pr_custom_purchase.operations_director,pr_custom_purchase.managing_director"/>
+              groups="pr_custom_purchase.managing_director"/>
 
     <menuitem id="purchase_requisition_supervisor_approvals_view_menu"
               parent="menu_my_purchase_approvals"
               name="Purchase Requisitions"
               action="pr_sale_purchase_requisition_supervisor_approvals_action"
               sequence="2"
-              groups="base.group_user"/>
+              groups="pr_custom_purchase.project_manager,pr_custom_purchase.managing_director,account.group_account_manager,account.group_account_user"/>
 </odoo>

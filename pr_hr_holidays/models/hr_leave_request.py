@@ -70,22 +70,6 @@ class HrLeaveRequest(models.Model):
     hr_supervisor_check = fields.Boolean(compute="_compute_hr_supervisor_check")
     hr_manager_check = fields.Boolean(compute="_compute_hr_manager_check")
     leave_id = fields.Many2one("hr.leave", string="Leave", readonly=True)
-    allocation_override_applied = fields.Boolean(
-        string="Allocation Override Applied",
-        default=False,
-        readonly=True,
-        copy=False,
-    )
-    allocation_override_note = fields.Text(
-        string="Allocation Override Note",
-        readonly=True,
-        copy=False,
-    )
-    allocation_bypassed = fields.Boolean(
-        string="Allocation Bypassed",
-        compute="_compute_allocation_bypassed",
-        readonly=True,
-    )
 
     # endregion [Fields]
 
@@ -133,27 +117,6 @@ class HrLeaveRequest(models.Model):
                 rec.requested_days = 0.0
                 continue
             rec.requested_days = float((rec.date_to - rec.date_from).days + 1)
-
-    @api.depends("requested_days", "leave_type_id", "employee_id", "state")
-    def _compute_allocation_bypassed(self):
-        for rec in self:
-            if not rec.employee_id or not rec.leave_type_id:
-                rec.allocation_bypassed = False
-                continue
-            available_days = rec._get_available_days_for_request()
-            rec.allocation_bypassed = (
-                available_days != float("inf")
-                and rec._get_requested_days_count() > (available_days + 1e-6)
-            )
-
-    @api.constrains("leave_type_id", "date_from")
-    def _check_annual_leave_start_date(self):
-        today = fields.Date.context_today(self)
-        for rec in self:
-            if not rec.leave_type_id or not rec.date_from:
-                continue
-            if rec.leave_type_id.leave_type == "annual_leave" and rec.date_from <= today:
-                raise ValidationError(_("Annual Leave requests must start from tomorrow onward."))
 
     # endregion [Compute Methods]
 
@@ -347,9 +310,6 @@ class HrLeaveRequest(models.Model):
 
     def _check_requested_days_with_allocation(self):
         for rec in self:
-            if self.env.user.has_group('pr_hr_holidays.group_leave_allocation_limit_override'):
-                continue
-
             requested_days = rec._get_requested_days_count()
             if requested_days <= 0:
                 continue
@@ -426,29 +386,12 @@ class HrLeaveRequest(models.Model):
             return view
 
     def action_hr_manager_approve(self):
-        actor_has_allocation_override = self.env.user.has_group(
-            'pr_hr_holidays.group_leave_allocation_limit_override'
-        )
         for rec in self:
             rec = rec.sudo()
-            available_days = rec._get_available_days_for_request()
-            bypassed_allocation_limit = (
-                actor_has_allocation_override
-                and available_days != float("inf")
-                and rec._get_requested_days_count() > (available_days + 1e-6)
-            )
-            rec.write({
-                "allocation_override_applied": bypassed_allocation_limit,
-                "allocation_override_note": _(
-                    "Advance allocation: this leave was approved without available allocation."
-                ) if bypassed_allocation_limit else False,
-            })
             rec._check_requested_days_with_allocation()
             rec.state = "hr_approve"
             rec.approval_state = "hr_approve"
-            leave_id = rec._create_employee_leave(
-                allocation_override=actor_has_allocation_override
-            )
+            leave_id = rec._create_employee_leave()
             rec._send_result_to_employee(result="Approved")
 
     def action_hr_manager_reject(self):
@@ -466,17 +409,8 @@ class HrLeaveRequest(models.Model):
             }
             return view
 
-    def _create_employee_leave(self, allocation_override=False):
+    def _create_employee_leave(self):
         for rec in self:
-            leave_context = {
-                "tracking_disable": True,
-                "mail_activity_automation_skip": True,
-                "leave_fast_create": True,
-                "leave_skip_state_check": True,
-            }
-            if allocation_override:
-                leave_context["pr_leave_allocation_override"] = True
-
             leave_vals = {
                 'name': f"{rec.employee_id.name} Leave From {rec.date_from} To {rec.date_to}",
                 "employee_id": rec.employee_id.id,
@@ -484,13 +418,17 @@ class HrLeaveRequest(models.Model):
                 "request_date_from": rec.date_from,
                 "request_date_to": rec.date_to,
                 "leave_request_id": rec.id,
-                "allocation_override_applied": bool(rec.allocation_override_applied),
-                "allocation_override_note": rec.allocation_override_note or False,
             }
-            leave_id = self.env["hr.leave"].with_context(**leave_context).sudo().create(leave_vals)
+            leave_id = self.env["hr.leave"].with_context(
+                tracking_disable=True,
+                mail_activity_automation_skip=True,
+                leave_fast_create=True,
+                leave_skip_state_check=True
+            ).sudo().create(leave_vals)
             if leave_id:
                 rec.leave_id = leave_id.id
-                leave_id.with_context(**leave_context).sudo().state = "validate"
+                # leave_id.sudo().action_approve()
+                leave_id.sudo().state = "validate"
                 return leave_id
             else:
                 return False
@@ -521,32 +459,27 @@ class HrLeaveRequest(models.Model):
 
     # region [Crud]
 
-    @api.model_create_multi
-    def create(self, vals_list):
+    @api.model
+    def create(self, vals):
         '''
         We Inherit Create Method To Pass Sequence Fo Field Name
         '''
-        for vals in vals_list:
-            if not vals.get("name"):
-                vals["name"] = self.env['ir.sequence'].next_by_code('hr.holidays.leave.request.seq.code') or '/'
-
-        records = super().create(vals_list)
+        res = super().create(vals)
+        res.name = self.env['ir.sequence'].next_by_code('hr.holidays.leave.request.seq.code') or ''
+        employee_manager_id = res.employee_id.parent_id
+        if employee_manager_id:
+            res.employee_manager_id = employee_manager_id.id
         hr_supervisor_group_ids = [self.env.ref('pr_hr_holidays.custom_group_hr_holidays_supervisor').id]
         hr_manager_group_ids = [self.env.ref('hr_holidays.group_hr_holidays_manager').id]
         hr_supervisor_ids = self.env['res.users'].sudo().search([('groups_id', 'in', hr_supervisor_group_ids)])
         hr_manager_ids = self.env['res.users'].sudo().search([('groups_id', 'in', hr_manager_group_ids)])
-
-        for rec in records:
-            employee_manager_id = rec.employee_id.parent_id
-            if employee_manager_id:
-                rec.employee_manager_id = employee_manager_id.id
-            if hr_supervisor_ids:
-                rec.hr_supervisor_ids = hr_supervisor_ids.ids
-            if hr_manager_ids:
-                rec.hr_manager_ids = hr_manager_ids.ids
-            rec._check_requested_days_with_allocation()
-            rec.sudo()._send_manager_email()
-        return records
+        if hr_supervisor_ids:
+            res.hr_supervisor_ids = hr_supervisor_ids.ids
+        if hr_manager_ids:
+            res.hr_manager_ids = hr_manager_ids.ids
+        res._check_requested_days_with_allocation()
+        res.sudo()._send_manager_email()
+        return res
 
     def write(self, vals):
         res = super().write(vals)

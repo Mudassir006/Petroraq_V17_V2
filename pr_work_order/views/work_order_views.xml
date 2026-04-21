@@ -99,7 +99,7 @@
                             string="Create PR"
                             class="btn-primary"
                             groups="pr_custom_purchase.group_custom_pr_end_user"
-                            invisible="state not in ['approved','in_progress']"/>
+                            invisible="state not in ['acc_approval', 'final_approval', 'approved', 'in_progress', 'done']"/>
 
 
                     <field name="state" widget="statusbar"
@@ -112,17 +112,6 @@
                 =========================================== -->
 
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <field name="expense_bucket_id" invisible="1"/>
-                        <button class="oe_stat_button"
-                                name="action_view_expense_bucket"
-                                type="object"
-                                icon="fa-money"
-                                groups="pr_work_order.custom_group_work_order_accounts,pr_work_order.custom_group_work_order_management"
-                                invisible="expense_bucket_id == False">
-                            <field name="expense_bucket_count" widget="statinfo" string="Budget"/>
-                        </button>
-                    </div>
                     <div class="alert alert-danger py-1 px-2 mb-1"
                          style="font-size: 15px; line-height: 1.7;"
                          invisible="not rejection_reason">

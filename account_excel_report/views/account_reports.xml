@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+<!--        <menuitem id="accounting_pdf_reports.menu_finance_legal_statement"-->
+<!--                  name="PDF &amp; Excel Reports"-->
+<!--                  parent="pr_account.account_reports_main_menu"/>-->
+<!--                  parent="account.menu_finance_reports"/>-->
+
+    </data>
+</odoo>
+

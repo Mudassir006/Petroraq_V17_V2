@@ -10,6 +10,6 @@
               name="Purchase Approvals"
               parent="de_hr_workspace.menu_my_employee_approvals"
               sequence="60"
-              groups="base.group_user"/>
+              groups="pr_custom_purchase.managing_director,pr_custom_purchase.project_manager,account.group_account_manager,account.group_account_user"/>
 
 </odoo>

@@ -17,7 +17,7 @@ class HrShortageRequest(models.Model):
         else:
             action_id = False
         domain = domain or []
-        if approvals_of_shortage_request or (action_id and action_id == view_action_id.id):
+        if user.has_group("de_hr_workspace.group_hr_employee_approvals") and ( approvals_of_shortage_request or (action_id and action_id == view_action_id.id)):
             domain = []
             role_domains = []
             # Employee Manager
@@ -34,7 +34,7 @@ class HrShortageRequest(models.Model):
                 ])
             # HR Supervisor
             # elif user.has_group("hr_attendance.group_hr_attendance_officer"):
-            if user.has_group("pr_hr_attendance.custom_group_hr_attendance_supervisor"):
+            elif user.has_group("pr_hr_attendance.custom_group_hr_attendance_supervisor"):
                 role_domains.append([
                     ('state', '=', 'manager_approve'),
                     ('hr_supervisor_ids', 'in', user.id),
@@ -56,3 +56,4 @@ class HrShortageRequest(models.Model):
             return super().search_fetch(domain, field_names, offset, limit, order)
 
     # endregion [System Methods]
+

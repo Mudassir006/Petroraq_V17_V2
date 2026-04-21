@@ -385,10 +385,7 @@ class HrContract(models.Model):
             'description': 'Hr contract periods check',
             'implement_date': fields.Datetime.now(),
         }
-        cron_update_id = False
-        cron_update_model = self.env.registry.get('bof.cron.update')
-        if cron_update_model:
-            cron_update_id = self.env['bof.cron.update'].sudo().create(cron_update_vals)
+        # cron_update_id = self.env['bof.cron.update'].sudo().create(cron_update_vals)
         try:
             today = fields.Date.today()
             # Check Contracts That After 3 Weeks Trial Period Ends,
@@ -465,13 +462,12 @@ class HrContract(models.Model):
                                    author_id=odoobot)
         except Exception as e:
             # raise UserError(f'{e}')
-            if cron_update_id:
-                cron_update_id.write({
-                    'failed_error': str(e),
-                    'model': self._name,
-                    # 'ir_cron': cron_id.id,
-                    'nextcall': cron_id.nextcall,
-                })
+            cron_update_id.write({
+                'failed_error': e,
+                'model': self._name,
+                # 'ir_cron': cron_id.id,
+                'nextcall': cron_id.nextcall,
+            })
 
     # endregion [Cron Methods]
 
