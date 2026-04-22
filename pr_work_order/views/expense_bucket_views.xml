@@ -27,4 +27,23 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_budget_form_inherit_work_order_source_products" model="ir.ui.view">
+        <field name="name">budget.form.inherit.work.order.source.products</field>
+        <field name="model">crossovered.budget</field>
+        <field name="inherit_id" ref="pr_custom_purchase.view_budget_form_inherit_expense_type"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[field[@name='crossovered_budget_line']]" position="after">
+                <page string="Source Products"
+                      invisible="not sale_order_id and not work_order_id">
+                    <group>
+                        <field name="sale_order_id" readonly="1"/>
+                        <field name="work_order_id" readonly="1"/>
+                        <field name="source_products_total" readonly="1"/>
+                    </group>
+                    <field name="source_products_html" widget="html" readonly="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
 </odoo>
