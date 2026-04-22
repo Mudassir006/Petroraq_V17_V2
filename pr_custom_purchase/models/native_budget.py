@@ -179,20 +179,31 @@ class CrossoveredBudget(models.Model):
 
     @api.depends("sale_order_id", "work_order_id")
     def _compute_product_breakdown(self):
+        work_order_model = self.env.get("pr.work.order")
         for rec in self:
             section_data = {}
             grand_total = 0.0
-            work_order = rec.work_order_id
+            work_order = False
             sale_order = rec.sale_order_id
 
             def _line_key(product):
                 return product.display_name if product else _("Unnamed Product")
 
-            if (
-                work_order
-                and getattr(work_order, "_name", "") == "pr.work.order"
-                and hasattr(work_order, "boq_line_ids")
-            ):
+            # `work_order_id` on this model can be unresolved (`_unknown`) when
+            # `pr_work_order` is not loaded at the same time as this module.
+            # Always try to resolve the Work Order through the inverse
+            # `expense_bucket_id` link as a safe fallback.
+            if work_order_model:
+                if (
+                    rec.work_order_id
+                    and getattr(rec.work_order_id, "_name", "") == "pr.work.order"
+                    and hasattr(rec.work_order_id, "boq_line_ids")
+                ):
+                    work_order = rec.work_order_id
+                if not work_order:
+                    work_order = work_order_model.sudo().search([("expense_bucket_id", "=", rec.id)], limit=1)
+
+            if work_order and hasattr(work_order, "boq_line_ids"):
                 for line in work_order.boq_line_ids:
                     if line.display_type in ("line_section", "line_note") or not line.product_id:
                         continue
