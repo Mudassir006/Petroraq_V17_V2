@@ -177,19 +177,7 @@ class CrossoveredBudget(models.Model):
         for rec in self:
             rec.company_currency_id = rec.company_id.currency_id
 
-    @api.depends(
-        "sale_order_id.order_line",
-        "sale_order_id.order_line.display_type",
-        "sale_order_id.order_line.product_id",
-        "sale_order_id.order_line.product_uom_qty",
-        "sale_order_id.order_line.price_subtotal",
-        "work_order_id.boq_line_ids",
-        "work_order_id.boq_line_ids.display_type",
-        "work_order_id.boq_line_ids.product_id",
-        "work_order_id.boq_line_ids.qty",
-        "work_order_id.boq_line_ids.total",
-        "work_order_id.boq_line_ids.section_name",
-    )
+    @api.depends("sale_order_id", "work_order_id")
     def _compute_product_breakdown(self):
         for rec in self:
             section_data = {}
