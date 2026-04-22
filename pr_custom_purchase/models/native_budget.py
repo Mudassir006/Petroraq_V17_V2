@@ -178,25 +178,6 @@ class CrossoveredBudget(models.Model):
             vals["approval_state"] = "draft"
         return super().write(vals)
 
-    @api.depends(
-        "sale_order_id",
-        "sale_order_id.order_line",
-        "sale_order_id.order_line.display_type",
-        "sale_order_id.order_line.name",
-        "sale_order_id.order_line.product_id",
-        "sale_order_id.order_line.product_uom_qty",
-        "sale_order_id.order_line.price_unit",
-        "sale_order_id.order_line.price_subtotal",
-        "work_order_id",
-        "work_order_id.boq_line_ids",
-        "work_order_id.boq_line_ids.display_type",
-        "work_order_id.boq_line_ids.section_name",
-        "work_order_id.boq_line_ids.name",
-        "work_order_id.boq_line_ids.product_id",
-        "work_order_id.boq_line_ids.qty",
-        "work_order_id.boq_line_ids.unit_cost",
-        "work_order_id.boq_line_ids.total",
-    )
     def _compute_source_products_data(self):
         for rec in self:
             rows = []
