@@ -467,6 +467,7 @@ class PRWorkOrder(models.Model):
                     "scope": "project",
                     "expense_type": "capex",
                     "work_order_id": rec.id,
+                    "sale_order_id": rec.sale_order_id.id if rec.sale_order_id else False,
                     "source_budget_limit": total_budget,
                     "date_from": rec.date_start or today,
                     "date_to": rec.date_end or today,
@@ -476,8 +477,13 @@ class PRWorkOrder(models.Model):
                 rec.sudo().write({"expense_bucket_id": bucket.id})
             else:
                 bucket = rec.expense_bucket_id.sudo()
+                write_vals = {}
                 if bucket.work_order_id != rec:
-                    bucket.write({"work_order_id": rec.id})
+                    write_vals["work_order_id"] = rec.id
+                if rec.sale_order_id and bucket.sale_order_id != rec.sale_order_id:
+                    write_vals["sale_order_id"] = rec.sale_order_id.id
+                if write_vals:
+                    bucket.write(write_vals)
 
             existing_cc_ids = set(bucket.crossovered_budget_line.mapped("analytic_account_id").ids)
             for analytic in cost_centers:

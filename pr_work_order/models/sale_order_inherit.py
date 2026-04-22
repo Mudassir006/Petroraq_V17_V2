@@ -63,6 +63,7 @@ class SaleOrder(models.Model):
                     "scope": "trading",
                     "expense_type": "capex",
                     "sale_order_id": order.id,
+                    "work_order_id": order.work_order_id.id if order.work_order_id else False,
                     "source_budget_limit": source_amount,
                     "date_from": today,
                     "date_to": today,
@@ -75,6 +76,8 @@ class SaleOrder(models.Model):
                 write_vals = {}
                 if bucket.sale_order_id != order:
                     write_vals["sale_order_id"] = order.id
+                if order.work_order_id and bucket.work_order_id != order.work_order_id:
+                    write_vals["work_order_id"] = order.work_order_id.id
                 if not bucket.source_budget_limit:
                     write_vals["source_budget_limit"] = source_amount
                 if write_vals:
