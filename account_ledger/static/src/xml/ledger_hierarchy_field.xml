@@ -16,43 +16,40 @@
             <table class="table table-sm table-hover o_list_table">
           <thead class="position-sticky top-0 bg-white" style="z-index: 1;">
             <tr>
-              <th>Account</th>
-                <th class="text-end">Init Dr</th>
-                <th class="text-end">Init Cr</th>
-                <th class="text-end">Period Dr</th>
-                <th class="text-end">Period Cr</th>
-                <th class="text-end">End Dr</th>
-                <th class="text-end">End Cr</th>
+                <th>Code</th>
+                <th>Main Head</th>
+                <th>Category</th>
+                <th>Sub-Category</th>
+                <th>Account</th>
+                <th>Account Type</th>
                 <th class="text-end">Balance</th>
-                <th>Type</th>
             </tr>
           </thead>
 
                 <tbody>
             <t t-foreach="state.rows" t-as="r" t-key="r.id">
               <t t-if="isVisible(r)">
-                <tr t-att-class="r.is_heading ? 'fw-bold table-light' : ''">
-                  <td>
+                <tr t-att-class="rowClass(r)">
+                    <td>
                     <div t-att-style="indentStyle(r)" class="d-flex align-items-center gap-1">
                       <a href="#"
-                         t-on-click.prevent="() => toggle(r)"
+                         t-on-click.prevent="() => this.toggle(r)"
                          t-att-class="r._children and r._children.length and 'text-decoration-none' or 'invisible'">
   <t t-esc="state.expanded[r.id] ? '▾' : '▸'"/>
 </a>
-                        <span t-esc="r.label"/>
+                        <span t-esc="r.code || ''"/>
                     </div>
                   </td>
+                    <td><t t-esc="r.main_head_label || ''"/></td>
+                    <td><t t-esc="r.category_label || ''"/></td>
+                    <td><t t-esc="r.subcategory_label || ''"/></td>
+                    <td><t t-esc="r.account_label || ''"/></td>
+                    <td><t t-esc="r.account_type_label || ''"/></td>
+                    <td class="text-end">
+                    <span t-att-class="r.balance &lt; 0 ? 'text-danger' : ''">
+                      <t t-esc="fmt(r.balance)"/>
 
-                    <td class="text-end"><t t-esc="fmt(r.initial_debit)"/></td>
-                    <td class="text-end"><t t-esc="fmt(r.initial_credit)"/></td>
-                    <td class="text-end"><t t-esc="fmt(r.period_debit)"/></td>
-                    <td class="text-end"><t t-esc="fmt(r.period_credit)"/></td>
-                    <td class="text-end"><t t-esc="fmt(r.ending_debit)"/></td>
-                    <td class="text-end"><t t-esc="fmt(r.ending_credit)"/></td>
-                    <td class="text-end"><t t-esc="fmt(r.balance)"/></td>
-                    <td>
-                    <span t-att-class="r.balance_type === 'Credit' ? 'text-danger' : (r.balance_type === 'Debit' ? 'text-primary' : '')">
-                      <t t-esc="r.balance_type || '-'"/>
+
                     </span>
                   </td>
                 </tr>

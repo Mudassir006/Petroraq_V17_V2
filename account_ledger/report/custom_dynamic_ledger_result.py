@@ -38,8 +38,21 @@ class CustomDynamicLedgerResultLine(models.TransientModel):
     level = fields.Integer(default=0)
     is_heading = fields.Boolean(default=False)
     sequence = fields.Integer(default=10)
+    row_type = fields.Selection([
+        ("main_head", "Main Head"),
+        ("category", "Category"),
+        ("subcategory", "Sub-Category"),
+        ("account", "Account"),
+        ("total", "Total"),
+    ], default="account")
 
     label = fields.Char("Account")
+    code = fields.Char("Code")
+    main_head_label = fields.Char("Main Head")
+    category_label = fields.Char("Category")
+    subcategory_label = fields.Char("Sub-Category")
+    account_label = fields.Char("Account")
+    account_type_label = fields.Char("Account Type")
     initial_debit = fields.Float("Initial Debit")
     initial_credit = fields.Float("Initial Credit")
     period_debit = fields.Float("Period Debit")

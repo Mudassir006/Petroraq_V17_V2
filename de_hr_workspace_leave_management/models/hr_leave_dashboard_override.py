@@ -14,7 +14,7 @@ class HrLeaveDashboardOverride(models.Model):
                 ('state', '!=', 'cancel'),
                 ('date_start', '!=', False),
             ], order='date_start asc', limit=1)
-            joining_date = contract.date_start
+            joining_date = contract.joining_date
         return fields.Date.to_string(joining_date) if joining_date else False
 
     def _get_employee_current_contract_start_date(self, employee):
@@ -111,7 +111,8 @@ class HrLeaveDashboardOverride(models.Model):
             if current_employee:
                 domain.append(('employee_id', 'in', current_employee.child_ids.ids))
         leaves = self.env['hr.leave'].sudo().search(domain)
-        return [{'employee_id': l.employee_id.id, 'name': l.employee_id.name, 'date_from': l.date_from, 'date_to': l.date_to} for l in leaves]
+        return [{'employee_id': l.employee_id.id, 'name': l.employee_id.name, 'date_from': l.date_from,
+                 'date_to': l.date_to} for l in leaves]
 
     @api.model
     def get_current_shift(self):
@@ -144,9 +145,12 @@ class HrLeaveDashboardOverride(models.Model):
     @api.model
     def get_approval_status_count(self, current_employee):
         return {
-            'validate_count': self.env['hr.leave'].search_count([('employee_id', '=', current_employee), ('state', '=', 'validate')]),
-            'confirm_count': self.env['hr.leave'].search_count([('employee_id', '=', current_employee), ('state', '=', 'confirm')]),
-            'refuse_count': self.env['hr.leave'].search_count([('employee_id', '=', current_employee), ('state', '=', 'refuse')]),
+            'validate_count': self.env['hr.leave'].search_count(
+                [('employee_id', '=', current_employee), ('state', '=', 'validate')]),
+            'confirm_count': self.env['hr.leave'].search_count(
+                [('employee_id', '=', current_employee), ('state', '=', 'confirm')]),
+            'refuse_count': self.env['hr.leave'].search_count(
+                [('employee_id', '=', current_employee), ('state', '=', 'refuse')]),
         }
 
     @api.model
@@ -227,10 +231,10 @@ class HrLeaveDashboardOverride(models.Model):
             current = date_from
             while current <= date_to:
                 if (
-                    current.weekday() in working_days
-                    and current not in public_holiday_dates
-                    and current not in leave_days_map.get(employee.id, set())
-                    and current not in attendance_days_map.get(employee.id, set())
+                        current.weekday() in working_days
+                        and current not in public_holiday_dates
+                        and current not in leave_days_map.get(employee.id, set())
+                        and current not in attendance_days_map.get(employee.id, set())
                 ):
                     absent_count += 1
                 current += timedelta(days=1)
@@ -308,7 +312,8 @@ class HrLeaveDashboardOverride(models.Model):
         }
 
     @api.model
-    def get_leave_request_count_by_filters(self, duration='this_month', employee_id=False, leave_type_id=False, date_from=False, date_to=False):
+    def get_leave_request_count_by_filters(self, duration='this_month', employee_id=False, leave_type_id=False,
+                                           date_from=False, date_to=False):
         if duration == 'custom' and date_from and date_to:
             start = fields.Date.to_date(date_from)
             end = fields.Date.to_date(date_to)
@@ -417,16 +422,19 @@ class HrLeaveDashboardOverride(models.Model):
         allocated = {}
         consumed = {}
         for allocation in allocations:
-            allocated[allocation.holiday_status_id.id] = allocated.get(allocation.holiday_status_id.id, 0.0) + (allocation.number_of_days or 0.0)
+            allocated[allocation.holiday_status_id.id] = allocated.get(allocation.holiday_status_id.id, 0.0) + (
+                        allocation.number_of_days or 0.0)
         for leave in leaves:
-            consumed[leave.holiday_status_id.id] = consumed.get(leave.holiday_status_id.id, 0.0) + (leave.number_of_days or 0.0)
+            consumed[leave.holiday_status_id.id] = consumed.get(leave.holiday_status_id.id, 0.0) + (
+                        leave.number_of_days or 0.0)
         return [{
             'leave_type': leave_type.name,
             'remaining_days': round(allocated.get(leave_type.id, 0.0) - consumed.get(leave_type.id, 0.0), 2),
         } for leave_type in leave_types]
 
     @api.model
-    def get_employee_leave_simple_summary(self, employee_id=None, duration='current_contract', date_from=False, date_to=False):
+    def get_employee_leave_simple_summary(self, employee_id=None, duration='current_contract', date_from=False,
+                                          date_to=False):
         employee = self.env['hr.employee'].browse(employee_id) if employee_id else self.env.user.employee_id
         if not employee:
             return {'employee_id': False, 'employee_name': '', 'lines': []}
@@ -444,7 +452,8 @@ class HrLeaveDashboardOverride(models.Model):
         elif duration == 'this_month':
             start = today.replace(day=1)
         else:
-            start = fields.Date.to_date(current_contract_start) if current_contract_start else today.replace(month=1, day=1)
+            start = fields.Date.to_date(current_contract_start) if current_contract_start else today.replace(month=1,
+                                                                                                             day=1)
 
         allocations = self.env['hr.leave.allocation'].sudo().search([
             ('state', '=', 'validate'),

@@ -303,33 +303,38 @@ class CustomDynamicLedgerReportWizard(models.TransientModel):
         report_rows = self.generate_balance_report()
 
         result = self.env["custom.dynamic.ledger.result"].create({"wizard_id": self.id})
+        created_map = {}
+        seq = 1
 
         for row in report_rows:
-            ending_debit = row["ending_debit"]
-            ending_credit = row["ending_credit"]
+            parent_line_id = created_map.get(row.get("parent_key"))
+            created = self.env["custom.dynamic.ledger.result.line"].create({
 
-            if ending_debit > ending_credit:
-                balance = ending_debit - ending_credit
-                balance_type = "Debit"
-            elif ending_credit > ending_debit:
-                balance = ending_credit - ending_debit
-                balance_type = "Credit"
-            else:
-                balance = 0.0
-                balance_type = "-"
-
-            self.env["custom.dynamic.ledger.result.line"].create({
                 "result_id": result.id,
-                "label": row["level"],
-                "initial_debit": row["initial_debit"],
-                "initial_credit": row["initial_credit"],
-                "period_debit": row["period_debit"],
-                "period_credit": row["period_credit"],
-                "ending_debit": ending_debit,
-                "ending_credit": ending_credit,
-                "balance": balance,
-                "balance_type": balance_type,
+                "parent_id": parent_line_id,
+                "level": row.get("level", 0),
+                "is_heading": row.get("is_heading", False),
+                "sequence": seq,
+                "row_type": row.get("row_type"),
+                "label": row.get("label"),
+                "code": row.get("code"),
+                "main_head_label": row.get("main_head_label"),
+                "category_label": row.get("category_label"),
+                "subcategory_label": row.get("subcategory_label"),
+                "account_label": row.get("account_label"),
+                "account_type_label": row.get("account_type_label"),
+                "initial_debit": row.get("initial_debit", 0.0),
+                "initial_credit": row.get("initial_credit", 0.0),
+                "period_debit": row.get("period_debit", 0.0),
+                "period_credit": row.get("period_credit", 0.0),
+                "ending_debit": row.get("ending_debit", 0.0),
+                "ending_credit": row.get("ending_credit", 0.0),
+                "balance": row.get("balance", 0.0),
+                "balance_type": row.get("balance_type", "-"),
             })
+            seq += 1
+            if row.get("key"):
+                created_map[row["key"]] = created.id
 
         return {
             "type": "ir.actions.act_window",
@@ -340,10 +345,27 @@ class CustomDynamicLedgerReportWizard(models.TransientModel):
             "target": "current",
         }
 
+    def _account_type_label(self, account):
+        """
+        In Odoo 17, account_type is a Selection field (string), not a Many2one.
+        Convert the technical value into its human-readable label safely.
+        """
+        account_type = getattr(account, "account_type", False)
+        if not account_type:
+            return ""
+
+        field = account._fields.get("account_type")
+        if not field or not field.selection:
+            return str(account_type)
+
+        selection = field.selection(account.env) if callable(field.selection) else field.selection
+        return dict(selection).get(account_type, str(account_type))
+
     def generate_balance_report(self):
         """
-        Hierarchical trial balance:
-        Main Head → Category → Subcategory → Account
+         Hierarchical balance report:
+        Main Head -> Category -> Subcategory -> Account
+        with totals after each level.
         """
         self.ensure_one()
 
@@ -383,6 +405,7 @@ class CustomDynamicLedgerReportWizard(models.TransientModel):
         # ----------------------------
         # 1) Build totals per account (initial & period)
         # ----------------------------
+
         def _map_from_read_group(domain):
             rows = aml.read_group(domain, ["debit:sum", "credit:sum", "account_id"], ["account_id"])
             out = {}
@@ -435,18 +458,20 @@ class CustomDynamicLedgerReportWizard(models.TransientModel):
         # 2) Group into hierarchy
         # ----------------------------
         grouped_data = defaultdict(lambda: {
+            "label": "",
             "summary": self._init_balance_totals(),
             "categories": defaultdict(lambda: {
+                "label": "",
                 "summary": self._init_balance_totals(),
                 "subcategories": defaultdict(lambda: {
+                    "label": "",
                     "summary": self._init_balance_totals(),
-                    "accounts": {}
-                })
+                    "accounts": []})
             })
         })
 
         for account in accounts:
-            main_head = account.main_head or "Unclassified"
+            main_head = account.main_head or "unclassified"
             category = self.get_category(account)
             subcategory = self.get_subcategory(account)
 
@@ -457,19 +482,34 @@ class CustomDynamicLedgerReportWizard(models.TransientModel):
                 "debit": float_round(initial["debit"] + period["debit"], 2),
                 "credit": float_round(initial["credit"] + period["credit"], 2),
             }
+            ending_debit = ending["debit"]
+            ending_credit = ending["credit"]
+            signed_balance = float_round(ending_debit - ending_credit, 2)
+            balance_type = "Debit" if signed_balance > 0 else "Credit" if signed_balance < 0 else "-"
 
-            account_key = f"{account.code} - {account.name}"
             account_row = {
+                "code": account.code,
+                "main_head_label": self._selection_label("main_head", account.main_head) if account.main_head else "",
+                "category_label": self._selection_label_for_value(account, category),
+                "subcategory_label": self._selection_label_for_value(account, subcategory),
+                "account_label": account.name,
+                "account_type_label": self._account_type_label(account),
                 "initial_debit": initial["debit"],
                 "initial_credit": initial["credit"],
                 "period_debit": period["debit"],
                 "period_credit": period["credit"],
-                "ending_debit": ending["debit"],
-                "ending_credit": ending["credit"],
+                "ending_debit": ending_debit,
+                "ending_credit": ending_credit,
+                "balance": signed_balance,
+                "balance_type": balance_type,
+
             }
 
             subcat_data = grouped_data[main_head]["categories"][category]["subcategories"][subcategory]
-            subcat_data["accounts"][account_key] = account_row
+            grouped_data[main_head]["label"] = account_row["main_head_label"] or "Unclassified"
+            grouped_data[main_head]["categories"][category]["label"] = account_row["category_label"] or "Unclassified"
+            subcat_data["label"] = account_row["subcategory_label"] or "Unclassified"
+            subcat_data["accounts"].append(account_row)
 
             self._update_totals(grouped_data[main_head]["summary"], account_row)
             self._update_totals(grouped_data[main_head]["categories"][category]["summary"], account_row)
@@ -478,18 +518,42 @@ class CustomDynamicLedgerReportWizard(models.TransientModel):
         # ----------------------------
         # 3) Flatten rows in order
         # ----------------------------
+        # 3) Flatten rows in order
         report_rows = []
         for main_head, main_data in grouped_data.items():
-            report_rows.append(self.format_row(main_head.title(), main_data["summary"], level=0))
-
+            main_key = f"main::{main_head}"
+            report_rows.append(self._build_heading_row(
+                key=main_key, parent_key=False, level=0, row_type="main_head",
+                code="", main_head_label=main_data["label"], category_label="",
+                subcategory_label="", account_label="", account_type_label="",
+                totals=main_data["summary"],
+            ))
             for category, cat_data in main_data["categories"].items():
-                report_rows.append(self.format_row(category.title(), cat_data["summary"], level=1))
-
+                cat_key = f"{main_key}::cat::{category}"
+                report_rows.append(self._build_heading_row(
+                    key=cat_key, parent_key=main_key, level=1, row_type="category",
+                    code="", main_head_label="", category_label=cat_data["label"],
+                    subcategory_label="", account_label="", account_type_label="",
+                    totals=cat_data["summary"],
+                ))
                 for subcategory, subcat_data in cat_data["subcategories"].items():
-                    report_rows.append(self.format_row(subcategory.title(), subcat_data["summary"], level=2))
+                    sub_key = f"{cat_key}::sub::{subcategory}"
+                    report_rows.append(self._build_heading_row(
+                        key=sub_key, parent_key=cat_key, level=2, row_type="subcategory",
+                        code="", main_head_label="", category_label="",
+                        subcategory_label=subcat_data["label"], account_label="", account_type_label="",
+                        totals=subcat_data["summary"],
+                    ))
 
-                    for acc_label, acc_data in subcat_data["accounts"].items():
-                        report_rows.append(self.format_row(acc_label, acc_data, level=3))
+                    for idx, acc_data in enumerate(subcat_data["accounts"], 1):
+                        acc_key = f"{sub_key}::acc::{idx}"
+                        report_rows.append(self._build_account_row(
+                            key=acc_key,
+                            parent_key=sub_key,
+                            level=3,
+                            row_type="account",
+                            row_data=acc_data,
+                        ))
 
         return report_rows
 
@@ -504,23 +568,105 @@ class CustomDynamicLedgerReportWizard(models.TransientModel):
             "period_credit": 0.0,
             "ending_debit": 0.0,
             "ending_credit": 0.0,
+            "balance": 0.0,
         }
 
     def _update_totals(self, summary, row):
         for k in summary:
             summary[k] += float_round(row.get(k, 0.0), precision_digits=2)
 
-    def format_row(self, label, data, level=0):
-        indent = "    " * level
+    def _build_heading_row(self, key, parent_key, level, row_type, code, main_head_label, category_label,
+                           subcategory_label, account_label, account_type_label, totals):
+        balance = float_round(totals.get("balance", 0.0), 2)
         return {
-            "level": f"{indent}{label}",
-            "initial_debit": data["initial_debit"],
-            "initial_credit": data["initial_credit"],
-            "period_debit": data["period_debit"],
-            "period_credit": data["period_credit"],
-            "ending_debit": data["ending_debit"],
-            "ending_credit": data["ending_credit"],
+            "key": key,
+            "parent_key": parent_key,
+            "level": level,
+            "row_type": row_type,
+            "is_heading": True,
+            "label": main_head_label or category_label or subcategory_label,
+            "code": code,
+            "main_head_label": main_head_label,
+            "category_label": category_label,
+            "subcategory_label": subcategory_label,
+            "account_label": account_label,
+            "account_type_label": account_type_label,
+            "initial_debit": totals["initial_debit"],
+            "initial_credit": totals["initial_credit"],
+            "period_debit": totals["period_debit"],
+            "period_credit": totals["period_credit"],
+            "ending_debit": totals["ending_debit"],
+            "ending_credit": totals["ending_credit"],
+            "balance": balance,
+            "balance_type": "Debit" if balance > 0 else "Credit" if balance < 0 else "-",
         }
+
+    def _build_total_row(self, key, parent_key, level, row_type, code, main_head_label, category_label,
+                         subcategory_label, account_label, account_type_label, totals):
+        row = self._build_heading_row(
+            key=key,
+            parent_key=parent_key,
+            level=level,
+            row_type=row_type,
+            code=code,
+            main_head_label=main_head_label,
+            category_label=category_label,
+            subcategory_label=subcategory_label,
+            account_label=account_label,
+            account_type_label=account_type_label,
+            totals=totals,
+        )
+        row["is_heading"] = False
+        return row
+
+    def _build_account_row(self, key, parent_key, level, row_type, row_data):
+        return {
+            "key": key,
+            "parent_key": parent_key,
+            "level": level,
+            "row_type": row_type,
+            "is_heading": False,
+            "label": row_data["account_label"],
+            "code": row_data["code"],
+            "main_head_label": "",
+            "category_label": "",
+            "subcategory_label": "",
+            "account_label": row_data["account_label"],
+            "account_type_label": row_data["account_type_label"],
+            "initial_debit": row_data["initial_debit"],
+            "initial_credit": row_data["initial_credit"],
+            "period_debit": row_data["period_debit"],
+            "period_credit": row_data["period_credit"],
+            "ending_debit": row_data["ending_debit"],
+            "ending_credit": row_data["ending_credit"],
+            "balance": row_data["balance"],
+            "balance_type": row_data["balance_type"],
+        }
+
+    def _selection_label(self, field_name, value):
+        if not value:
+            return ""
+        field = self.env["account.account"]._fields.get(field_name)
+        if not field or not field.selection:
+            return value
+        if callable(field.selection):
+            try:
+                selection = field.selection(self.env["account.account"])
+            except TypeError:
+                selection = field.selection(self.env)
+        else:
+            selection = field.selection
+        return dict(selection).get(value, value)
+
+    def _selection_label_for_value(self, account, value):
+        if not value:
+            return "Unclassified"
+        field_names = CATEGORY_FIELDS + CURRENT_ASSET_FIELDS + FIXED_ASSET_FIELDS + OTHER_ASSET_FIELDS + \
+                      CURRENT_LIABILITY_FIELDS + NON_CURRENT_LIABILITY_FIELDS + EQUITY_FIELDS + REVENUE_FIELDS + EXPENSE_FIELDS
+        for field_name in field_names:
+            if getattr(account, field_name, False) == value:
+                return self._selection_label(field_name, value)
+        return value
 
     def get_category(self, account):
         if account.main_head == "assets":

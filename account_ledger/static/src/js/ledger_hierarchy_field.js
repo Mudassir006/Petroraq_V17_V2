@@ -50,6 +50,13 @@ export class LedgerHierarchyField extends Component {
                 "id",
                 "result_id",
                 "label",
+                "code",
+                "main_head_label",
+                "category_label",
+                "subcategory_label",
+                "account_label",
+                "account_type_label",
+                "row_type",
                 "initial_debit",
                 "initial_credit",
                 "period_debit",
@@ -80,6 +87,13 @@ export class LedgerHierarchyField extends Component {
                     "id",
                     "result_id",
                     "label",
+                     "code",
+                    "main_head_label",
+                    "category_label",
+                    "subcategory_label",
+                    "account_label",
+                    "account_type_label",
+                    "row_type",
                     "initial_debit",
                     "initial_credit",
                     "period_debit",
@@ -162,6 +176,11 @@ export class LedgerHierarchyField extends Component {
     indentStyle(row) {
         const lvl = row.level || 0;
         return `padding-left:${lvl * 18}px;`;
+    }
+     rowClass(row) {
+        if (row.row_type === "total") return "table-warning fw-semibold";
+        if (row.is_heading) return "fw-bold table-light";
+        return "";
     }
 
     fmt(value) {

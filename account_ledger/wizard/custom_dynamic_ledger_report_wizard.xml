@@ -159,10 +159,15 @@
     </record>
 
 
-    <menuitem action="custom_dynamic_ledger_report_wizard_action"
-              id="menu_custom_dynamic_ledger_report_wizard"
-              name="Balance Report"
+    <menuitem id="menu_financial_reporting_root"
+              name="Financial Reporting"
               parent="pr_account.account_reports_main_menu"
               sequence="3"/>
+
+    <menuitem action="custom_dynamic_ledger_report_wizard_action"
+              id="menu_custom_dynamic_ledger_report_wizard"
+              name="Classification Balance Report"
+              parent="menu_financial_reporting_root"
+              sequence="1"/>
 
 </odoo>
