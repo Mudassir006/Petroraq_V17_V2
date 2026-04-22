@@ -23,8 +23,6 @@ class CrossoveredBudget(models.Model):
         related="department_id.manager_id.user_id",
         readonly=True,
     )
-    sale_order_id = fields.Many2one("sale.order", string="Sale Order")
-    work_order_id = fields.Many2one("pr.work.order", string="Work Order")
     source_budget_limit = fields.Float(string="Source Budget Limit")
     po_reference = fields.Char(string="PO Reference")
     approval_state = fields.Selection(
