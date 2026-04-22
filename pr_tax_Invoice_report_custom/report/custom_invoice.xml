@@ -46,7 +46,7 @@
                         Regular/Droid Arabic Naskh Regular.ttf');
                         }
                     </style>
-                    <div class="page" style="font-family: 'DroidArabicNaskh', sans-serif;padding: 0px 25px !important;">
+                    <div class="page" style="font-family: 'DroidArabicNaskh', sans-serif;padding: 0 !important; margin: 0 !important;">
 
                         <style>
                             @font-face {
@@ -76,8 +76,16 @@
                             margin: 0 !important;
                             padding: 0 !important;
                             }
+                            .container, .container-fluid, .article, .o_report_layout_standard {
+                            margin: 0 !important;
+                            padding-left: 0 !important;
+                            padding-right: 0 !important;
+                            max-width: 100% !important;
+                            width: 100% !important;
+                            }
                             .page {
-                            padding: 0px 15px !important;
+                            padding: 0 !important;
+                            margin: 0 !important;
                             }
                         </style>
 
