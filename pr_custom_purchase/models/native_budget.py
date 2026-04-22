@@ -182,12 +182,18 @@ class CrossoveredBudget(models.Model):
         for rec in self:
             section_data = {}
             grand_total = 0.0
+            work_order = rec.work_order_id
+            sale_order = rec.sale_order_id
 
             def _line_key(product):
                 return product.display_name if product else _("Unnamed Product")
 
-            if rec.work_order_id:
-                for line in rec.work_order_id.boq_line_ids:
+            if (
+                work_order
+                and getattr(work_order, "_name", "") == "pr.work.order"
+                and hasattr(work_order, "boq_line_ids")
+            ):
+                for line in work_order.boq_line_ids:
                     if line.display_type in ("line_section", "line_note") or not line.product_id:
                         continue
                     section = line.section_name or _("Unsectioned")
@@ -197,11 +203,11 @@ class CrossoveredBudget(models.Model):
                     section_data[section][key]["qty"] += line.qty or 0.0
                     section_data[section][key]["amount"] += line.total or 0.0
                     grand_total += line.total or 0.0
-            elif rec.sale_order_id:
+            elif sale_order:
                 section = _("Products")
                 section_data.setdefault(section, {})
                 current_section = section
-                for line in rec.sale_order_id.order_line:
+                for line in sale_order.order_line:
                     if line.display_type == "line_section":
                         current_section = line.name or _("Unsectioned")
                         section_data.setdefault(current_section, {})
