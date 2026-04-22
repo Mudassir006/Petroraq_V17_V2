@@ -3,10 +3,31 @@
 
     <!--Bridge template-->
     <template id="custom_invoice_bridge_layout">
-        .header, .footer {
-        margin: 0 !important;
-        padding: 0 !important;
-        }
+        <style>
+            .header,
+            .footer {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: calc(100% + 16px) !important;
+                left: -8px !important;
+                right: 0 !important;
+                position: relative !important;
+                box-sizing: border-box !important;
+            }
+            .header img,
+            .footer img {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+            .footer .footer-full-width-line {
+                width: calc(100% + 16px) !important;
+                margin: 0 0 0 -8px !important;
+                border-top: 1px solid #305081 !important;
+                box-sizing: border-box !important;
+            }
+        </style>
         <!-- Multicompany -->
         <t t-if="not o and doc">
             <t t-set="o" t-value="doc"/>
@@ -30,7 +51,7 @@
     <template id="custom_invoice_header_layout">
         <div class="header">
             <div>
-                <img src='/pr_tax_Invoice_report_custom/static/src/img/header_custom.png' style="width:101%;"/>
+                <img src='/pr_tax_Invoice_report_custom/static/src/img/header_custom.png'/>
             </div>
         </div>
     </template>
@@ -38,10 +59,8 @@
     <!--Template footer-->
     <template id="custom_invoice_footer_layout">
 
-        <div class="footer" style="border-top:1px solid #305081">
-
-
-            <div style="border-top:1px solid #305081 !important;">
+        <div class="footer">
+            <div class="footer-full-width-line">
                 <div name="pager" class="list-inline no-margin text-center" style="color:rgba(18,49,96,0.91);">
                     Page:
                     <span class="page"/>
@@ -50,7 +69,7 @@
                 </div>
 
                 <img src='/pr_tax_Invoice_report_custom/static/src/img/footer.png'
-                     style="width:101%;display:inline-block;"/>
+                     style="display:inline-block;"/>
 
             </div>
         </div>
