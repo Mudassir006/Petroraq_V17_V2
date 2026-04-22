@@ -47,6 +47,15 @@
                 <attribute name="invisible">state != 'confirm' or approval_state != 'md_approval' or not can_md_approve</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='crossovered_budget_line']/ancestor::page[1]" position="after">
+                <page string="Products Summary">
+                    <group>
+                        <field name="product_breakdown_total" readonly="1"/>
+                    </group>
+                    <field name="product_breakdown_html" readonly="1" nolabel="1" widget="html"/>
+                </page>
+            </xpath>
+
         </field>
     </record>
     <record id="view_budget_tree_inherit_expense_type" model="ir.ui.view">

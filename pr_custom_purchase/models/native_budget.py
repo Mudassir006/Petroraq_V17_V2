@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from markupsafe import escape
 
 
 class CrossoveredBudget(models.Model):
@@ -43,6 +44,19 @@ class CrossoveredBudget(models.Model):
     can_pm_approve = fields.Boolean(compute="_compute_role_flags")
     can_accounts_approve = fields.Boolean(compute="_compute_role_flags")
     can_md_approve = fields.Boolean(compute="_compute_role_flags")
+    product_breakdown_html = fields.Html(
+        string="Products Breakdown",
+        compute="_compute_product_breakdown",
+    )
+    product_breakdown_total = fields.Monetary(
+        string="Products Grand Total",
+        currency_field="company_currency_id",
+        compute="_compute_product_breakdown",
+    )
+    company_currency_id = fields.Many2one(
+        "res.currency",
+        compute="_compute_company_currency_id",
+    )
 
     def name_get(self):
         result = []
@@ -157,3 +171,92 @@ class CrossoveredBudget(models.Model):
         if vals.get("state") == "draft" and "approval_state" not in vals:
             vals["approval_state"] = "draft"
         return super().write(vals)
+
+    @api.depends("company_id")
+    def _compute_company_currency_id(self):
+        for rec in self:
+            rec.company_currency_id = rec.company_id.currency_id
+
+    @api.depends(
+        "sale_order_id.order_line",
+        "sale_order_id.order_line.display_type",
+        "sale_order_id.order_line.product_id",
+        "sale_order_id.order_line.product_uom_qty",
+        "sale_order_id.order_line.price_subtotal",
+        "work_order_id.boq_line_ids",
+        "work_order_id.boq_line_ids.display_type",
+        "work_order_id.boq_line_ids.product_id",
+        "work_order_id.boq_line_ids.qty",
+        "work_order_id.boq_line_ids.total",
+        "work_order_id.boq_line_ids.section_name",
+    )
+    def _compute_product_breakdown(self):
+        for rec in self:
+            section_data = {}
+            grand_total = 0.0
+
+            def _line_key(product):
+                return product.display_name if product else _("Unnamed Product")
+
+            if rec.work_order_id:
+                for line in rec.work_order_id.boq_line_ids:
+                    if line.display_type in ("line_section", "line_note") or not line.product_id:
+                        continue
+                    section = line.section_name or _("Unsectioned")
+                    section_data.setdefault(section, {})
+                    key = _line_key(line.product_id)
+                    section_data[section].setdefault(key, {"qty": 0.0, "amount": 0.0})
+                    section_data[section][key]["qty"] += line.qty or 0.0
+                    section_data[section][key]["amount"] += line.total or 0.0
+                    grand_total += line.total or 0.0
+            elif rec.sale_order_id:
+                section = _("Products")
+                section_data.setdefault(section, {})
+                current_section = section
+                for line in rec.sale_order_id.order_line:
+                    if line.display_type == "line_section":
+                        current_section = line.name or _("Unsectioned")
+                        section_data.setdefault(current_section, {})
+                        continue
+                    if line.display_type in ("line_note",) or not line.product_id:
+                        continue
+                    key = _line_key(line.product_id)
+                    section_data[current_section].setdefault(key, {"qty": 0.0, "amount": 0.0})
+                    section_data[current_section][key]["qty"] += line.product_uom_qty or 0.0
+                    section_data[current_section][key]["amount"] += line.price_subtotal or 0.0
+                    grand_total += line.price_subtotal or 0.0
+
+            if not section_data:
+                rec.product_breakdown_html = _("<p>No source Sale Order/Work Order products found.</p>")
+                rec.product_breakdown_total = 0.0
+                continue
+
+            currency = rec.company_currency_id or rec.company_id.currency_id
+            html = []
+            for section_name, products in section_data.items():
+                html.append(f"<h4>{escape(section_name)}</h4>")
+                html.append("<table class='table table-sm o_list_table'>")
+                html.append("<thead><tr><th>Product</th><th class='text-end'>Quantity</th><th class='text-end'>Total</th></tr></thead>")
+                html.append("<tbody>")
+                section_total = 0.0
+                for product_name, values in products.items():
+                    section_total += values["amount"]
+                    html.append(
+                        "<tr>"
+                        f"<td>{escape(product_name)}</td>"
+                        f"<td class='text-end'>{values['qty']:.2f}</td>"
+                        f"<td class='text-end'>{currency.symbol or ''} {values['amount']:.2f}</td>"
+                        "</tr>"
+                    )
+                html.append(
+                    "<tr>"
+                    "<td><strong>Section Total</strong></td>"
+                    "<td></td>"
+                    f"<td class='text-end'><strong>{currency.symbol or ''} {section_total:.2f}</strong></td>"
+                    "</tr>"
+                )
+                html.append("</tbody></table>")
+
+            html.append(f"<h3>{_('Grand Total')}: {currency.symbol or ''} {grand_total:.2f}</h3>")
+            rec.product_breakdown_html = "".join(html)
+            rec.product_breakdown_total = grand_total
