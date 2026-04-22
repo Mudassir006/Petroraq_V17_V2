@@ -467,7 +467,7 @@ class PRWorkOrder(models.Model):
                     "scope": "project",
                     "expense_type": "capex",
                     "work_order_id": rec.id,
-                    "sale_order_id": rec.sale_order_id.id if rec.sale_order_id else False,
+                    "sale_order_id": False,
                     "source_budget_limit": total_budget,
                     "date_from": rec.date_start or today,
                     "date_to": rec.date_end or today,
@@ -480,8 +480,8 @@ class PRWorkOrder(models.Model):
                 write_vals = {}
                 if bucket.work_order_id != rec:
                     write_vals["work_order_id"] = rec.id
-                if rec.sale_order_id and bucket.sale_order_id != rec.sale_order_id:
-                    write_vals["sale_order_id"] = rec.sale_order_id.id
+                if bucket.sale_order_id:
+                    write_vals["sale_order_id"] = False
                 if write_vals:
                     bucket.write(write_vals)
 
