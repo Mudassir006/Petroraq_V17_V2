@@ -1,6 +1,6 @@
 {
     'name': 'Custom Attendance Report',
-    'version': '16.0',
+    'version': '17.0.1.0.0',
     'summary': 'Advanced Attendance Reporting with Detailed Insights',
     'description': """
 Custom Attendance Report
