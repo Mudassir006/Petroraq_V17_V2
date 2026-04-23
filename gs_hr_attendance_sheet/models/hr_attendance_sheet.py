@@ -475,6 +475,20 @@ class AttendanceSheet(models.Model):
         help='Attendance sheet where this source sheet carry-forward was finally deducted.',
     )
 
+    def unlink(self):
+        settled_target_ids = self.ids
+        if settled_target_ids:
+            settled_sources = self.search([
+                ('carry_forward_settled_sheet_id', 'in', settled_target_ids)
+            ])
+            if settled_sources:
+                settled_sources.write({
+                    'carry_forward_processed': False,
+                    'carry_forward_run_date': False,
+                    'carry_forward_settled_sheet_id': False,
+                })
+        return super().unlink()
+
     contract_id = fields.Many2one('hr.contract', string='Contract',
                                   readonly=True,
                                   states={'draft': [('readonly', False)]})
