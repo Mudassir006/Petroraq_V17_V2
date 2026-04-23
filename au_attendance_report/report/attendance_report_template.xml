@@ -5,17 +5,17 @@
       <div class="page" style="font-family: Arial, sans-serif; font-size: 12px; padding: 20px;">
         <table style="width:100%; border-collapse:collapse; margin-bottom: 16px;">
           <tr>
-            <td style="background:#173b76; color:#ffffff; font-size:16px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+            <td style="background:#122AA0; color:#ffffff; font-size:16px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
               <t t-esc="doc.company_id.name"/> - VAT Number <t t-esc="doc.company_id.vat or '-'"/>
             </td>
           </tr>
           <tr>
-            <td style="background:#173b76; color:#ffffff; font-size:14px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+            <td style="background:#122AA0; color:#ffffff; font-size:14px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
               Attendance Report - <t t-esc="employee_report.get('employee_name')"/>
             </td>
           </tr>
           <tr>
-            <td style="background:#173b76; color:#ffffff; font-size:14px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+            <td style="background:#122AA0; color:#ffffff; font-size:14px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
               Period: <t t-esc="doc.date_from"/> to <t t-esc="doc.date_to"/>
             </td>
           </tr>
@@ -39,8 +39,8 @@
               <tr t-attf-style="
                 border: 1px solid #ccc;
                 text-align: center;
-                background-color: #{'lightgray' if line.get('is_weekend') else 'white'};
-                color: #{'red' if line.get('worked_hours') == 'Absent' else 'black'};
+                background-color: #{'#dff5df' if line.get('worked_hours') == 'Leave' else ('lightgray' if line.get('is_weekend') else 'white')};
+                color: #{'red' if line.get('absent') else ('green' if line.get('worked_hours') == 'Leave' else 'black')};
               ">
                 <td style="border: 1px solid #ccc; padding: 5px;">
                   <t t-esc="line.get('day')"/> <t t-esc="line.get('date')"/>
@@ -49,8 +49,8 @@
                 <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="line.get('check_in')"/></td>
                 <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="line.get('check_out')"/></td>
                 <td style="border: 1px solid #ccc; padding: 5px;">
-                  <t t-if="line.get('worked_hours') == 'Absent'">
-                    <span style="color: red;">0</span>
+                  <t t-if="line.get('absent')">
+                    <span style="color: red;"><t t-esc="line.get('worked_hours')"/></span>
                   </t>
                   <t t-else="">
                     <t t-esc="line.get('worked_hours')"/>

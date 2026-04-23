@@ -199,6 +199,24 @@ class AttendanceReportWizard(models.TransientModel):
                 check_in = min(day_attendance.mapped('check_in'))
                 check_out = max(day_attendance.mapped('check_out'))
                 worked_hours = round(sum(day_attendance.mapped('worked_hours')), 2)
+                late_absent_cutoff = time(9, 1)
+
+                if check_in and check_in.time() > late_absent_cutoff:
+                    total_absent_days += 1
+                    result.append({
+                        'date': single_date.strftime('%Y-%m-%d'),
+                        'day': single_date.strftime('%A'),
+                        'actual_hours': planned_hours,
+                        'check_in': format_datetime(self.env, check_in),
+                        'check_out': format_datetime(self.env, check_out),
+                        'worked_hours': 'Absent (Late Check-in after 09:01 AM)',
+                        'late_hours': 0,
+                        'difference': planned_hours,
+                        'overtime': 0,
+                        'absent': True,
+                        'is_weekend': single_date.weekday() in [5, 6],
+                    })
+                    continue
 
                 late_hours = 0
                 difference = round((planned_hours - worked_hours), 2)
@@ -283,6 +301,13 @@ class AttendanceReportWizard(models.TransientModel):
     def generate_xls_report(self):
         company = self.env.company
         company_header = '%s - VAT Number %s' % (company.name or '', company.vat or '-')
+        blue_idx = 0x21
+        leave_style = xlwt.easyxf(
+            'font: colour_index green;'
+            'pattern: pattern solid, fore_colour light_green;'
+            'borders: left thin, right thin, top thin, bottom thin;'
+            'align: horiz center, vert center'
+        )
         holiday_style = xlwt.easyxf(
             'font: colour_index black;'
             'borders: left thin, right thin, top thin, bottom thin;'
@@ -290,6 +315,7 @@ class AttendanceReportWizard(models.TransientModel):
         )
         absent_style = xlwt.easyxf(
             'font: colour_index red;'
+            'pattern: pattern solid, fore_colour rose;'
             'borders: left thin, right thin, top thin, bottom thin;'
             'align: horiz center, vert center'
         )
@@ -299,28 +325,29 @@ class AttendanceReportWizard(models.TransientModel):
             'align: horiz center, vert center'
         )
         workbook = xlwt.Workbook()
+        workbook.set_colour_RGB(blue_idx, 0x12, 0x2A, 0xA0)
         col_widths = [15, 15, 15, 20, 20, 15, 15, 15, 15]
         title_style = xlwt.easyxf(
             'font: bold 1, colour white, height 320;'
-            'pattern: pattern solid, fore_colour ocean_blue;'
+            f'pattern: pattern solid, fore_colour {blue_idx};'
             'align: horiz center, vert center;'
             'borders: left thin, right thin, top thin, bottom thin'
         )
         subtitle_style = xlwt.easyxf(
             'font: bold 1, colour white, height 280;'
-            'pattern: pattern solid, fore_colour ocean_blue;'
+            f'pattern: pattern solid, fore_colour {blue_idx};'
             'align: horiz center, vert center;'
             'borders: left thin, right thin, top thin, bottom thin'
         )
         header_style = xlwt.easyxf(
             'font: bold 1, colour white;'
-            'pattern: pattern solid, fore_colour ocean_blue;'
+            f'pattern: pattern solid, fore_colour {blue_idx};'
             'align: horiz center, vert center;'
             'borders: left thin, right thin, top thin, bottom thin'
         )
         summary_title_style = xlwt.easyxf(
             'font: bold 1, colour white, height 220;'
-            'pattern: pattern solid, fore_colour ocean_blue;'
+            f'pattern: pattern solid, fore_colour {blue_idx};'
             'align: horiz center, vert center;'
             'borders: left thin, right thin, top thin, bottom thin'
         )
@@ -353,6 +380,8 @@ class AttendanceReportWizard(models.TransientModel):
                 if isinstance(line, dict):
                     if line.get('absent'):
                         text_style = absent_style
+                    elif line.get('worked_hours') == 'Leave':
+                        text_style = leave_style
                     elif line.get('worked_hours') == 'Holiday':
                         text_style = holiday_style
                     else:
