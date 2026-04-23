@@ -1,5 +1,5 @@
 import pytz
-from datetime import timedelta
+from datetime import timedelta, datetime
 from odoo import api, fields, models
 
 
@@ -102,6 +102,113 @@ class HrLeaveDashboardOverride(models.Model):
                 ], order='date_start desc', limit=1)
             contract_start = contract.date_start
         return fields.Date.to_string(contract_start) if contract_start else False
+
+    def _get_employee_effective_start_date(self, employee):
+        """Earliest date from which summary metrics should be computed for an employee."""
+        start_dates = []
+        joining_date = self._get_employee_joining_date(employee)
+        if joining_date:
+            start_dates.append(fields.Date.to_date(joining_date))
+        contract_start = self._get_employee_current_contract_start_date(employee)
+        if contract_start:
+            start_dates.append(fields.Date.to_date(contract_start))
+        if employee.create_date:
+            start_dates.append(fields.Datetime.to_datetime(employee.create_date).date())
+        return min(start_dates) if start_dates else fields.Date.context_today(self)
+
+    @api.model
+    def _sanitize_summary_date_range(self, employee, duration='current_contract', date_from=False, date_to=False):
+        """Build and sanitize summary range so it never exceeds employee lifetime/today."""
+        today = fields.Date.context_today(self)
+        employee_start = self._get_employee_effective_start_date(employee)
+        start = employee_start
+        end = today
+
+        if duration == 'custom':
+            if date_from:
+                start = fields.Date.to_date(date_from)
+            if date_to:
+                end = fields.Date.to_date(date_to)
+        elif duration == 'this_year':
+            start = today.replace(month=1, day=1)
+        elif duration == 'this_month':
+            start = today.replace(day=1)
+        else:
+            current_contract_start = self._get_employee_current_contract_start_date(employee)
+            start = fields.Date.to_date(current_contract_start) if current_contract_start else employee_start
+
+        if end < start:
+            start, end = end, start
+        start = max(start, employee_start)
+        end = min(end, today)
+        if end < start:
+            end = start
+        return start, end, employee_start
+
+    @api.model
+    def _get_employee_absentee_days(self, employee, start, end):
+        """Count employee absent working days excluding public holidays, approved leaves and attendances."""
+        if not employee or not start or not end or end < start:
+            return 0
+
+        calendar = employee.resource_calendar_id
+        if calendar and calendar.attendance_ids:
+            working_days = {int(att.dayofweek) for att in calendar.attendance_ids}
+        else:
+            working_days = {0, 1, 2, 3, 4}
+
+        holidays = self.env['hr.public.holiday'].sudo().search([
+            ('state', '=', 'active'),
+            ('date_from', '<=', end),
+            ('date_to', '>=', start),
+        ])
+        public_holiday_dates = set()
+        for holiday in holidays:
+            holiday_start = max(holiday.date_from, start)
+            holiday_end = min(holiday.date_to, end)
+            current = holiday_start
+            while current <= holiday_end:
+                public_holiday_dates.add(current)
+                current += timedelta(days=1)
+
+        leave_days = set()
+        leaves = self.env['hr.leave'].sudo().search([
+            ('state', '=', 'validate'),
+            ('employee_id', '=', employee.id),
+            ('request_date_from', '<=', end),
+            ('request_date_to', '>=', start),
+        ])
+        for leave in leaves:
+            leave_start = max(leave.request_date_from, start)
+            leave_end = min(leave.request_date_to, end)
+            current = leave_start
+            while current <= leave_end:
+                leave_days.add(current)
+                current += timedelta(days=1)
+
+        attendance_days = set()
+        start_dt = datetime.combine(start, datetime.min.time())
+        end_dt = datetime.combine(end + timedelta(days=1), datetime.min.time())
+        attendances = self.env['hr.attendance'].sudo().search([
+            ('employee_id', '=', employee.id),
+            ('check_in', '>=', fields.Datetime.to_string(start_dt)),
+            ('check_in', '<', fields.Datetime.to_string(end_dt)),
+        ])
+        for attendance in attendances:
+            attendance_days.add(fields.Datetime.to_datetime(attendance.check_in).date())
+
+        absentees = 0
+        current = start
+        while current <= end:
+            if (
+                    current.weekday() in working_days
+                    and current not in public_holiday_dates
+                    and current not in leave_days
+                    and current not in attendance_days
+            ):
+                absentees += 1
+            current += timedelta(days=1)
+        return absentees
 
     @api.model
     def _get_period_date_range(self, duration):
@@ -503,21 +610,12 @@ class HrLeaveDashboardOverride(models.Model):
         if not employee:
             return {'employee_id': False, 'employee_name': '', 'lines': []}
         leave_types = self.env['hr.leave.type'].sudo().search([('active', '=', True)])
-        today = fields.Date.context_today(self)
-        current_contract_start = self._get_employee_current_contract_start_date(employee)
-        start = False
-        end = today
-
-        if duration == 'custom' and date_from and date_to:
-            start = fields.Date.to_date(date_from)
-            end = fields.Date.to_date(date_to)
-        elif duration == 'this_year':
-            start = today.replace(month=1, day=1)
-        elif duration == 'this_month':
-            start = today.replace(day=1)
-        else:
-            start = fields.Date.to_date(current_contract_start) if current_contract_start else today.replace(month=1,
-                                                                                                             day=1)
+        start, end, employee_start = self._sanitize_summary_date_range(
+            employee,
+            duration=duration,
+            date_from=date_from,
+            date_to=date_to,
+        )
 
         allocations = self.env['hr.leave.allocation'].sudo().search([
             ('state', '=', 'validate'),
@@ -558,6 +656,13 @@ class HrLeaveDashboardOverride(models.Model):
             'allocated_days': round(allocated.get(leave_type.id, 0.0), 2),
             'requires_allocation': leave_type.requires_allocation == 'yes',
         } for leave_type in leave_types]
+        lines.append({
+            'leave_type_id': False,
+            'leave_type': 'Absentees',
+            'used_days': self._get_employee_absentee_days(employee, start, end),
+            'allocated_days': 0.0,
+            'requires_allocation': False,
+        })
 
         return {
             'employee_id': employee.id,
@@ -568,6 +673,7 @@ class HrLeaveDashboardOverride(models.Model):
                 'employee_code': employee.code or employee.barcode or '',
                 'joining_date': self._get_employee_joining_date(employee),
                 'current_contract_start_date': self._get_employee_current_contract_start_date(employee),
+                'effective_start_date': fields.Date.to_string(employee_start),
                 'job_position': employee.job_title or '',
                 'department': employee.department_id.name or '',
                 'company': employee.company_id.name or '',
