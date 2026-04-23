@@ -134,6 +134,33 @@
     position: relative;
 }
 
+.de_leave_mgmt_dashboard .de-adv-search-field .de-summary-select {
+    padding-right: 34px;
+}
+
+.de_leave_mgmt_dashboard .de-sort-toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #64748b;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.de_leave_mgmt_dashboard .de-sort-toggle-btn:hover {
+    background: #eef4ff;
+    color: #1f3f76;
+}
+
 .de_leave_mgmt_dashboard .de-adv-search-dropdown {
     position: absolute;
     top: calc(100% + 6px);

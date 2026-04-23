@@ -245,6 +245,10 @@
                            t-on-input="onEmployeeIdSearchInput"
                            t-on-focus="onEmployeeIdFocus"
                            t-on-blur="onEmployeeIdBlur"/>
+                    <button type="button" class="de-sort-toggle-btn" t-on-click="toggleIdSortOrder"
+                            t-att-title="'Sort by ID: ' + (state.id_sort_order === 'asc' ? 'Ascending' : 'Descending')">
+                        <i t-att-class="state.id_sort_order === 'asc' ? 'fa fa-sort-numeric-asc' : 'fa fa-sort-numeric-desc'"/>
+                    </button>
                     <div t-if="state.show_id_suggestions" class="de-adv-search-dropdown">
                         <t t-if="filteredEmployeesById.length">
                             <button type="button"
@@ -267,6 +271,10 @@
                            t-on-input="onEmployeeNameSearchInput"
                            t-on-focus="onEmployeeNameFocus"
                            t-on-blur="onEmployeeNameBlur"/>
+                    <button type="button" class="de-sort-toggle-btn" t-on-click="toggleNameSortOrder"
+                            t-att-title="'Sort by Name: ' + (state.name_sort_order === 'asc' ? 'A to Z' : 'Z to A')">
+                        <i t-att-class="state.name_sort_order === 'asc' ? 'fa fa-sort-alpha-asc' : 'fa fa-sort-alpha-desc'"/>
+                    </button>
                     <div t-if="state.show_name_suggestions" class="de-adv-search-dropdown">
                         <t t-if="filteredEmployeesByName.length">
                             <button type="button"

@@ -323,6 +323,8 @@ export class SimpleLeaveSummaryCard extends Component {
             employee_search_name: '',
             show_id_suggestions: false,
             show_name_suggestions: false,
+            id_sort_order: 'asc',
+            name_sort_order: 'asc',
             duration: 'current_contract',
             date_from: '',
             date_to: '',
@@ -378,28 +380,36 @@ export class SimpleLeaveSummaryCard extends Component {
     get filteredEmployeesById() {
         const query = String(this.state.employee_search_id || '').trim().toLowerCase();
         const rows = this.employeesById;
+        const direction = this.state.id_sort_order === 'desc' ? -1 : 1;
         if (!query) {
-            return rows.slice(0, 12);
+            return rows.slice(0, 12).sort((a, b) => {
+                const aCode = String(a.code || a.employee_code || '');
+                const bCode = String(b.code || b.employee_code || '');
+                return aCode.localeCompare(bCode, undefined, { numeric: true, sensitivity: "base" }) * direction;
+            });
         }
         return rows.filter((employee) =>
             String(employee.code || employee.employee_code || '').toLowerCase().includes(query)
         ).sort((a, b) => {
             const aCode = String(a.code || a.employee_code || '');
             const bCode = String(b.code || b.employee_code || '');
-            return aCode.localeCompare(bCode, undefined, { numeric: true, sensitivity: "base" });
+            return aCode.localeCompare(bCode, undefined, { numeric: true, sensitivity: "base" }) * direction;
         }).slice(0, 12);
     }
 
     get filteredEmployeesByName() {
         const query = String(this.state.employee_search_name || '').trim().toLowerCase();
         const rows = this.employeesByName;
+        const direction = this.state.name_sort_order === 'desc' ? -1 : 1;
         if (!query) {
-            return rows.slice(0, 12);
+            return rows.slice(0, 12).sort((a, b) =>
+                String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: "base" }) * direction
+            );
         }
         return rows.filter((employee) =>
             String(employee.name || '').toLowerCase().includes(query)
         ).sort((a, b) =>
-            String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: "base" })
+            String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: "base" }) * direction
         ).slice(0, 12);
     }
 
@@ -509,6 +519,16 @@ export class SimpleLeaveSummaryCard extends Component {
     }
 
     onEmployeeNameFocus() {
+        this.state.show_name_suggestions = true;
+    }
+
+    toggleIdSortOrder() {
+        this.state.id_sort_order = this.state.id_sort_order === 'asc' ? 'desc' : 'asc';
+        this.state.show_id_suggestions = true;
+    }
+
+    toggleNameSortOrder() {
+        this.state.name_sort_order = this.state.name_sort_order === 'asc' ? 'desc' : 'asc';
         this.state.show_name_suggestions = true;
     }
 
