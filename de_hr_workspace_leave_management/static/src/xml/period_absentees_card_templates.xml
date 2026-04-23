@@ -243,6 +243,7 @@
                            placeholder="Search by Employee ID..."
                            t-att-value="state.employee_search_id"
                            t-on-input="onEmployeeIdSearchInput"
+                           t-on-keydown="onEmployeeIdKeyDown"
                            t-on-focus="onEmployeeIdFocus"
                            t-on-blur="onEmployeeIdBlur"/>
                     <button type="button" class="de-sort-toggle-btn" t-on-click="toggleIdSortOrder"
@@ -256,6 +257,7 @@
                                     t-foreach="filteredEmployeesById"
                                     t-as="employee"
                                     t-key="employee.id"
+                                    t-att-class="'de-adv-search-option ' + (state.id_highlighted_index === employee_index ? 'is-active' : '')"
                                     t-on-click="() => this.selectEmployeeFromId(employee)">
                                 <span class="de-option-main"><t t-esc="employee.code || employee.employee_code || '-'"/></span>
                             </button>
@@ -269,6 +271,7 @@
                            placeholder="Search by Employee Name..."
                            t-att-value="state.employee_search_name"
                            t-on-input="onEmployeeNameSearchInput"
+                           t-on-keydown="onEmployeeNameKeyDown"
                            t-on-focus="onEmployeeNameFocus"
                            t-on-blur="onEmployeeNameBlur"/>
                     <button type="button" class="de-sort-toggle-btn" t-on-click="toggleNameSortOrder"
@@ -282,6 +285,7 @@
                                     t-foreach="filteredEmployeesByName"
                                     t-as="employee"
                                     t-key="employee.id"
+                                    t-att-class="'de-adv-search-option ' + (state.name_highlighted_index === employee_index ? 'is-active' : '')"
                                     t-on-click="() => this.selectEmployeeFromName(employee)">
                                 <span class="de-option-main"><t t-esc="employee.name"/></span>
                             </button>

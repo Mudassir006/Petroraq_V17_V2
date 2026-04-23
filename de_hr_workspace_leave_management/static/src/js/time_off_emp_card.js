@@ -325,6 +325,8 @@ export class SimpleLeaveSummaryCard extends Component {
             show_name_suggestions: false,
             id_sort_order: 'asc',
             name_sort_order: 'asc',
+            id_highlighted_index: 0,
+            name_highlighted_index: 0,
             duration: 'current_contract',
             date_from: '',
             date_to: '',
@@ -476,6 +478,7 @@ export class SimpleLeaveSummaryCard extends Component {
         const value = (ev.target.value || '').trim();
         this.state.employee_search_id = value;
         this.state.show_id_suggestions = true;
+        this.state.id_highlighted_index = 0;
         if (!value) {
             this.state.employee_id = false;
             this.state.lines = [];
@@ -497,6 +500,7 @@ export class SimpleLeaveSummaryCard extends Component {
         const value = (ev.target.value || '').trim();
         this.state.employee_search_name = value;
         this.state.show_name_suggestions = true;
+        this.state.name_highlighted_index = 0;
         if (!value) {
             this.state.employee_id = false;
             this.state.lines = [];
@@ -516,20 +520,84 @@ export class SimpleLeaveSummaryCard extends Component {
 
     onEmployeeIdFocus() {
         this.state.show_id_suggestions = true;
+        this.state.id_highlighted_index = 0;
     }
 
     onEmployeeNameFocus() {
         this.state.show_name_suggestions = true;
+        this.state.name_highlighted_index = 0;
     }
 
     toggleIdSortOrder() {
         this.state.id_sort_order = this.state.id_sort_order === 'asc' ? 'desc' : 'asc';
         this.state.show_id_suggestions = true;
+        this.state.id_highlighted_index = 0;
     }
 
     toggleNameSortOrder() {
         this.state.name_sort_order = this.state.name_sort_order === 'asc' ? 'desc' : 'asc';
         this.state.show_name_suggestions = true;
+        this.state.name_highlighted_index = 0;
+    }
+
+    async onEmployeeIdKeyDown(ev) {
+        const rows = this.filteredEmployeesById;
+        if (!rows.length) {
+            return;
+        }
+        if (ev.key === "ArrowDown") {
+            ev.preventDefault();
+            this.state.show_id_suggestions = true;
+            this.state.id_highlighted_index = (this.state.id_highlighted_index + 1) % rows.length;
+            return;
+        }
+        if (ev.key === "ArrowUp") {
+            ev.preventDefault();
+            this.state.show_id_suggestions = true;
+            this.state.id_highlighted_index = (this.state.id_highlighted_index - 1 + rows.length) % rows.length;
+            return;
+        }
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            const selected = rows[this.state.id_highlighted_index] || rows[0];
+            if (selected) {
+                await this.selectEmployeeFromId(selected);
+            }
+            return;
+        }
+        if (ev.key === "Escape") {
+            this.state.show_id_suggestions = false;
+        }
+    }
+
+    async onEmployeeNameKeyDown(ev) {
+        const rows = this.filteredEmployeesByName;
+        if (!rows.length) {
+            return;
+        }
+        if (ev.key === "ArrowDown") {
+            ev.preventDefault();
+            this.state.show_name_suggestions = true;
+            this.state.name_highlighted_index = (this.state.name_highlighted_index + 1) % rows.length;
+            return;
+        }
+        if (ev.key === "ArrowUp") {
+            ev.preventDefault();
+            this.state.show_name_suggestions = true;
+            this.state.name_highlighted_index = (this.state.name_highlighted_index - 1 + rows.length) % rows.length;
+            return;
+        }
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            const selected = rows[this.state.name_highlighted_index] || rows[0];
+            if (selected) {
+                await this.selectEmployeeFromName(selected);
+            }
+            return;
+        }
+        if (ev.key === "Escape") {
+            this.state.show_name_suggestions = false;
+        }
     }
 
     onEmployeeIdBlur() {
