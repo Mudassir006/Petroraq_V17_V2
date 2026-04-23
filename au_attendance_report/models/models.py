@@ -91,13 +91,23 @@ class AttendanceReportWizard(models.TransientModel):
 
         # Custom deployments can store public holidays on hr.public.holiday.
         if 'hr.public.holiday' in self.env:
-            is_public_holiday = self.env['hr.public.holiday'].sudo().search_count([
-                ('date_from', '<=', day_date),
-                ('date_to', '>=', day_date),
-                ('company_id', 'in', [False, employee.company_id.id]),
-            ]) > 0
-            if is_public_holiday:
-                return 0.0
+            public_holiday_model = self.env['hr.public.holiday'].sudo()
+            holiday_fields = public_holiday_model._fields
+            holiday_domain = []
+            if 'date_from' in holiday_fields and 'date_to' in holiday_fields:
+                holiday_domain.extend([
+                    ('date_from', '<=', day_date),
+                    ('date_to', '>=', day_date),
+                ])
+            elif 'date' in holiday_fields:
+                holiday_domain.append(('date', '=', day_date))
+
+            if holiday_domain:
+                if 'company_id' in holiday_fields:
+                    holiday_domain.append(('company_id', 'in', [False, employee.company_id.id]))
+                is_public_holiday = public_holiday_model.search_count(holiday_domain) > 0
+                if is_public_holiday:
+                    return 0.0
 
         weekday = str(day_date.weekday())
         planned_hours = 0.0
