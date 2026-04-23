@@ -1382,6 +1382,25 @@ class AttendanceSheet(models.Model):
         carry_overtime_amount = 0.0
         carry_early_checkout_amount = 0.0
         carry_amount = 0.0
+
+        stale_settled_sources = self.search([
+            ('employee_id', '=', self.employee_id.id),
+            ('state', '=', 'done'),
+            ('id', '!=', self.id),
+            ('predictive_mode', '=', True),
+            ('predictive_cutoff_date', '!=', False),
+            ('date_to', '<', self.date_from),
+            ('carry_forward_settled_sheet_id', '!=', False),
+            ('carry_forward_settled_sheet_id.batch_id', '=', False),
+            ('carry_forward_settled_sheet_id.payslip_id', '=', False),
+        ])
+        if stale_settled_sources:
+            stale_settled_sources.write({
+                'carry_forward_processed': False,
+                'carry_forward_run_date': False,
+                'carry_forward_settled_sheet_id': False,
+            })
+
         previous_sheet = self.search([
             ('employee_id', '=', self.employee_id.id),
             ('state', '=', 'done'),
