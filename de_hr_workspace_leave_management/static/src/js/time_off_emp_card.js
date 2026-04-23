@@ -319,7 +319,8 @@ export class SimpleLeaveSummaryCard extends Component {
         this.actionService = useService("action");
         this.state = useState({
             employee_id: this.props.id,
-            employee_search: '',
+            employee_search_id: '',
+            employee_search_name: '',
             duration: 'current_contract',
             date_from: '',
             date_to: '',
@@ -330,7 +331,8 @@ export class SimpleLeaveSummaryCard extends Component {
         onWillStart(async () => {
             const selected = this.employeeOptions.find((employee) => employee.id === this.state.employee_id);
             if (selected) {
-                this.state.employee_search = this.employeeLabel(selected);
+                this.state.employee_search_id = selected.code || selected.employee_code || '';
+                this.state.employee_search_name = selected.name || '';
             }
             await this.loadSummary();
         });
@@ -343,6 +345,36 @@ export class SimpleLeaveSummaryCard extends Component {
     employeeLabel(employee) {
         const code = employee?.code || employee?.employee_code || '';
         return code ? `${code} - ${employee.name}` : (employee?.name || '');
+    }
+
+    get employeesById() {
+        const toNumeric = (employee) => {
+            const value = String(employee?.code || employee?.employee_code || '').trim();
+            const numeric = Number.parseInt(value, 10);
+            return Number.isNaN(numeric) ? Number.MAX_SAFE_INTEGER : numeric;
+        };
+        return [...this.employeeOptions].sort((a, b) => {
+            const diff = toNumeric(a) - toNumeric(b);
+            if (diff !== 0) {
+                return diff;
+            }
+            return this.employeeLabel(a).localeCompare(this.employeeLabel(b));
+        });
+    }
+
+    get employeesByName() {
+        return [...this.employeeOptions].sort((a, b) =>
+            (a?.name || '').localeCompare((b?.name || ''), undefined, { sensitivity: "base" })
+        );
+    }
+
+    _applyEmployeeSelection(employee) {
+        if (!employee) {
+            return;
+        }
+        this.state.employee_id = employee.id;
+        this.state.employee_search_id = employee.code || employee.employee_code || '';
+        this.state.employee_search_name = employee.name || '';
     }
 
     async loadSummary() {
@@ -395,9 +427,9 @@ export class SimpleLeaveSummaryCard extends Component {
         await this.loadSummary();
     }
 
-    async onEmployeeSearchInput(ev) {
+    async onEmployeeIdSearchInput(ev) {
         const value = (ev.target.value || '').trim();
-        this.state.employee_search = value;
+        this.state.employee_search_id = value;
         if (!value) {
             this.state.employee_id = false;
             this.state.lines = [];
@@ -406,12 +438,31 @@ export class SimpleLeaveSummaryCard extends Component {
             return;
         }
         const normalized = value.toLowerCase();
-        const matchedEmployee = this.employeeOptions.find((employee) => {
-            const code = (employee.code || '').toLowerCase();
-            return this.employeeLabel(employee).toLowerCase() === normalized || code === normalized;
-        });
+        const matchedEmployee = this.employeeOptions.find((employee) =>
+            String(employee.code || employee.employee_code || '').toLowerCase() === normalized
+        );
         if (matchedEmployee && matchedEmployee.id !== this.state.employee_id) {
-            this.state.employee_id = matchedEmployee.id;
+            this._applyEmployeeSelection(matchedEmployee);
+            await this.loadSummary();
+        }
+    }
+
+    async onEmployeeNameSearchInput(ev) {
+        const value = (ev.target.value || '').trim();
+        this.state.employee_search_name = value;
+        if (!value) {
+            this.state.employee_id = false;
+            this.state.lines = [];
+            this.state.employee_name = '';
+            this.state.employee_profile = {};
+            return;
+        }
+        const normalized = value.toLowerCase();
+        const matchedEmployee = this.employeeOptions.find((employee) =>
+            String(employee.name || '').toLowerCase() === normalized
+        );
+        if (matchedEmployee && matchedEmployee.id !== this.state.employee_id) {
+            this._applyEmployeeSelection(matchedEmployee);
             await this.loadSummary();
         }
     }

@@ -239,13 +239,24 @@
             <div class="de-simple-summary-controls de-simple-summary-filter-grid">
                 <input type="text"
                        class="form-control de-summary-select"
-                       placeholder="Search employee by code or name..."
-                       t-att-value="state.employee_search"
-                       list="de_summary_employee_filter_options"
-                       t-on-input="onEmployeeSearchInput"/>
-                <datalist id="de_summary_employee_filter_options">
-                    <t t-foreach="employeeOptions" t-as="employee" t-key="employee.id">
-                        <option t-att-value="this.employeeLabel(employee)"/>
+                       placeholder="Search by Employee ID..."
+                       t-att-value="state.employee_search_id"
+                       list="de_summary_employee_filter_id_options"
+                       t-on-input="onEmployeeIdSearchInput"/>
+                <datalist id="de_summary_employee_filter_id_options">
+                    <t t-foreach="employeesById" t-as="employee" t-key="employee.id">
+                        <option t-att-value="employee.code || employee.employee_code || ''"/>
+                    </t>
+                </datalist>
+                <input type="text"
+                       class="form-control de-summary-select"
+                       placeholder="Search by Employee Name..."
+                       t-att-value="state.employee_search_name"
+                       list="de_summary_employee_filter_name_options"
+                       t-on-input="onEmployeeNameSearchInput"/>
+                <datalist id="de_summary_employee_filter_name_options">
+                    <t t-foreach="employeesByName" t-as="employee" t-key="employee.id">
+                        <option t-att-value="employee.name"/>
                     </t>
                 </datalist>
                 <select class="form-select de-summary-select" t-att-value="state.duration" t-on-change="onDurationChange">
