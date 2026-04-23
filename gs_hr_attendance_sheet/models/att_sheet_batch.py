@@ -213,3 +213,9 @@ class AttendanceSheetBatch(models.Model):
                     sheet.action_confirm()
 
             batch.write({'state': 'att_sub'})
+
+    def unlink(self):
+        for batch in self:
+            if batch.att_sheet_ids:
+                batch.att_sheet_ids.unlink()
+        return super().unlink()
