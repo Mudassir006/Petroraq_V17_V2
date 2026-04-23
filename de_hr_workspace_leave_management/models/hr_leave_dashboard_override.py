@@ -6,6 +6,70 @@ from odoo import api, fields, models
 class HrLeaveDashboardOverride(models.Model):
     _inherit = 'hr.leave'
 
+    @api.model
+    def _is_time_based_allocation_leave_type(self, leave_type):
+        """Leave types whose total allocation must follow selected date range."""
+        name = (leave_type.name or '').strip().lower()
+        return any(keyword in name for keyword in ('annual', 'hajj', 'emergency', 'marriage'))
+
+    @api.model
+    def _get_allocation_date_bounds(self, allocation):
+        start = (
+            allocation.date_from
+            or getattr(allocation, 'accrual_plan_start_date', False)
+            or getattr(allocation, 'request_date_from', False)
+        )
+        end = allocation.date_to or getattr(allocation, 'request_date_to', False)
+        return start, end
+
+    @api.model
+    def _compute_accrual_allocation_in_range(self, allocation, start, end):
+        """
+        Estimate accrued days as of the selected range end.
+
+        We pro-rate the currently validated accrued balance by elapsed days between
+        allocation start and today, then cap by the selected period.
+        """
+        alloc_start, _alloc_end = self._get_allocation_date_bounds(allocation)
+        if not alloc_start:
+            return allocation.number_of_days or 0.0
+
+        today = fields.Date.context_today(self)
+        current_total = allocation.number_of_days or 0.0
+        elapsed_until_today = (today - alloc_start).days + 1
+        if elapsed_until_today <= 0 or current_total <= 0:
+            return 0.0
+
+        effective_end = min(end, today)
+        if effective_end < alloc_start:
+            return 0.0
+
+        effective_start = max(start, alloc_start)
+        if effective_start > effective_end:
+            return 0.0
+
+        days_in_selected_window = (effective_end - effective_start).days + 1
+        days_in_selected_window = max(0, min(days_in_selected_window, elapsed_until_today))
+        return current_total * (days_in_selected_window / elapsed_until_today)
+
+    @api.model
+    def _compute_allocation_days_for_summary(self, allocation, leave_type, start, end):
+        """Compute allocation amount to be shown in summary for selected range."""
+        base_days = allocation.number_of_days or 0.0
+        if not self._is_time_based_allocation_leave_type(leave_type):
+            return base_days
+
+        alloc_start, alloc_end = self._get_allocation_date_bounds(allocation)
+        if alloc_start and alloc_start > end:
+            return 0.0
+        if alloc_end and alloc_end < start:
+            return 0.0
+
+        if allocation.allocation_type == 'accrual':
+            return self._compute_accrual_allocation_in_range(allocation, start, end)
+
+        return base_days
+
     def _get_employee_joining_date(self, employee):
         joining_date = False
         if 'hr.contract' in self.env:
@@ -475,8 +539,14 @@ class HrLeaveDashboardOverride(models.Model):
         allocated = {}
         used = {}
         for allocation in allocations:
-            key = allocation.holiday_status_id.id
-            allocated[key] = allocated.get(key, 0.0) + (allocation.number_of_days or 0.0)
+            leave_type = allocation.holiday_status_id
+            key = leave_type.id
+            allocated[key] = allocated.get(key, 0.0) + self._compute_allocation_days_for_summary(
+                allocation,
+                leave_type,
+                start,
+                end,
+            )
         for leave in leaves:
             key = leave.holiday_status_id.id
             used[key] = used.get(key, 0.0) + (leave.number_of_days or 0.0)

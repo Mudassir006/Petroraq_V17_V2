@@ -342,12 +342,14 @@ class HrLeaveRequest(models.Model):
         # Do not count "draft" requests here to avoid showing misleading "0 available"
         # on initial portal submission; drafts are not yet manager-confirmed commitments.
         pending_states = ["manager_approve", "hr_supervisor"]
-        pending_requests = self.search([
-            ("id", "!=", self.id),
+        domain = [
             ("employee_id", "=", employee.id),
             ("leave_type_id", "=", leave_type.id),
             ("state", "in", pending_states),
-        ])
+        ]
+        if isinstance(self.id, int):
+            domain.insert(0, ("id", "!=", self.id))
+        pending_requests = self.search(domain)
         pending_days = sum(req._get_requested_days_count() for req in pending_requests)
         return virtual_remaining - pending_days
 
