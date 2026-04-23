@@ -321,6 +321,8 @@ export class SimpleLeaveSummaryCard extends Component {
             employee_id: this.props.id,
             employee_search_id: '',
             employee_search_name: '',
+            show_id_suggestions: false,
+            show_name_suggestions: false,
             duration: 'current_contract',
             date_from: '',
             date_to: '',
@@ -366,6 +368,28 @@ export class SimpleLeaveSummaryCard extends Component {
         return [...this.employeeOptions].sort((a, b) =>
             (a?.name || '').localeCompare((b?.name || ''), undefined, { sensitivity: "base" })
         );
+    }
+
+    get filteredEmployeesById() {
+        const query = String(this.state.employee_search_id || '').trim().toLowerCase();
+        const rows = this.employeesById;
+        if (!query) {
+            return rows.slice(0, 12);
+        }
+        return rows.filter((employee) =>
+            String(employee.code || employee.employee_code || '').toLowerCase().includes(query)
+        ).slice(0, 12);
+    }
+
+    get filteredEmployeesByName() {
+        const query = String(this.state.employee_search_name || '').trim().toLowerCase();
+        const rows = this.employeesByName;
+        if (!query) {
+            return rows.slice(0, 12);
+        }
+        return rows.filter((employee) =>
+            String(employee.name || '').toLowerCase().includes(query)
+        ).slice(0, 12);
     }
 
     _applyEmployeeSelection(employee) {
@@ -430,6 +454,7 @@ export class SimpleLeaveSummaryCard extends Component {
     async onEmployeeIdSearchInput(ev) {
         const value = (ev.target.value || '').trim();
         this.state.employee_search_id = value;
+        this.state.show_id_suggestions = true;
         if (!value) {
             this.state.employee_id = false;
             this.state.lines = [];
@@ -450,6 +475,7 @@ export class SimpleLeaveSummaryCard extends Component {
     async onEmployeeNameSearchInput(ev) {
         const value = (ev.target.value || '').trim();
         this.state.employee_search_name = value;
+        this.state.show_name_suggestions = true;
         if (!value) {
             this.state.employee_id = false;
             this.state.lines = [];
@@ -465,6 +491,38 @@ export class SimpleLeaveSummaryCard extends Component {
             this._applyEmployeeSelection(matchedEmployee);
             await this.loadSummary();
         }
+    }
+
+    onEmployeeIdFocus() {
+        this.state.show_id_suggestions = true;
+    }
+
+    onEmployeeNameFocus() {
+        this.state.show_name_suggestions = true;
+    }
+
+    onEmployeeIdBlur() {
+        setTimeout(() => {
+            this.state.show_id_suggestions = false;
+        }, 150);
+    }
+
+    onEmployeeNameBlur() {
+        setTimeout(() => {
+            this.state.show_name_suggestions = false;
+        }, 150);
+    }
+
+    async selectEmployeeFromId(employee) {
+        this._applyEmployeeSelection(employee);
+        this.state.show_id_suggestions = false;
+        await this.loadSummary();
+    }
+
+    async selectEmployeeFromName(employee) {
+        this._applyEmployeeSelection(employee);
+        this.state.show_name_suggestions = false;
+        await this.loadSummary();
     }
 
     _todayISO() {

@@ -237,28 +237,52 @@
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3 de-simple-summary-header">
             <strong class="de-simple-summary-title">Search Employee</strong>
             <div class="de-simple-summary-controls de-simple-summary-filter-grid">
-                <input type="text"
-                       class="form-control de-summary-select"
-                       placeholder="Search by Employee ID..."
-                       t-att-value="state.employee_search_id"
-                       list="de_summary_employee_filter_id_options"
-                       t-on-input="onEmployeeIdSearchInput"/>
-                <datalist id="de_summary_employee_filter_id_options">
-                    <t t-foreach="employeesById" t-as="employee" t-key="employee.id">
-                        <option t-att-value="employee.code || employee.employee_code || ''"/>
-                    </t>
-                </datalist>
-                <input type="text"
-                       class="form-control de-summary-select"
-                       placeholder="Search by Employee Name..."
-                       t-att-value="state.employee_search_name"
-                       list="de_summary_employee_filter_name_options"
-                       t-on-input="onEmployeeNameSearchInput"/>
-                <datalist id="de_summary_employee_filter_name_options">
-                    <t t-foreach="employeesByName" t-as="employee" t-key="employee.id">
-                        <option t-att-value="employee.name"/>
-                    </t>
-                </datalist>
+                <div class="de-adv-search-field">
+                    <input type="text"
+                           class="form-control de-summary-select"
+                           placeholder="Search by Employee ID..."
+                           t-att-value="state.employee_search_id"
+                           t-on-input="onEmployeeIdSearchInput"
+                           t-on-focus="onEmployeeIdFocus"
+                           t-on-blur="onEmployeeIdBlur"/>
+                    <div t-if="state.show_id_suggestions" class="de-adv-search-dropdown">
+                        <t t-if="filteredEmployeesById.length">
+                            <button type="button"
+                                    class="de-adv-search-option"
+                                    t-foreach="filteredEmployeesById"
+                                    t-as="employee"
+                                    t-key="employee.id"
+                                    t-on-click="() => this.selectEmployeeFromId(employee)">
+                                <span class="de-option-main"><t t-esc="employee.code || employee.employee_code || '-'"/></span>
+                                <span class="de-option-sub"><t t-esc="employee.name"/></span>
+                            </button>
+                        </t>
+                        <div t-else="" class="de-adv-search-empty">No matching employee ID found.</div>
+                    </div>
+                </div>
+                <div class="de-adv-search-field">
+                    <input type="text"
+                           class="form-control de-summary-select"
+                           placeholder="Search by Employee Name..."
+                           t-att-value="state.employee_search_name"
+                           t-on-input="onEmployeeNameSearchInput"
+                           t-on-focus="onEmployeeNameFocus"
+                           t-on-blur="onEmployeeNameBlur"/>
+                    <div t-if="state.show_name_suggestions" class="de-adv-search-dropdown">
+                        <t t-if="filteredEmployeesByName.length">
+                            <button type="button"
+                                    class="de-adv-search-option"
+                                    t-foreach="filteredEmployeesByName"
+                                    t-as="employee"
+                                    t-key="employee.id"
+                                    t-on-click="() => this.selectEmployeeFromName(employee)">
+                                <span class="de-option-main"><t t-esc="employee.name"/></span>
+                                <span class="de-option-sub">ID: <t t-esc="employee.code || employee.employee_code || '-'"/></span>
+                            </button>
+                        </t>
+                        <div t-else="" class="de-adv-search-empty">No matching employee name found.</div>
+                    </div>
+                </div>
                 <select class="form-select de-summary-select" t-att-value="state.duration" t-on-change="onDurationChange">
                     <option value="current_contract">Current Contract</option>
                     <option value="this_month">This Month</option>
