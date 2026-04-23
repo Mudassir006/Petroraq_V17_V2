@@ -133,6 +133,9 @@ class HrLeaveDashboardOverride(models.Model):
             start = today.replace(month=1, day=1)
         elif duration == 'this_month':
             start = today.replace(day=1)
+        elif duration == 'date_of_joining':
+            joining_date = self._get_employee_joining_date(employee)
+            start = fields.Date.to_date(joining_date) if joining_date else employee_start
         else:
             current_contract_start = self._get_employee_current_contract_start_date(employee)
             start = fields.Date.to_date(current_contract_start) if current_contract_start else employee_start

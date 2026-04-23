@@ -250,7 +250,7 @@
                             type="button"
                             class="de-clear-field-btn"
                             title="Clear"
-                            t-on-click="clearEmployeeIdSearch">
+                            t-on-click="clearAllEmployeeSearchFields">
                         <i class="fa fa-times"/>
                     </button>
                     <button type="button" class="de-sort-toggle-btn" t-on-click="toggleIdSortOrder"
@@ -285,7 +285,7 @@
                             type="button"
                             class="de-clear-field-btn"
                             title="Clear"
-                            t-on-click="clearEmployeeNameSearch">
+                            t-on-click="clearAllEmployeeSearchFields">
                         <i class="fa fa-times"/>
                     </button>
                     <button type="button" class="de-sort-toggle-btn" t-on-click="toggleNameSortOrder"
@@ -309,6 +309,7 @@
                 </div>
                 <select class="form-select de-summary-select" t-att-value="state.duration" t-on-change="onDurationChange">
                     <option value="current_contract">Current Contract</option>
+                    <option value="date_of_joining">Date of Joining</option>
                     <option value="this_month">This Month</option>
                     <option value="this_year">This Year</option>
                     <option value="custom">Custom</option>

@@ -540,23 +540,16 @@ export class SimpleLeaveSummaryCard extends Component {
         this.state.name_highlighted_index = 0;
     }
 
-    clearEmployeeIdSearch() {
+    clearAllEmployeeSearchFields() {
         this.state.employee_search_id = '';
-        this.state.employee_id = false;
-        this.state.lines = [];
-        this.state.employee_name = '';
-        this.state.employee_profile = {};
-        this.state.show_id_suggestions = false;
-        this.state.id_highlighted_index = 0;
-    }
-
-    clearEmployeeNameSearch() {
         this.state.employee_search_name = '';
         this.state.employee_id = false;
         this.state.lines = [];
         this.state.employee_name = '';
         this.state.employee_profile = {};
+        this.state.show_id_suggestions = false;
         this.state.show_name_suggestions = false;
+        this.state.id_highlighted_index = 0;
         this.state.name_highlighted_index = 0;
     }
 
@@ -663,6 +656,8 @@ export class SimpleLeaveSummaryCard extends Component {
             const now = new Date();
             const month = `${now.getMonth() + 1}`.padStart(2, "0");
             start = `${now.getFullYear()}-${month}-01`;
+        } else if (this.state.duration === "date_of_joining") {
+            start = this.state.employee_profile.joining_date || `${new Date().getFullYear()}-01-01`;
         } else {
             start = this.state.employee_profile.current_contract_start_date || `${new Date().getFullYear()}-01-01`;
         }
