@@ -350,8 +350,9 @@ export class SimpleLeaveSummaryCard extends Component {
     }
 
     get employeesById() {
+        const getCode = (employee) => String(employee?.code || employee?.employee_code || '').trim();
         const toNumeric = (employee) => {
-            const value = String(employee?.code || employee?.employee_code || '').trim();
+            const value = getCode(employee);
             const numeric = Number.parseInt(value, 10);
             return Number.isNaN(numeric) ? Number.MAX_SAFE_INTEGER : numeric;
         };
@@ -360,7 +361,11 @@ export class SimpleLeaveSummaryCard extends Component {
             if (diff !== 0) {
                 return diff;
             }
-            return this.employeeLabel(a).localeCompare(this.employeeLabel(b));
+            const codeCompare = getCode(a).localeCompare(getCode(b), undefined, { numeric: true, sensitivity: "base" });
+            if (codeCompare !== 0) {
+                return codeCompare;
+            }
+            return (a?.name || '').localeCompare((b?.name || ''), undefined, { sensitivity: "base" });
         });
     }
 
@@ -378,7 +383,11 @@ export class SimpleLeaveSummaryCard extends Component {
         }
         return rows.filter((employee) =>
             String(employee.code || employee.employee_code || '').toLowerCase().includes(query)
-        ).slice(0, 12);
+        ).sort((a, b) => {
+            const aCode = String(a.code || a.employee_code || '');
+            const bCode = String(b.code || b.employee_code || '');
+            return aCode.localeCompare(bCode, undefined, { numeric: true, sensitivity: "base" });
+        }).slice(0, 12);
     }
 
     get filteredEmployeesByName() {
@@ -389,6 +398,8 @@ export class SimpleLeaveSummaryCard extends Component {
         }
         return rows.filter((employee) =>
             String(employee.name || '').toLowerCase().includes(query)
+        ).sort((a, b) =>
+            String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: "base" })
         ).slice(0, 12);
     }
 

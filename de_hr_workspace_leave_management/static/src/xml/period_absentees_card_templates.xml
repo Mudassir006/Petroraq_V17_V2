@@ -254,7 +254,6 @@
                                     t-key="employee.id"
                                     t-on-click="() => this.selectEmployeeFromId(employee)">
                                 <span class="de-option-main"><t t-esc="employee.code || employee.employee_code || '-'"/></span>
-                                <span class="de-option-sub"><t t-esc="employee.name"/></span>
                             </button>
                         </t>
                         <div t-else="" class="de-adv-search-empty">No matching employee ID found.</div>
@@ -277,7 +276,6 @@
                                     t-key="employee.id"
                                     t-on-click="() => this.selectEmployeeFromName(employee)">
                                 <span class="de-option-main"><t t-esc="employee.name"/></span>
-                                <span class="de-option-sub">ID: <t t-esc="employee.code || employee.employee_code || '-'"/></span>
                             </button>
                         </t>
                         <div t-else="" class="de-adv-search-empty">No matching employee name found.</div>
