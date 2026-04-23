@@ -281,18 +281,49 @@ class AttendanceReportWizard(models.TransientModel):
         return self.env.ref('au_attendance_report.attendance_report_action').report_action(self, data=data)
 
     def generate_xls_report(self):
-
-        holiday_style = xlwt.easyxf('font: colour_index black;')
-        absent_style = xlwt.easyxf('font: colour_index red;')
-        default_style = xlwt.easyxf('font: colour_index green')
-
-
+        company = self.env.company
+        company_header = '%s - VAT Number %s' % (company.name or '', company.vat or '-')
+        holiday_style = xlwt.easyxf(
+            'font: colour_index black;'
+            'borders: left thin, right thin, top thin, bottom thin;'
+            'align: horiz center, vert center'
+        )
+        absent_style = xlwt.easyxf(
+            'font: colour_index red;'
+            'borders: left thin, right thin, top thin, bottom thin;'
+            'align: horiz center, vert center'
+        )
+        default_style = xlwt.easyxf(
+            'font: colour_index black;'
+            'borders: left thin, right thin, top thin, bottom thin;'
+            'align: horiz center, vert center'
+        )
         workbook = xlwt.Workbook()
         col_widths = [15, 15, 15, 20, 20, 15, 15, 15, 15]
-        title_style = xlwt.easyxf('font: bold 1, height 280; align: horiz center')
-        subtitle_style = xlwt.easyxf('font: bold 1; align: horiz left')
-        header_style = xlwt.easyxf('font: bold 1; borders: bottom thin')
-        summary_title_style = xlwt.easyxf('font: bold 1, height 220; align: horiz center; borders: bottom thick')
+        title_style = xlwt.easyxf(
+            'font: bold 1, colour white, height 320;'
+            'pattern: pattern solid, fore_colour ocean_blue;'
+            'align: horiz center, vert center;'
+            'borders: left thin, right thin, top thin, bottom thin'
+        )
+        subtitle_style = xlwt.easyxf(
+            'font: bold 1, colour white, height 280;'
+            'pattern: pattern solid, fore_colour ocean_blue;'
+            'align: horiz center, vert center;'
+            'borders: left thin, right thin, top thin, bottom thin'
+        )
+        header_style = xlwt.easyxf(
+            'font: bold 1, colour white;'
+            'pattern: pattern solid, fore_colour ocean_blue;'
+            'align: horiz center, vert center;'
+            'borders: left thin, right thin, top thin, bottom thin'
+        )
+        summary_title_style = xlwt.easyxf(
+            'font: bold 1, colour white, height 220;'
+            'pattern: pattern solid, fore_colour ocean_blue;'
+            'align: horiz center, vert center;'
+            'borders: left thin, right thin, top thin, bottom thin'
+        )
         summary_label_style = xlwt.easyxf(
             'font: bold 1; borders: left thin, right thin, top thin, bottom thin; align: horiz left')
         summary_value_style = xlwt.easyxf('borders: left thin, right thin, top thin, bottom thin; align: horiz right')
@@ -301,9 +332,11 @@ class AttendanceReportWizard(models.TransientModel):
             sheet = workbook.add_sheet((employee.name or 'Employee')[:31])
             for col_index, width in enumerate(col_widths):
                 sheet.col(col_index).width = 256 * width
+            sheet.col(10).width = 256 * 25
+            sheet.col(11).width = 256 * 15
 
-            sheet.write_merge(0, 0, 0, 8, 'Attendance Report', title_style)
-            sheet.write_merge(1, 1, 0, 8, f'Employee: {employee.name}', subtitle_style)
+            sheet.write_merge(0, 0, 0, 8, company_header, title_style)
+            sheet.write_merge(1, 1, 0, 8, f'Attendance Report - {employee.name}', subtitle_style)
             sheet.write_merge(2, 2, 0, 8, f'Period: {self.date_from} to {self.date_to}', subtitle_style)
             row = 4
 
@@ -349,8 +382,6 @@ class AttendanceReportWizard(models.TransientModel):
                 ('Total Overtime', summary['summary_overtime']),
             ]
             for idx, (label, value) in enumerate(summary_data):
-                sheet.col(summary_start_col).width = 256 * 25
-                sheet.col(summary_start_col + 1).width = 256 * 15
                 sheet.write(summary_start_row + idx + 1, 10, label, summary_label_style)
                 sheet.write(summary_start_row + idx + 1, 11, value, summary_value_style)
 

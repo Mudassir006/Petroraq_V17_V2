@@ -3,15 +3,23 @@
     <t t-call="web.html_container">
       <t t-foreach="employee_reports" t-as="employee_report">
       <div class="page" style="font-family: Arial, sans-serif; font-size: 12px; padding: 20px;">
-        <h2 style="text-align: center; margin-bottom: 20px;">Attendance Report</h2>
-        <p>
-          <strong>Employee:</strong>
-          <span style="text-decoration: underline;"><t t-esc="employee_report.get('employee_name')"/></span>
-        </p>
-        <p>
-          <strong>From:</strong> <t t-esc="doc.date_from"/>
-          <strong>To:</strong> <t t-esc="doc.date_to"/>
-        </p>
+        <table style="width:100%; border-collapse:collapse; margin-bottom: 16px;">
+          <tr>
+            <td style="background:#173b76; color:#ffffff; font-size:16px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+              <t t-esc="doc.company_id.name"/> - VAT Number <t t-esc="doc.company_id.vat or '-'"/>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#173b76; color:#ffffff; font-size:14px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+              Attendance Report - <t t-esc="employee_report.get('employee_name')"/>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#173b76; color:#ffffff; font-size:14px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+              Period: <t t-esc="doc.date_from"/> to <t t-esc="doc.date_to"/>
+            </td>
+          </tr>
+        </table>
 
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
           <thead>
