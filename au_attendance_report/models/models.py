@@ -53,19 +53,36 @@ class AttendanceReportWizard(models.TransientModel):
                 raise ValidationError("Date From cannot be in the future.")
 
     def _get_day_planned_hours(self, employee, day_date):
-        """Return planned hours for the employee on a date based on calendar/work entries."""
+        """Return planned hours for the employee on a date based on working schedule."""
         calendar = employee.resource_calendar_id or employee.company_id.resource_calendar_id
         if not calendar:
             return 0.0
 
         day_start = datetime.combine(day_date, time.min)
         day_end = datetime.combine(day_date, time.max)
-        work_data = employee._get_work_days_data(
-            day_start,
-            day_end,
-            calendar=calendar,
-        )
-        return work_data.get('hours', 0.0)
+        is_calendar_leave = self.env['resource.calendar.leaves'].search_count([
+            ('calendar_id', 'in', [False, calendar.id]),
+            ('date_from', '<=', day_end),
+            ('date_to', '>=', day_start),
+        ]) > 0
+        if is_calendar_leave:
+            return 0.0
+
+        # Custom deployments can store public holidays on hr.public.holiday.
+        if 'hr.public.holiday' in self.env:
+            is_public_holiday = self.env['hr.public.holiday'].sudo().search_count([
+                ('date_from', '<=', day_date),
+                ('date_to', '>=', day_date),
+                ('company_id', 'in', [False, employee.company_id.id]),
+            ]) > 0
+            if is_public_holiday:
+                return 0.0
+
+        weekday = str(day_date.weekday())
+        planned_hours = 0.0
+        for line in calendar.attendance_ids.filtered(lambda l: l.dayofweek == weekday):
+            planned_hours += max(0.0, line.hour_to - line.hour_from)
+        return planned_hours
 
     def _get_attendance_data(self, employee):
         result = []
