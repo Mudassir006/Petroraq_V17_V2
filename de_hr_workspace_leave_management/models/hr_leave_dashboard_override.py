@@ -150,6 +150,9 @@ class HrLeaveDashboardOverride(models.Model):
         """Count employee absent working days excluding public holidays, approved leaves and attendances."""
         if not employee or not start or not end or end < start:
             return 0
+        if not getattr(employee, 'compute_attendance', False):
+            # Employees without attendance tracking enabled should not be counted as absentees.
+            return 0
 
         calendar = employee.resource_calendar_id
         if calendar and calendar.attendance_ids:
