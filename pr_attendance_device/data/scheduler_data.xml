@@ -25,5 +25,20 @@
             <field name="code">model._cron_download_device_attendance()</field>
         </record>
 
+        <record id="ir_cron_scheduler_checkin_leverage" model="ir.cron">
+            <field name="name">Sync Attendance Machine Data</field>
+            <field name="model_id" ref="model_user_attendance"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="state">code</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+            <field name="nextcall"
+                   eval="((DateTime.now().replace(hour=6, minute=10, second=0, microsecond=0) if DateTime.now() &lt; DateTime.now().replace(hour=6, minute=10, second=0, microsecond=0) else DateTime.now().replace(hour=6, minute=10, second=0, microsecond=0) + relativedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S'))"/>
+            <field name="code">model._cron_apply_checkin_leverage()</field>
+        </record>
+
+
     </data>
 </odoo>
