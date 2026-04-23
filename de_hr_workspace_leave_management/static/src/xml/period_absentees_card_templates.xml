@@ -246,6 +246,13 @@
                            t-on-keydown="onEmployeeIdKeyDown"
                            t-on-focus="onEmployeeIdFocus"
                            t-on-blur="onEmployeeIdBlur"/>
+                    <button t-if="state.employee_search_id"
+                            type="button"
+                            class="de-clear-field-btn"
+                            title="Clear"
+                            t-on-click="clearEmployeeIdSearch">
+                        <i class="fa fa-times"/>
+                    </button>
                     <button type="button" class="de-sort-toggle-btn" t-on-click="toggleIdSortOrder"
                             t-att-title="'Sort by ID: ' + (state.id_sort_order === 'asc' ? 'Ascending' : 'Descending')">
                         <i t-att-class="state.id_sort_order === 'asc' ? 'fa fa-sort-numeric-asc' : 'fa fa-sort-numeric-desc'"/>
@@ -274,6 +281,13 @@
                            t-on-keydown="onEmployeeNameKeyDown"
                            t-on-focus="onEmployeeNameFocus"
                            t-on-blur="onEmployeeNameBlur"/>
+                    <button t-if="state.employee_search_name"
+                            type="button"
+                            class="de-clear-field-btn"
+                            title="Clear"
+                            t-on-click="clearEmployeeNameSearch">
+                        <i class="fa fa-times"/>
+                    </button>
                     <button type="button" class="de-sort-toggle-btn" t-on-click="toggleNameSortOrder"
                             t-att-title="'Sort by Name: ' + (state.name_sort_order === 'asc' ? 'A to Z' : 'Z to A')">
                         <i t-att-class="state.name_sort_order === 'asc' ? 'fa fa-sort-alpha-asc' : 'fa fa-sort-alpha-desc'"/>

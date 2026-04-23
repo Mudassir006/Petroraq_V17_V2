@@ -540,6 +540,26 @@ export class SimpleLeaveSummaryCard extends Component {
         this.state.name_highlighted_index = 0;
     }
 
+    clearEmployeeIdSearch() {
+        this.state.employee_search_id = '';
+        this.state.employee_id = false;
+        this.state.lines = [];
+        this.state.employee_name = '';
+        this.state.employee_profile = {};
+        this.state.show_id_suggestions = false;
+        this.state.id_highlighted_index = 0;
+    }
+
+    clearEmployeeNameSearch() {
+        this.state.employee_search_name = '';
+        this.state.employee_id = false;
+        this.state.lines = [];
+        this.state.employee_name = '';
+        this.state.employee_profile = {};
+        this.state.show_name_suggestions = false;
+        this.state.name_highlighted_index = 0;
+    }
+
     async onEmployeeIdKeyDown(ev) {
         const rows = this.filteredEmployeesById;
         if (!rows.length) {
