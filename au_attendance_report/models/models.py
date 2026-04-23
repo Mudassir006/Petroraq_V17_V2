@@ -1,5 +1,6 @@
 from io import BytesIO
 import base64
+import inspect
 from datetime import date, timedelta, datetime, time
 
 import xlwt
@@ -60,6 +61,26 @@ class AttendanceReportWizard(models.TransientModel):
 
         day_start = datetime.combine(day_date, time.min)
         day_end = datetime.combine(day_date, time.max)
+
+        # Prefer native calendar API when available (different signatures across versions/custom forks).
+        get_work_hours = getattr(calendar, 'get_work_hours_count', False)
+        if get_work_hours:
+            try:
+                signature = inspect.signature(get_work_hours)
+                kwargs = {}
+                if 'compute_leaves' in signature.parameters:
+                    kwargs['compute_leaves'] = True
+                if 'resource' in signature.parameters:
+                    kwargs['resource'] = employee.resource_id
+                elif 'resources' in signature.parameters:
+                    kwargs['resources'] = employee.resource_id
+                planned = get_work_hours(day_start, day_end, **kwargs)
+                if planned:
+                    return planned
+            except Exception:
+                # Fallback to explicit calendar/public holiday checks below.
+                pass
+
         is_calendar_leave = self.env['resource.calendar.leaves'].search_count([
             ('calendar_id', 'in', [False, calendar.id]),
             ('date_from', '<=', day_end),
