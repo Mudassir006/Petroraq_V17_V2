@@ -60,12 +60,12 @@ class AttendanceReportWizard(models.TransientModel):
 
         day_start = datetime.combine(day_date, time.min)
         day_end = datetime.combine(day_date, time.max)
-        return calendar.get_work_hours_count(
+        work_data = employee._get_work_days_data(
             day_start,
             day_end,
-            compute_leaves=True,
-            resource=employee.resource_id,
+            calendar=calendar,
         )
+        return work_data.get('hours', 0.0)
 
     def _get_attendance_data(self, employee):
         result = []
