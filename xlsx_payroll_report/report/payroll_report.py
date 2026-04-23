@@ -140,7 +140,7 @@ class PayrollReport(models.AbstractModel):
                      "Food",
                      "Other Payments",
                      # "Other Allowances",
-                     "Car Allowance",
+                     # "Car Allowance",
                      # "Car Allowances",
                      "Fixed Overtime",
                      "Overtime",

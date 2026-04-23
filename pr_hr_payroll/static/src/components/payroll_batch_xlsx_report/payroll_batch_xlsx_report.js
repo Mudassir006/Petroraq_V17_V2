@@ -46,7 +46,7 @@ class PayrollBatchXlsxReport extends Component {
                      "Accommodation",
                      "Transportation",
                      "Food",
-                     "Car Allowance",
+//                     "Car Allowance",
                      "Fixed Overtime",
                      "Overtime",
 

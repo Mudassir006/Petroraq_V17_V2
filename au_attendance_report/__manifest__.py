@@ -1,6 +1,6 @@
 {
     'name': 'Custom Attendance Report',
-    'version': '16.0',
+    'version': '17.0.1.0.0',
     'summary': 'Advanced Attendance Reporting with Detailed Insights',
     'description': """
 Custom Attendance Report
@@ -23,7 +23,7 @@ Perfect for organizations needing a reliable and professional way to analyze emp
     'category': 'Human Resources',
     'author': 'Mudassir Amin',
     'website': 'mudassir.odoo@gmail.com',
-    'license': 'LGPL-3',		
+    'license': 'LGPL-3',
     'depends': [
         'hr_attendance',
         'hr_holidays',

@@ -1,19 +1,25 @@
 <odoo>
   <template id="attendance_report_template">
     <t t-call="web.html_container">
+      <t t-foreach="employee_reports" t-as="employee_report">
       <div class="page" style="font-family: Arial, sans-serif; font-size: 12px; padding: 20px;">
-
-        <h2 style="text-align: center; margin-bottom: 20px;">Attendance Report</h2>
-
-        <p>
-          <strong>Employee:</strong>
-          <span style="text-decoration: underline;"><t t-esc="employee_name"/></span>
-        </p>
-        <p>
-          <strong>From:</strong> <t t-esc="doc.date_from"/>
-
-          <strong>To:</strong> <t t-esc="doc.date_to"/>
-        </p>
+        <table style="width:100%; border-collapse:collapse; margin-bottom: 16px;">
+          <tr>
+            <td style="background:#122AA0; color:#ffffff; font-size:16px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+              <t t-esc="doc.company_id.name"/> - VAT Number <t t-esc="doc.company_id.vat or '-'"/>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#122AA0; color:#ffffff; font-size:14px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+              Attendance Report - <t t-esc="employee_report.get('employee_name')"/>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#122AA0; color:#ffffff; font-size:14px; font-weight:bold; text-align:center; padding:6px; border:1px solid #000;">
+              Period: <t t-esc="doc.date_from"/> to <t t-esc="doc.date_to"/>
+            </td>
+          </tr>
+        </table>
 
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
           <thead>
@@ -29,12 +35,12 @@
             </tr>
           </thead>
           <tbody>
-            <t t-foreach="attendance_lines" t-as="line">
+            <t t-foreach="employee_report.get('attendance_lines')" t-as="line">
               <tr t-attf-style="
                 border: 1px solid #ccc;
                 text-align: center;
-                background-color: #{'lightgray' if line.get('is_weekend') else 'white'};
-                color: #{'red' if line.get('worked_hours') == 'Absent' else 'black'};
+                background-color: #{'#dff5df' if line.get('worked_hours') == 'Leave' else ('lightgray' if line.get('is_weekend') else 'white')};
+                color: #{'red' if line.get('absent') else ('green' if line.get('worked_hours') == 'Leave' else 'black')};
               ">
                 <td style="border: 1px solid #ccc; padding: 5px;">
                   <t t-esc="line.get('day')"/> <t t-esc="line.get('date')"/>
@@ -43,8 +49,8 @@
                 <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="line.get('check_in')"/></td>
                 <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="line.get('check_out')"/></td>
                 <td style="border: 1px solid #ccc; padding: 5px;">
-                  <t t-if="line.get('worked_hours') == 'Absent'">
-                    <span style="color: red;">0</span>
+                  <t t-if="line.get('absent')">
+                    <span style="color: red;"><t t-esc="line.get('worked_hours')"/></span>
                   </t>
                   <t t-else="">
                     <t t-esc="line.get('worked_hours')"/>
@@ -64,32 +70,33 @@
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="border: 1px solid #ccc; padding: 5px;">Planned Hours</td>
-              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="summary_planned_hours"/></td>
+              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="employee_report.get('summary').get('summary_planned_hours')"/></td>
             </tr>
             <tr>
               <td style="border: 1px solid #ccc; padding: 5px;">Worked Hours</td>
-              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="summary_worked_hours"/></td>
+              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="employee_report.get('summary').get('summary_worked_hours')"/></td>
             </tr>
             <tr>
               <td style="border: 1px solid #ccc; padding: 5px;">Absent Days</td>
-              <td style="border: 1px solid #ccc; padding: 5px; color: red;"><t t-esc="summary_absent_days"/></td>
+              <td style="border: 1px solid #ccc; padding: 5px; color: red;"><t t-esc="employee_report.get('summary').get('summary_absent_days')"/></td>
             </tr>
             <tr>
               <td style="border: 1px solid #ccc; padding: 5px;">Late Hours</td>
-              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="summary_late_hours"/></td>
+              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="employee_report.get('summary').get('summary_late_hours')"/></td>
             </tr>
             <tr>
               <td style="border: 1px solid #ccc; padding: 5px;">Difference</td>
-              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="summary_difference"/></td>
+              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="employee_report.get('summary').get('summary_difference')"/></td>
             </tr>
             <tr>
               <td style="border: 1px solid #ccc; padding: 5px;">Overtime</td>
-              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="summary_overtime"/></td>
+              <td style="border: 1px solid #ccc; padding: 5px;"><t t-esc="employee_report.get('summary').get('summary_overtime')"/></td>
             </tr>
           </table>
         </div>
 
       </div>
+      </t>
     </t>
   </template>
 </odoo>
