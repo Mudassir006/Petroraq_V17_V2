@@ -267,6 +267,11 @@ get payrollMonth() {
         const codeByName = new Map(columns.map(c => [c.name, c.code]));
         const val = (name) => Number(valsByCode.get(codeByName.get(name)) || 0);
 
+        const gosiCompanyAdd = Math.abs(Number(valsByCode.get("GOSI_COMP_ADD") || 0));
+        const gosiCompanyDed = Math.abs(Number(valsByCode.get("GOSI_COMP_DED") || 0));
+        const gosiEmployeePortion = Math.abs(Number(valsByCode.get("GOSI_EMP") || 0));
+        const gosiCompanyPortion = gosiCompanyAdd + gosiCompanyDed;
+
         const computedGross =
             val("Basic Salary") +
             val("Accommodation") +
@@ -282,16 +287,15 @@ get payrollMonth() {
             val("Late In") +
             val("Unpaid Leave") +
             val("Early Checkout") +
-            Number(valsByCode.get("GOSI_COMP_ADD") || 0);
+            gosiCompanyPortion;
 
         const grossCode = codeByName.get("Gross");
         if (grossCode) valsByCode.set(grossCode, computedGross);
 
         const computedNet =
             computedGross -
-            val("Advance Allowances") -
-            Number(valsByCode.get("GOSI_COMP_ADD") || 0) +
-            Number(valsByCode.get("GOSI_EMP") || 0);
+            Math.abs(val("Advance Allowances")) -
+            (gosiCompanyPortion + gosiEmployeePortion);
 
         const netCode = codeByName.get("Net Salary");
         if (netCode) valsByCode.set(netCode, computedNet);

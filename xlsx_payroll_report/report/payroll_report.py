@@ -304,6 +304,11 @@ class PayrollReport(models.AbstractModel):
                     code = code_by_name.get(name)
                     return slip_amount_by_code.get(code, 0.0) if code else 0.0
 
+                gosi_company_add = abs(slip_amount_by_code.get("GOSI_COMP_ADD", 0.0))
+                gosi_company_ded = abs(slip_amount_by_code.get("GOSI_COMP_DED", 0.0))
+                gosi_employee_portion = abs(slip_amount_by_code.get("GOSI_EMP", 0.0))
+                gosi_company_portion = gosi_company_add + gosi_company_ded
+
                 computed_gross = (
                     amount_by_name("Basic Salary")
                     + amount_by_name("Accommodation")
@@ -319,7 +324,7 @@ class PayrollReport(models.AbstractModel):
                     + amount_by_name("Late In")
                     + amount_by_name("Unpaid Leave")
                     + amount_by_name("Early Checkout")
-                    + slip_amount_by_code.get("GOSI_COMP_ADD", 0.0)
+                    + gosi_company_portion
                 )
                 gross_code = code_by_name.get("Gross")
                 if gross_code:
@@ -327,9 +332,8 @@ class PayrollReport(models.AbstractModel):
 
                 computed_net = (
                     computed_gross
-                    - amount_by_name("Advance Allowances")
-                    - slip_amount_by_code.get("GOSI_COMP_ADD", 0.0)
-                    + slip_amount_by_code.get("GOSI_EMP", 0.0)
+                    - abs(amount_by_name("Advance Allowances"))
+                    - (gosi_company_portion + gosi_employee_portion)
                 )
                 net_code = code_by_name.get("Net Salary")
                 if net_code:
