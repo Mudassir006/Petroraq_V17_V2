@@ -138,27 +138,18 @@ class PayrollReport(models.AbstractModel):
                      "Accommodation",
                      "Transportation",
                      "Food",
-                     "Other Payments",
-                     # "Other Allowances",
-                     "Car Allowance",
-                     # "Car Allowances",
                      "Fixed Overtime",
                      "Overtime",
-
-                     "Sick Time Off",
-                     "Annual Time Off",
-                     "Late In",
-                     "Early Checkout",
-                     "Absence",
-                     "GOSI",
-                     "Unpaid Leave",
-
-                     "Gross",
-                     "HRA",
-                     "Advance Allowances",
-
                      "Annual Time Off DED",
                      "Sick Time Off DED",
+                     "Annual Time Off",
+                     "Sick Time Off",
+                     "Absence",
+                     "Late In",
+                     "Unpaid Leave",
+                     "Early Checkout",
+                     "Gross",
+                     "Advance Allowances",
                      "Net Salary", ]
 
             salary_rule_ids = salary_rule_ids.filtered(lambda s: s.name in order)
@@ -306,6 +297,43 @@ class PayrollReport(models.AbstractModel):
                 # Fill all rule columns (by code)
                 # (Small perf improvement: build dict {code: amount} once per slip)
                 slip_amount_by_code = {l.code: l.amount for l in slip.line_ids}
+
+                code_by_name = {rule[2]: rule[1] for rule in rules}
+
+                def amount_by_name(name):
+                    code = code_by_name.get(name)
+                    return slip_amount_by_code.get(code, 0.0) if code else 0.0
+
+                computed_gross = (
+                    amount_by_name("Basic Salary")
+                    + amount_by_name("Accommodation")
+                    + amount_by_name("Transportation")
+                    + amount_by_name("Food")
+                    + amount_by_name("Fixed Overtime")
+                    + amount_by_name("Overtime")
+                    + amount_by_name("Annual Time Off DED")
+                    + amount_by_name("Sick Time Off DED")
+                    + amount_by_name("Annual Time Off")
+                    + amount_by_name("Sick Time Off")
+                    + amount_by_name("Absence")
+                    + amount_by_name("Late In")
+                    + amount_by_name("Unpaid Leave")
+                    + amount_by_name("Early Checkout")
+                    + slip_amount_by_code.get("GOSI_COMP_ADD", 0.0)
+                )
+                gross_code = code_by_name.get("Gross")
+                if gross_code:
+                    slip_amount_by_code[gross_code] = computed_gross
+
+                computed_net = (
+                    computed_gross
+                    - amount_by_name("Advance Allowances")
+                    - slip_amount_by_code.get("GOSI_COMP_ADD", 0.0)
+                    + slip_amount_by_code.get("GOSI_EMP", 0.0)
+                )
+                net_code = code_by_name.get("Net Salary")
+                if net_code:
+                    slip_amount_by_code[net_code] = computed_net
 
                 DEDUCTION_CODES = {
                     "ABS", "LATE", "ECO", "LEAVE90", "DIFFT", "UNPAID", "PAID87",

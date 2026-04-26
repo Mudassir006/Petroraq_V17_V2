@@ -43,30 +43,22 @@ class PayrollBatchXlsxReport extends Component {
     get RULE_NAME_ORDER() {
         return [
             "Basic Salary",
-                     "Accommodation",
-                     "Transportation",
-                     "Food",
-                     "Car Allowance",
-                     "Fixed Overtime",
-                     "Overtime",
-
-
-                     "Sick Time Off",
-                     "Annual Time Off",
-                     "Late In",
-                     "Early Checkout",
-                     "Absence",
-                      //            "GOSI",
-                     "Unpaid Leave",
-
-
-                     "Gross",
-                      "HRA",
-                     "Advance Allowances",
-
-                     "Annual Time Off DED",
-                     "Sick Time Off DED",
-                     "Net Salary",
+            "Accommodation",
+            "Transportation",
+            "Food",
+            "Fixed Overtime",
+            "Overtime",
+            "Annual Time Off DED",
+            "Sick Time Off DED",
+            "Annual Time Off",
+            "Sick Time Off",
+            "Absence",
+            "Late In",
+            "Unpaid Leave",
+            "Early Checkout",
+            "Gross",
+            "Advance Allowances",
+            "Net Salary",
         ];
     }
 
@@ -211,6 +203,8 @@ get payrollMonth() {
                 if (!valsByCode.has(col.code)) valsByCode.set(col.code, 0);
             }
 
+            this._recomputeGrossAndNet(valsByCode, columns);
+
             // Accumulate totals
             for (const col of columns) {
                 const v = valsByCode.get(col.code) || 0;
@@ -267,6 +261,40 @@ get payrollMonth() {
             }
             return aVal > bVal ? direction : -direction;
         });
+    }
+
+    _recomputeGrossAndNet(valsByCode, columns) {
+        const codeByName = new Map(columns.map(c => [c.name, c.code]));
+        const val = (name) => Number(valsByCode.get(codeByName.get(name)) || 0);
+
+        const computedGross =
+            val("Basic Salary") +
+            val("Accommodation") +
+            val("Transportation") +
+            val("Food") +
+            val("Fixed Overtime") +
+            val("Overtime") +
+            val("Annual Time Off DED") +
+            val("Sick Time Off DED") +
+            val("Annual Time Off") +
+            val("Sick Time Off") +
+            val("Absence") +
+            val("Late In") +
+            val("Unpaid Leave") +
+            val("Early Checkout") +
+            Number(valsByCode.get("GOSI_COMP_ADD") || 0);
+
+        const grossCode = codeByName.get("Gross");
+        if (grossCode) valsByCode.set(grossCode, computedGross);
+
+        const computedNet =
+            computedGross -
+            val("Advance Allowances") -
+            Number(valsByCode.get("GOSI_COMP_ADD") || 0) +
+            Number(valsByCode.get("GOSI_EMP") || 0);
+
+        const netCode = codeByName.get("Net Salary");
+        if (netCode) valsByCode.set(netCode, computedNet);
     }
 
     toggleSort(field) {
