@@ -134,32 +134,25 @@ class PayrollReport(models.AbstractModel):
 
             # Salary rules (KEEP your logic)
             salary_rule_ids = lines.slip_ids.line_ids.mapped("salary_rule_id")
-            order = ["Basic Salary",
-                     "Accommodation",
-                     "Transportation",
-                     "Food",
-                     "Other Payments",
-                     # "Other Allowances",
-                     # "Car Allowance",
-                     # "Car Allowances",
-                     "Fixed Overtime",
-                     "Overtime",
-
-                     "Sick Time Off",
-                     "Annual Time Off",
-                     "Late In",
-                     "Early Checkout",
-                     "Absence",
-                     "GOSI",
-                     "Unpaid Leave",
-
-                     "Gross",
-                     "HRA",
-                     "Advance Allowances",
-
-                     "Annual Time Off DED",
-                     "Sick Time Off DED",
-                     "Net Salary", ]
+            order = [
+                "Basic Salary",
+                "Accommodation",
+                "Transportation",
+                "Food",
+                "Fixed Overtime",
+                "Overtime",
+                "Annual Time Off DED",
+                "Sick Time Off DED",
+                "Annual Time Off",
+                "Sick Time Off",
+                "Absence",
+                "Late In",
+                "Unpaid Leave",
+                "Early Checkout",
+                "Gross",
+                "Advance Allowances",
+                "Net Salary",
+            ]
 
             salary_rule_ids = salary_rule_ids.filtered(lambda s: s.name in order)
 
@@ -177,22 +170,50 @@ class PayrollReport(models.AbstractModel):
                 rules.append(row)
                 col_no += 1
 
-            # Show only GOSI add part as a dedicated display column (only when data exists)
-            has_gosi_add = any(
-                l.code == "GOSI_COMP_ADD" and abs(l.amount or 0.0) > 1e-6
-                for slip in lines.slip_ids
-                if slip.struct_id.id == used_struct[0]
-                for l in slip.line_ids
-            )
-            if has_gosi_add:
-                gosi_add_row = [None, None, None, None, None]
-                gosi_add_row[0] = col_no
-                gosi_add_row[1] = "GOSI_COMP_ADD"
-                gosi_add_row[2] = "GOSI"
-                gosi_add_row[3] = f"{cols[col_no]}:{cols[col_no]}"
-                gosi_add_row[4] = 14
-                rules.append(gosi_add_row)
+            # Dedicated GOSI columns (Saudi/non-Saudi normalized)
+            extra_cols = [
+                ("GOSI_COMP_ADD", "GOSI Company Contribution"),
+                ("GOSI_EMP", "GOSI Employee Deduction"),
+                ("GOSI_COMP_DED", "GOSI Company Deduction"),
+            ]
+            for code, name in extra_cols:
+                rowx = [None, None, None, None, None]
+                rowx[0] = col_no
+                rowx[1] = code
+                rowx[2] = name
+                rowx[3] = f"{cols[col_no]}:{cols[col_no]}"
+                rowx[4] = 24
+                rules.append(rowx)
                 col_no += 1
+
+            full_order = [
+                "Basic Salary",
+                "Accommodation",
+                "Transportation",
+                "Food",
+                "Fixed Overtime",
+                "Overtime",
+                "Annual Time Off DED",
+                "Sick Time Off DED",
+                "Annual Time Off",
+                "Sick Time Off",
+                "Absence",
+                "Late In",
+                "Unpaid Leave",
+                "Early Checkout",
+                "GOSI Company Contribution",
+                "Gross",
+                "Advance Allowances",
+                "GOSI Company Deduction",
+                "GOSI Employee Deduction",
+                "Net Salary",
+            ]
+            order_map = {name: index for index, name in enumerate(full_order)}
+            rules = sorted(rules, key=lambda r: order_map.get(r[2], 9999))
+            for idx, row in enumerate(rules):
+                row[0] = 3 + idx
+                row[3] = f"{cols[row[0]]}:{cols[row[0]]}"
+            col_no = 3 + len(rules)
 
             # # --- Add Saudi GOSI virtual columns (display only) ---
             # # to hide comment the below code including loop these will than not be included
@@ -263,15 +284,10 @@ class PayrollReport(models.AbstractModel):
                 sheet.set_column(rule[3], rule[4])
 
             # ======================
-            # Hide GOSI columns (display only, totals unaffected)
+            # Hide legacy GOSI column only
             # ======================
-            HIDE_CODES = {
-                "GOSI", "GOSI_EMP", "GOSI_COMP_DED"
-            }
-            HIDE_TITLES = {
-                "GOSI Employee Deduction",
-                "GOSI Company Deduction",
-            }
+            HIDE_CODES = {"GOSI"}
+            HIDE_TITLES = set()
 
             for r in rules:
                 code = r[1]
@@ -305,7 +321,18 @@ class PayrollReport(models.AbstractModel):
 
                 # Fill all rule columns (by code)
                 # (Small perf improvement: build dict {code: amount} once per slip)
-                slip_amount_by_code = {l.code: l.amount for l in slip.line_ids}
+                slip_amount_by_code = {}
+                for l in slip.line_ids:
+                    slip_amount_by_code[l.code] = slip_amount_by_code.get(l.code, 0.0) + (l.amount or 0.0)
+
+                # Normalize GOSI portions to dedicated report columns
+                slip_amount_by_code["GOSI_COMP_ADD"] = (
+                    slip_amount_by_code.get("GOSI_COMP_ADD", 0.0) + slip_amount_by_code.get("GOSIALLOW", 0.0)
+                )
+                slip_amount_by_code["GOSI_EMP"] = (
+                    slip_amount_by_code.get("GOSI_EMP", 0.0) + slip_amount_by_code.get("GOSI", 0.0)
+                )
+                slip_amount_by_code["GOSI_COMP_DED"] = slip_amount_by_code.get("GOSI_COMP_DED", 0.0)
 
                 DEDUCTION_CODES = {
                     "ABS", "LATE", "ECO", "LEAVE90", "DIFFT", "UNPAID", "PAID87",
