@@ -123,6 +123,24 @@ class CrossoveredBudget(models.Model):
                 rec._sync_cost_center_budget_allowance()
         return res
 
+    def action_budget_cancel(self):
+        res = super().action_budget_cancel()
+        self.filtered(lambda b: b.state == "cancel").write({"approval_state": "rejected"})
+        return res
+
+    def action_resubmit_approval(self):
+        for rec in self:
+            if rec.approval_state != "rejected":
+                continue
+            if rec.state == "cancel":
+                rec.action_budget_draft()
+                rec.action_budget_confirm()
+                continue
+            if rec.state == "confirm":
+                rec.write({"approval_state": "pm_approval"})
+                continue
+            raise UserError(_("Only cancelled/confirmed rejected budgets can be resubmitted."))
+
     def _sync_cost_center_budget_allowance(self):
         """Reflect approved budget lines into Cost Center budget allowances."""
         BudgetLine = self.env["crossovered.budget.lines"].sudo()

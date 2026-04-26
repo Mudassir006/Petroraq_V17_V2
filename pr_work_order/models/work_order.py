@@ -500,6 +500,14 @@ class PRWorkOrder(models.Model):
         for rec in self:
             if rec.state != "acc_approval":
                 continue
+            budget = rec.expense_bucket_id.sudo()
+            if budget and (budget.state not in ("validate", "done") or budget.approval_state != "approved"):
+                raise UserError(
+                    _(
+                        "Budget %s must be fully approved before Accounts can approve this Work Order. "
+                        "Current budget status: %s / %s."
+                    ) % (budget.display_name, budget.state, budget.approval_state)
+                )
             rec.acc_approver_id = self.env.user
             rec.acc_approved_date = fields.Datetime.now()
             rec.state = "final_approval"

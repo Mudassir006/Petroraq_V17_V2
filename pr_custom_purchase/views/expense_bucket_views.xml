@@ -32,6 +32,8 @@
                         invisible="state != 'confirm' or approval_state != 'pm_approval' or not can_pm_approve"/>
                 <button name="action_accounts_approve" type="object" string="Accounts Approve" class="btn-primary"
                         invisible="state != 'confirm' or approval_state != 'accounts_approval' or not can_accounts_approve"/>
+                <button name="action_resubmit_approval" type="object" string="Resubmit Approval" class="btn-secondary"
+                        invisible="approval_state != 'rejected'"/>
                 <field name="approval_state" widget="statusbar"
                        statusbar_visible="draft,pm_approval,accounts_approval,md_approval,approved,rejected"/>
             </xpath>

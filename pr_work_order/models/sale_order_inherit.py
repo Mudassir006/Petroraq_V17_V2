@@ -43,7 +43,13 @@ class SaleOrder(models.Model):
 
     def _get_trading_bucket_source_amount(self):
         self.ensure_one()
-        return self.amount_total or self.final_grand_total or 0.0
+        cost_based_total = sum(
+            (line.cost_price_unit or 0.0) * (line.product_uom_qty or 0.0)
+            for line in self.order_line.filtered(
+                lambda l: not l.display_type and not l.is_downpayment
+            )
+        )
+        return cost_based_total or self.base_cost_total or 0.0
 
     def _ensure_trading_expense_bucket(self):
         Budget = self.env["crossovered.budget"].sudo()
