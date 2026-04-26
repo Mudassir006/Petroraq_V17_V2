@@ -263,15 +263,10 @@ class PayrollReport(models.AbstractModel):
                 sheet.set_column(rule[3], rule[4])
 
             # ======================
-            # Hide GOSI columns (display only, totals unaffected)
+            # Hide legacy GOSI column only
             # ======================
-            HIDE_CODES = {
-                "GOSI", "GOSI_EMP", "GOSI_COMP_DED"
-            }
-            HIDE_TITLES = {
-                "GOSI Employee Deduction",
-                "GOSI Company Deduction",
-            }
+            HIDE_CODES = {"GOSI"}
+            HIDE_TITLES = set()
 
             for r in rules:
                 code = r[1]

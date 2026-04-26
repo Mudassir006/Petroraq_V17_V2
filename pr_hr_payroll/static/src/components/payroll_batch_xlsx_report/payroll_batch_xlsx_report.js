@@ -79,7 +79,7 @@ class PayrollBatchXlsxReport extends Component {
     }
 
     get HIDE_CODES() {
-        return new Set(["GOSI", "GOSI_COMP_ADD", "GOSI_EMP", "GOSI_COMP_DED"]);
+        return new Set(["GOSI"]);
     }
 
     // Header info from batch record
