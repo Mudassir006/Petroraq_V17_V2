@@ -63,6 +63,33 @@ class HrPayslip(models.Model):
     carry_forward_early_checkout_amount = fields.Float(related="attendance_sheet_id.carry_forward_early_checkout_amount", readonly=True)
     carry_forward_deduction = fields.Float(string="Carry Forward Deduction", readonly=True)
 
+    @api.model
+    def _compute_gross_net_amounts(self, line_vals, excluded_earning_codes=None):
+        excluded_earning_codes = excluded_earning_codes or set()
+        totals_by_code = {}
+        for vals in line_vals:
+            code = vals.get("code")
+            if not code:
+                continue
+            totals_by_code[code] = totals_by_code.get(code, 0.0) + (vals.get("total", 0.0) or 0.0)
+
+        gosi_company_add = totals_by_code.get("GOSI_COMP_ADD", 0.0) + totals_by_code.get("GOSIALLOW", 0.0)
+        gosi_employee_ded = totals_by_code.get("GOSI_EMP", 0.0) + totals_by_code.get("GOSI", 0.0)
+        gosi_company_ded = totals_by_code.get("GOSI_COMP_DED", 0.0)
+        advance_allowances = totals_by_code.get("ADVALL", 0.0)
+
+        net_excluded = {"NET", "GROSS", "ADVALL", "GOSI_EMP", "GOSI", "GOSI_COMP_DED"}
+        gross_amount = sum(
+            vals.get("total", 0.0) or 0.0
+            for vals in line_vals
+            if vals.get("code")
+            and vals.get("code") not in net_excluded
+            and vals.get("code") not in excluded_earning_codes
+        )
+        # Keep formula explicit and in requested order
+        net_amount = gross_amount + advance_allowances + gosi_company_ded + gosi_employee_ded
+        return gross_amount, net_amount, gosi_company_add
+
     def _sync_attendance_summary_fields(self):
         field_names = [
             "tot_late_in_minutes",
@@ -371,24 +398,10 @@ class HrPayslip(models.Model):
                         vals['amount'] = 0.0
                         vals['total'] = 0.0
 
-            net_amount = sum(vals.get("total", 0) for vals in line_vals if vals.get("code") not in ["NET", "GROSS"])
-            attendance_ded_codes = ["ABS", "LATE", "DIFFT", "UNPAID", "PAID87", "LEAVE90", "SICKTO89", "BTD", "ECO"]
-
-            earnings = sum(
-                vals.get("total", 0)
-                for vals in line_vals
-                if vals.get("total", 0) > 0
-                and vals.get("code") not in ["NET", "GROSS"]
-                and vals.get("code") not in excluded_earning_codes
+            gross_amount, net_amount, _gosi_company_add = self._compute_gross_net_amounts(
+                line_vals,
+                excluded_earning_codes=excluded_earning_codes,
             )
-
-            attendance_deductions = sum(
-                vals.get("total", 0)
-                for vals in line_vals
-                if vals.get("code") in attendance_ded_codes
-            )
-
-            gross_amount = earnings + attendance_deductions
 
             for val_line in line_vals:
                 code = val_line.get("code")
@@ -447,22 +460,11 @@ class HrPayslip(models.Model):
                     amount = (line.total * payslip_days) / month_days
                     line.sudo().write({"amount": amount, "total": amount})
             # Calculate net and gross amounts, excluding "NET" and "GROSS" codes
-            net_amount = sum(vals.total for vals in payslip.line_ids if vals.code not in ["NET", "GROSS"])
-            attendance_ded_codes = ["ABS", "LATE", "DIFFT", "UNPAID", "PAID87", "LEAVE90", "SICKTO89", "BTD", "ECO"]
-
-            earnings = sum(
-                l.total for l in payslip.line_ids
-                if l.total > 0
-                and l.code not in ["NET", "GROSS"]
-                and l.code not in excluded_earning_codes
+            prepared_line_vals = [{"code": l.code, "total": l.total} for l in payslip.line_ids]
+            gross_amount, net_amount, _gosi_company_add = self._compute_gross_net_amounts(
+                prepared_line_vals,
+                excluded_earning_codes=excluded_earning_codes,
             )
-
-            attendance_deductions = sum(
-                l.total for l in payslip.line_ids
-                if l.code in attendance_ded_codes
-            )
-
-            gross_amount = earnings + attendance_deductions
 
             for val_line in payslip.line_ids:
                 code = val_line.code
