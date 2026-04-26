@@ -56,11 +56,8 @@ class PayrollBatchXlsxReport extends Component {
             "Late In",
             "Unpaid Leave",
             "Early Checkout",
-            "GOSI Company Contribution",
             "Gross",
             "Advance Allowances",
-            "GOSI Company Deduction",
-            "GOSI Employee Deduction",
             "Net Salary",
         ];
     }
@@ -299,9 +296,12 @@ async _buildColumns(slips) {
     const nameToCode = new Map(rules.map(r => [r.name, r.code]));
 
     const cols = [];
+    const seenCodes = new Set();
     for (const ruleName of this.RULE_NAME_ORDER) {
         const code = nameToCode.get(ruleName);
         if (!code) continue;
+        if (seenCodes.has(code)) continue;
+        seenCodes.add(code);
         cols.push({
             code: code,
             name: ruleName,
@@ -310,6 +310,8 @@ async _buildColumns(slips) {
     }
 
     for (const ex of this.EXTRA_COLS) {
+        if (seenCodes.has(ex.code)) continue;
+        seenCodes.add(ex.code);
         cols.push({
             code: ex.code,
             name: ex.name,
