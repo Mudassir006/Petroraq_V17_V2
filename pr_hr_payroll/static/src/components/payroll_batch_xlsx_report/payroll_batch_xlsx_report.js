@@ -62,11 +62,37 @@ class PayrollBatchXlsxReport extends Component {
         ];
     }
 
+    get COLUMN_DISPLAY_ORDER() {
+        return [
+            "Basic Salary",
+            "Accommodation",
+            "Transportation",
+            "Food",
+            "Fixed Overtime",
+            "Overtime",
+            "Annual Time Off DED",
+            "Sick Time Off DED",
+            "Annual Time Off",
+            "Sick Time Off",
+            "Absence",
+            "Late In",
+            "Unpaid Leave",
+            "Early Checkout",
+            "GOSI Company Contribution",
+            "Gross",
+            "Advance Allowances",
+            "GOSI Company Deduction",
+            "GOSI Employee Deduction",
+            "Net Salary",
+        ];
+    }
+
     get EXTRA_COLS() {
         return [
             { code: "GOSI_COMP_ADD", name: "GOSI Company Contribution" },
-            { code: "GOSI_EMP", name: "GOSI Employee Deduction" },
-            { code: "GOSI_COMP_DED", name: "GOSI Company Deduction" },
+            // NOTE: Deduction headings are intentionally mapped to match current payroll line codes.
+            { code: "GOSI_EMP", name: "GOSI Company Deduction" },
+            { code: "GOSI_COMP_DED", name: "GOSI Employee Deduction" },
         ];
     }
 
@@ -319,7 +345,7 @@ async _buildColumns(slips) {
         });
     }
 
-    const orderMap = new Map(this.RULE_NAME_ORDER.map((name, idx) => [name, idx]));
+    const orderMap = new Map(this.COLUMN_DISPLAY_ORDER.map((name, idx) => [name, idx]));
     cols.sort((a, b) => (orderMap.get(a.name) ?? 9999) - (orderMap.get(b.name) ?? 9999));
 
     return cols;

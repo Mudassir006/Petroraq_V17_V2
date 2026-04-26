@@ -173,8 +173,8 @@ class PayrollReport(models.AbstractModel):
             # Dedicated GOSI columns (Saudi/non-Saudi normalized)
             extra_cols = [
                 ("GOSI_COMP_ADD", "GOSI Company Contribution"),
-                ("GOSI_EMP", "GOSI Employee Deduction"),
-                ("GOSI_COMP_DED", "GOSI Company Deduction"),
+                ("GOSI_EMP", "GOSI Company Deduction"),
+                ("GOSI_COMP_DED", "GOSI Employee Deduction"),
             ]
             for code, name in extra_cols:
                 rowx = [None, None, None, None, None]
