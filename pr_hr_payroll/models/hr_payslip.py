@@ -132,9 +132,6 @@ class HrPayslip(models.Model):
         line_vals = super()._get_payslip_lines()
         for payslip in self:
             payslip._sync_attendance_summary_fields()
-            excluded_earning_codes = set()
-            if payslip.employee_id.exclude_transportation_from_attendance_gross:
-                excluded_earning_codes.add("TRANSPORTATION")
 
             contract_id = payslip.employee_id.contract_id
             gosi_salary_rule = self.env.ref("pr_hr_payroll.hr_salary_rule_saudi_gosi")
@@ -374,12 +371,13 @@ class HrPayslip(models.Model):
             net_amount = sum(vals.get("total", 0) for vals in line_vals if vals.get("code") not in ["NET", "GROSS"])
             attendance_ded_codes = ["ABS", "LATE", "DIFFT", "UNPAID", "PAID87", "LEAVE90", "SICKTO89", "BTD", "ECO"]
 
+            # Keep payroll gross independent from attendance deduction base toggles
+            # (transportation exclusion is applied in attendance sheet deduction math).
             earnings = sum(
                 vals.get("total", 0)
                 for vals in line_vals
                 if vals.get("total", 0) > 0
                 and vals.get("code") not in ["NET", "GROSS"]
-                and vals.get("code") not in excluded_earning_codes
             )
 
             attendance_deductions = sum(
@@ -434,9 +432,6 @@ class HrPayslip(models.Model):
     def check_payslip_dates(self):
         for payslip in self:
             payslip._sync_attendance_summary_fields()
-            excluded_earning_codes = set()
-            if payslip.employee_id.exclude_transportation_from_attendance_gross:
-                excluded_earning_codes.add("TRANSPORTATION")
 
             payslip_days = (payslip.date_to - payslip.date_from).days + 1
             start_of_month = date_utils.start_of(payslip.date_to, 'month')
@@ -450,11 +445,12 @@ class HrPayslip(models.Model):
             net_amount = sum(vals.total for vals in payslip.line_ids if vals.code not in ["NET", "GROSS"])
             attendance_ded_codes = ["ABS", "LATE", "DIFFT", "UNPAID", "PAID87", "LEAVE90", "SICKTO89", "BTD", "ECO"]
 
+            # Keep payroll gross independent from attendance deduction base toggles
+            # (transportation exclusion is applied in attendance sheet deduction math).
             earnings = sum(
                 l.total for l in payslip.line_ids
                 if l.total > 0
                 and l.code not in ["NET", "GROSS"]
-                and l.code not in excluded_earning_codes
             )
 
             attendance_deductions = sum(
