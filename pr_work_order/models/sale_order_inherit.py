@@ -43,7 +43,13 @@ class SaleOrder(models.Model):
 
     def _get_trading_bucket_source_amount(self):
         self.ensure_one()
-        return self.amount_total or self.final_grand_total or 0.0
+        cost_based_total = sum(
+            (line.cost_price_unit or 0.0) * (line.product_uom_qty or 0.0)
+            for line in self.order_line.filtered(
+                lambda l: not l.display_type and not l.is_downpayment
+            )
+        )
+        return cost_based_total or self.base_cost_total or 0.0
 
     def _ensure_trading_expense_bucket(self):
         Budget = self.env["crossovered.budget"].sudo()
@@ -129,7 +135,8 @@ class SaleOrder(models.Model):
         res = super().write(vals)
         if "inquiry_type" in vals:
             self.filtered(lambda o: o.inquiry_type != "trading")._remove_trading_expense_bucket()
-            self.filtered(lambda o: o.inquiry_type == "trading" and o.state in ("sale", "done"))._ensure_trading_expense_bucket()
+            self.filtered(
+                lambda o: o.inquiry_type == "trading" and o.state in ("sale", "done"))._ensure_trading_expense_bucket()
         return res
 
     def _action_cancel(self):
@@ -185,8 +192,8 @@ class SaleOrder(models.Model):
         WorkOrder = self.env["pr.work.order"]
 
         existing_projects = (
-            order.project_id
-            or order.order_line.mapped("project_id")
+                order.project_id
+                or order.order_line.mapped("project_id")
         )
         project = existing_projects[:1] if existing_projects else False
 
@@ -250,7 +257,8 @@ class SaleOrder(models.Model):
             if line.display_type:
                 continue
             if current_section:
-                section_amounts[current_section] = section_amounts.get(current_section, 0.0) + (line.price_subtotal or 0.0)
+                section_amounts[current_section] = section_amounts.get(current_section, 0.0) + (
+                            line.price_subtotal or 0.0)
 
         for sec in sections:
             analytic_vals = {
