@@ -168,40 +168,22 @@ class PayrollReport(models.AbstractModel):
                 rules.append(row)
                 col_no += 1
 
-            # Show only GOSI add part as a dedicated display column (only when data exists)
-            has_gosi_add = any(
-                l.code == "GOSI_COMP_ADD" and abs(l.amount or 0.0) > 1e-6
-                for slip in lines.slip_ids
-                if slip.struct_id.id == used_struct[0]
-                for l in slip.line_ids
-            )
-            if has_gosi_add:
-                gosi_add_row = [None, None, None, None, None]
-                gosi_add_row[0] = col_no
-                gosi_add_row[1] = "GOSI_COMP_ADD"
-                gosi_add_row[2] = "GOSI"
-                gosi_add_row[3] = f"{cols[col_no]}:{cols[col_no]}"
-                gosi_add_row[4] = 14
-                rules.append(gosi_add_row)
+            # Always display dedicated GOSI columns (company + employee portions)
+            extra_cols = [
+                ("GOSI_COMP_ADD", "GOSI Company Contribution"),
+                ("GOSI_EMP", "GOSI Employee Deduction"),
+                ("GOSI_COMP_DED", "GOSI Company Deduction"),
+            ]
+            for code, name in extra_cols:
+                rowx = [None, None, None, None, None]
+                rowx[0] = col_no
+                rowx[1] = code
+                rowx[2] = name
+                col_title = f"{cols[col_no]}:{cols[col_no]}"
+                rowx[3] = col_title
+                rowx[4] = 24
+                rules.append(rowx)
                 col_no += 1
-
-            # # --- Add Saudi GOSI virtual columns (display only) ---
-            # # to hide comment the below code including loop these will than not be included
-            # extra_cols = [
-            #     ("GOSI_COMP_ADD", "GOSI Company Contribution"),
-            #     ("GOSI_EMP", "GOSI Employee Deduction"),
-            #     ("GOSI_COMP_DED", "GOSI Company Deduction"),
-            # ]
-            # for code, name in extra_cols:
-            #     rowx = [None, None, None, None, None]
-            #     rowx[0] = col_no
-            #     rowx[1] = code
-            #     rowx[2] = name
-            #     col_title = f"{cols[col_no]}:{cols[col_no]}"
-            #     rowx[3] = col_title
-            #     rowx[4] = 22
-            #     rules.append(rowx)
-            #     col_no += 1
 
             # Report details (KEEP your logic)
             batch_period = ""
@@ -257,12 +239,9 @@ class PayrollReport(models.AbstractModel):
             # Hide GOSI columns (display only, totals unaffected)
             # ======================
             HIDE_CODES = {
-                "GOSI", "GOSI_EMP", "GOSI_COMP_DED"
+                "GOSI",
             }
-            HIDE_TITLES = {
-                "GOSI Employee Deduction",
-                "GOSI Company Deduction",
-            }
+            HIDE_TITLES = set()
 
             for r in rules:
                 code = r[1]
