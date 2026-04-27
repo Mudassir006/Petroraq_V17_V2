@@ -54,7 +54,7 @@ class PayrollBatchXlsxReport extends Component {
             "Sick Time Off",
             "Absence",
             "Late In",
-            "Unpaid Leave",
+//            "Unpaid Leave",
             "Early Checkout",
             "GOSI Company Contribution",
             "Gross",

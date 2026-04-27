@@ -147,7 +147,7 @@ class PayrollReport(models.AbstractModel):
                 "Sick Time Off",
                 "Absence",
                 "Late In",
-                "Unpaid Leave",
+                # "Unpaid Leave",
                 "Early Checkout",
                 "Gross",
                 "Reimbursement",
