@@ -68,8 +68,8 @@ class PayrollBatchXlsxReport extends Component {
     get EXTRA_COLS() {
         return [
             { code: "GOSI_COMP_ADD", name: "GOSI Company Contribution" },
-            { code: "GOSI_EMP", name: "GOSI Employee Deduction" },
-            { code: "GOSI_COMP_DED", name: "GOSI Company Deduction" },
+            { code: "GOSI_EMP", name: "GOSI Company Deduction" },
+            { code: "GOSI_COMP_DED", name: "GOSI Employee Deduction" },
         ];
     }
 

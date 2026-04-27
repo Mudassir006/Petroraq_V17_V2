@@ -56,11 +56,14 @@ class HrPayslip(models.Model):
     no_difftime = fields.Integer(related="attendance_sheet_id.no_difftime", readonly=True)
     tot_difftime = fields.Float(related="attendance_sheet_id.tot_difftime", readonly=True)
     tot_difftime_amount = fields.Float(related="attendance_sheet_id.tot_difftime_amount", readonly=True)
-    carry_forward_absence_amount = fields.Float(related="attendance_sheet_id.carry_forward_absence_amount", readonly=True)
+    carry_forward_absence_amount = fields.Float(related="attendance_sheet_id.carry_forward_absence_amount",
+                                                readonly=True)
     carry_forward_late_amount = fields.Float(related="attendance_sheet_id.carry_forward_late_amount", readonly=True)
     carry_forward_diff_amount = fields.Float(related="attendance_sheet_id.carry_forward_diff_amount", readonly=True)
-    carry_forward_overtime_amount = fields.Float(related="attendance_sheet_id.carry_forward_overtime_amount", readonly=True)
-    carry_forward_early_checkout_amount = fields.Float(related="attendance_sheet_id.carry_forward_early_checkout_amount", readonly=True)
+    carry_forward_overtime_amount = fields.Float(related="attendance_sheet_id.carry_forward_overtime_amount",
+                                                 readonly=True)
+    carry_forward_early_checkout_amount = fields.Float(
+        related="attendance_sheet_id.carry_forward_early_checkout_amount", readonly=True)
     carry_forward_deduction = fields.Float(string="Carry Forward Deduction", readonly=True)
 
     @api.model
@@ -84,7 +87,6 @@ class HrPayslip(models.Model):
             for vals in line_vals
             if vals.get("code")
             and vals.get("code") not in net_excluded
-            and vals.get("code") not in excluded_earning_codes
         )
         # Keep formula explicit and in requested order
         net_amount = gross_amount + advance_allowances + gosi_company_ded + gosi_employee_ded
@@ -108,13 +110,12 @@ class HrPayslip(models.Model):
                     value = int(value)
                 update_vals[field_name] = value
             update_vals["carry_forward_deduction"] = (
-                (payslip.carry_forward_absence_amount or 0.0)
-                + (payslip.carry_forward_late_amount or 0.0)
-                + (payslip.carry_forward_diff_amount or 0.0)
-                + (payslip.carry_forward_early_checkout_amount or 0.0)
+                    (payslip.carry_forward_absence_amount or 0.0)
+                    + (payslip.carry_forward_late_amount or 0.0)
+                    + (payslip.carry_forward_diff_amount or 0.0)
+                    + (payslip.carry_forward_early_checkout_amount or 0.0)
             )
             payslip.update(update_vals)
-
 
     def _upsert_attendance_deduction_line(self, line_vals, payslip, code, amount):
         """Ensure attendance deduction line exists and reflects latest attendance-sheet amount."""
@@ -159,9 +160,6 @@ class HrPayslip(models.Model):
         line_vals = super()._get_payslip_lines()
         for payslip in self:
             payslip._sync_attendance_summary_fields()
-            excluded_earning_codes = set()
-            if payslip.employee_id.exclude_transportation_from_attendance_gross:
-                excluded_earning_codes.add("TRANSPORTATION")
 
             contract_id = payslip.employee_id.contract_id
             gosi_salary_rule = self.env.ref("pr_hr_payroll.hr_salary_rule_saudi_gosi")
@@ -382,11 +380,17 @@ class HrPayslip(models.Model):
 
             if payslip.attendance_sheet_id and payslip.employee_id.compute_attendance:
                 att_sheet = payslip.attendance_sheet_id
-                abs_amount = -((att_sheet.tot_absence_amount or 0.0) + (getattr(att_sheet, 'carry_forward_absence_amount', 0.0) or 0.0))
-                late_amount = -((att_sheet.tot_late_amount or 0.0) + (getattr(att_sheet, 'carry_forward_late_amount', 0.0) or 0.0))
-                eco_amount = -((getattr(att_sheet, 'tot_early_checkout_amount', 0.0) or 0.0) + (getattr(att_sheet, 'carry_forward_early_checkout_amount', 0.0) or 0.0))
-                diff_amount = -((att_sheet.tot_difftime_amount or 0.0) + (getattr(att_sheet, 'carry_forward_diff_amount', 0.0) or 0.0))
-                ovt_amount = ((att_sheet.approved_overtime_amount or 0.0) + (getattr(att_sheet, 'carry_forward_overtime_amount', 0.0) or 0.0)) if payslip.employee_id.add_overtime else 0.0
+                abs_amount = -((att_sheet.tot_absence_amount or 0.0) + (
+                        getattr(att_sheet, 'carry_forward_absence_amount', 0.0) or 0.0))
+                late_amount = -((att_sheet.tot_late_amount or 0.0) + (
+                        getattr(att_sheet, 'carry_forward_late_amount', 0.0) or 0.0))
+                eco_amount = -((getattr(att_sheet, 'tot_early_checkout_amount', 0.0) or 0.0) + (
+                        getattr(att_sheet, 'carry_forward_early_checkout_amount', 0.0) or 0.0))
+                diff_amount = -((att_sheet.tot_difftime_amount or 0.0) + (
+                        getattr(att_sheet, 'carry_forward_diff_amount', 0.0) or 0.0))
+                ovt_amount = ((att_sheet.approved_overtime_amount or 0.0) + (
+                        getattr(att_sheet, 'carry_forward_overtime_amount',
+                                0.0) or 0.0)) if payslip.employee_id.add_overtime else 0.0
                 self._upsert_attendance_deduction_line(line_vals, payslip, 'OVT', ovt_amount)
                 self._upsert_attendance_deduction_line(line_vals, payslip, 'ABS', abs_amount)
                 self._upsert_attendance_deduction_line(line_vals, payslip, 'LATE', late_amount)
@@ -400,7 +404,6 @@ class HrPayslip(models.Model):
 
             gross_amount, net_amount, _gosi_company_add = self._compute_gross_net_amounts(
                 line_vals,
-                excluded_earning_codes=excluded_earning_codes,
             )
 
             for val_line in line_vals:
@@ -412,7 +415,6 @@ class HrPayslip(models.Model):
                     val_line["amount"] = gross_amount
                     val_line["total"] = gross_amount
         return line_vals
-
 
     def _compute_attendance_eligible_amount(self, payslip, salary_rule, base_amount):
         """Prorate contract rule amount based on attendance eligibility in the payslip period."""
@@ -443,13 +445,9 @@ class HrPayslip(models.Model):
 
         return (base_amount * eligible_days / considered_days) if considered_days else 0.0
 
-
     def check_payslip_dates(self):
         for payslip in self:
             payslip._sync_attendance_summary_fields()
-            excluded_earning_codes = set()
-            if payslip.employee_id.exclude_transportation_from_attendance_gross:
-                excluded_earning_codes.add("TRANSPORTATION")
 
             payslip_days = (payslip.date_to - payslip.date_from).days + 1
             start_of_month = date_utils.start_of(payslip.date_to, 'month')
@@ -463,7 +461,6 @@ class HrPayslip(models.Model):
             prepared_line_vals = [{"code": l.code, "total": l.total} for l in payslip.line_ids]
             gross_amount, net_amount, _gosi_company_add = self._compute_gross_net_amounts(
                 prepared_line_vals,
-                excluded_earning_codes=excluded_earning_codes,
             )
 
             for val_line in payslip.line_ids:

@@ -173,8 +173,8 @@ class PayrollReport(models.AbstractModel):
             # Dedicated GOSI columns (Saudi/non-Saudi normalized)
             extra_cols = [
                 ("GOSI_COMP_ADD", "GOSI Company Contribution"),
-                ("GOSI_EMP", "GOSI Employee Deduction"),
-                ("GOSI_COMP_DED", "GOSI Company Deduction"),
+                ("GOSI_EMP", "GOSI Company Deduction"),
+                ("GOSI_COMP_DED", "GOSI Employee Deduction"),
             ]
             for code, name in extra_cols:
                 rowx = [None, None, None, None, None]
@@ -327,10 +327,10 @@ class PayrollReport(models.AbstractModel):
 
                 # Normalize GOSI portions to dedicated report columns
                 slip_amount_by_code["GOSI_COMP_ADD"] = (
-                    slip_amount_by_code.get("GOSI_COMP_ADD", 0.0) + slip_amount_by_code.get("GOSIALLOW", 0.0)
+                        slip_amount_by_code.get("GOSI_COMP_ADD", 0.0) + slip_amount_by_code.get("GOSIALLOW", 0.0)
                 )
                 slip_amount_by_code["GOSI_EMP"] = (
-                    slip_amount_by_code.get("GOSI_EMP", 0.0) + slip_amount_by_code.get("GOSI", 0.0)
+                        slip_amount_by_code.get("GOSI_EMP", 0.0) + slip_amount_by_code.get("GOSI", 0.0)
                 )
                 slip_amount_by_code["GOSI_COMP_DED"] = slip_amount_by_code.get("GOSI_COMP_DED", 0.0)
 
