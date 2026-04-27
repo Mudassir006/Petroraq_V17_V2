@@ -56,13 +56,19 @@ class PayrollBatchXlsxReport extends Component {
             "Late In",
             "Unpaid Leave",
             "Early Checkout",
-            "GOSI Company Contribution",
             "Gross",
             "Reimbursement",
             "Advance Allowances",
+            "Net Salary",
+        ];
+    }
+
+    get COLUMN_ORDER() {
+        return [
+            ...this.RULE_NAME_ORDER,
+            "GOSI Company Contribution",
             "GOSI Company Deduction",
             "GOSI Employee Deduction",
-            "Net Salary",
         ];
     }
 
@@ -320,7 +326,7 @@ async _buildColumns(slips) {
         }
     }
 
-    const orderMap = new Map(this.RULE_NAME_ORDER.map((name, idx) => [name, idx]));
+    const orderMap = new Map(this.COLUMN_ORDER.map((name, idx) => [name, idx]));
     cols.sort((a, b) => (orderMap.get(a.name) ?? 9999) - (orderMap.get(b.name) ?? 9999));
 
     return cols;
