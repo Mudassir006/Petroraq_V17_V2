@@ -57,6 +57,8 @@
                                    readonly="is_automatic_gosi == True or state != 'draft'"/>
                             <field name="is_special_gosi"/>
                             <field name="special_company_gosi_rate"/>
+                            <field name="is_special_employee_gosi"/>
+                            <field name="special_employee_gosi_rate"/>
 
                             <!--                            <field name="struct_id" required="0" invisible="1"/>-->
                             <field name="structure_type_id" required="0" invisible="1"/>
