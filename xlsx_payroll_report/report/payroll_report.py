@@ -334,10 +334,10 @@ class PayrollReport(models.AbstractModel):
                 slip_amount_by_code["GOSI_COMP_ADD"] = (
                         slip_amount_by_code.get("GOSI_COMP_ADD", 0.0) + slip_amount_by_code.get("GOSIALLOW", 0.0)
                 )
-                slip_amount_by_code["GOSI_EMP"] = (
-                        slip_amount_by_code.get("GOSI_EMP", 0.0) + slip_amount_by_code.get("GOSI", 0.0)
+                slip_amount_by_code["GOSI_EMP"] = slip_amount_by_code.get("GOSI_EMP", 0.0)
+                slip_amount_by_code["GOSI_COMP_DED"] = (
+                        slip_amount_by_code.get("GOSI_COMP_DED", 0.0) + slip_amount_by_code.get("GOSI", 0.0)
                 )
-                slip_amount_by_code["GOSI_COMP_DED"] = slip_amount_by_code.get("GOSI_COMP_DED", 0.0)
 
                 DEDUCTION_CODES = {
                     "ABS", "LATE", "ECO", "LEAVE90", "DIFFT", "UNPAID", "PAID87",

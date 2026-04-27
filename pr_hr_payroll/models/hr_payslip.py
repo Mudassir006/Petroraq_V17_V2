@@ -77,8 +77,8 @@ class HrPayslip(models.Model):
             totals_by_code[code] = totals_by_code.get(code, 0.0) + (vals.get("total", 0.0) or 0.0)
 
         gosi_company_add = totals_by_code.get("GOSI_COMP_ADD", 0.0) + totals_by_code.get("GOSIALLOW", 0.0)
-        gosi_employee_ded = totals_by_code.get("GOSI_EMP", 0.0) + totals_by_code.get("GOSI", 0.0)
-        gosi_company_ded = totals_by_code.get("GOSI_COMP_DED", 0.0)
+        gosi_employee_ded = totals_by_code.get("GOSI_EMP", 0.0)
+        gosi_company_ded = totals_by_code.get("GOSI_COMP_DED", 0.0) + totals_by_code.get("GOSI", 0.0)
         advance_allowances = totals_by_code.get("ADVALL", 0.0)
         reimbursement_amount = totals_by_code.get("REIMBURSEMENT199", 0.0)
 

@@ -204,8 +204,8 @@ get payrollMonth() {
 
             // Normalize GOSI portions across Saudi / non-Saudi implementations
             const gosiCompanyAdd = (valsByCode.get("GOSI_COMP_ADD") || 0) + (valsByCode.get("GOSIALLOW") || 0);
-            const gosiEmployeeDed = (valsByCode.get("GOSI_EMP") || 0) + (valsByCode.get("GOSI") || 0);
-            const gosiCompanyDed = valsByCode.get("GOSI_COMP_DED") || 0;
+            const gosiEmployeeDed = valsByCode.get("GOSI_EMP") || 0;
+            const gosiCompanyDed = (valsByCode.get("GOSI_COMP_DED") || 0) + (valsByCode.get("GOSI") || 0);
             valsByCode.set("GOSI_COMP_ADD", gosiCompanyAdd);
             valsByCode.set("GOSI_EMP", gosiEmployeeDed);
             valsByCode.set("GOSI_COMP_DED", gosiCompanyDed);
