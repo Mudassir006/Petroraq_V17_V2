@@ -203,10 +203,23 @@ get payrollMonth() {
                 valsByCode.set(code, (valsByCode.get(code) || 0) + v);
             }
 
-            // Normalize GOSI portions across Saudi / non-Saudi implementations
+            // Normalize GOSI portions across Saudi / non-Saudi implementations.
+            // Some older batches only have legacy "GOSI" (combined deduction).
+            // In that case, split combined deduction using company add amount:
+            //   company deduction = -company contribution
+            //   employee deduction = combined deduction - company deduction
             const gosiCompanyAdd = (valsByCode.get("GOSI_COMP_ADD") || 0) + (valsByCode.get("GOSIALLOW") || 0);
-            const gosiEmployeeDed = valsByCode.get("GOSI_EMP") || 0;
-            const gosiCompanyDed = (valsByCode.get("GOSI_COMP_DED") || 0) + (valsByCode.get("GOSI") || 0);
+            const legacyGosiDed = valsByCode.get("GOSI") || 0;
+            let gosiEmployeeDed = valsByCode.get("GOSI_EMP") || 0;
+            let gosiCompanyDed = valsByCode.get("GOSI_COMP_DED") || 0;
+
+            if (!gosiEmployeeDed && !gosiCompanyDed && legacyGosiDed) {
+                gosiCompanyDed = -gosiCompanyAdd;
+                gosiEmployeeDed = legacyGosiDed - gosiCompanyDed;
+            } else {
+                gosiCompanyDed += legacyGosiDed;
+            }
+
             valsByCode.set("GOSI_COMP_ADD", gosiCompanyAdd);
             valsByCode.set("GOSI_EMP", gosiEmployeeDed);
             valsByCode.set("GOSI_COMP_DED", gosiCompanyDed);
