@@ -175,8 +175,8 @@ class PayrollReport(models.AbstractModel):
             extra_cols = [
                 ("REIMBURSEMENT199", "Reimbursement"),
                 ("GOSI_COMP_ADD", "GOSI Company Contribution"),
-                ("GOSI_EMP", "GOSI Company Deduction"),
-                ("GOSI_COMP_DED", "GOSI Employee Deduction"),
+                ("GOSI_COMP_DED", "GOSI Company Deduction"),
+                ("GOSI_EMP", "GOSI Employee Deduction"),
             ]
             for code, name in extra_cols:
                 if any(r[1] == code for r in rules):
