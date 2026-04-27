@@ -7,6 +7,30 @@ import ast
 class ir_ui_view(models.Model):
     _inherit = 'ir.ui.view'
 
+    def _combine(self, hierarchy):
+        """Safely combine inherited views even if a broken custom view has non-string XML.
+
+        Some databases may contain malformed `ir.ui.view` records where `arch` is not a
+        string/bytes payload. Core `_combine` calls `etree.fromstring(view.arch)` and
+        raises `ValueError: can only parse strings` in that case.
+        """
+        try:
+            return super()._combine(hierarchy)
+        except ValueError as error:
+            if "can only parse strings" not in str(error):
+                raise
+
+            def _sanitize_hierarchy(node):
+                view, children = node
+                safe_children = []
+                for child in children:
+                    child_view = child[0]
+                    if isinstance(child_view.arch, (str, bytes)):
+                        safe_children.append(_sanitize_hierarchy(child))
+                return view, safe_children
+
+            return super()._combine(_sanitize_hierarchy(hierarchy))
+
     def _postprocess_tag_field(self, node, name_manager, node_info):
         super()._postprocess_tag_field(node, name_manager, node_info)
         try:
