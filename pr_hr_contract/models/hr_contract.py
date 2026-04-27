@@ -31,6 +31,16 @@ class HrContract(models.Model):
         default=12.75
     )
 
+    is_special_employee_gosi = fields.Boolean(
+        string="Special Employee GOSI",
+        help="Enable special employee GOSI rate for this employee"
+    )
+
+    special_employee_gosi_rate = fields.Float(
+        string="Special Employee GOSI %",
+        default=9.75
+    )
+
     joining_date = fields.Date(string="Joining Date", required=True,
                                tracking=True)
 
@@ -112,7 +122,7 @@ class HrContract(models.Model):
             self.job_id = self.department_id = False
 
     @api.depends('employee_id', 'wage', 'contract_salary_rule_ids', 'contract_salary_rule_ids.pay_in_payslip',
-                 'gosi_salary')
+                 'gosi_salary', 'is_special_employee_gosi', 'special_employee_gosi_rate')
     def _compute_amount(self):
         """
         This Method Calculates Contract Total Amounts
@@ -137,7 +147,10 @@ class HrContract(models.Model):
                 is_homeland = rec.employee_id.country_id.is_homeland if rec.employee_id.country_id else False
 
                 if is_homeland:
-                    emp_gosi = gosi_configuration_id.citizen_employee_portion
+                    if rec.is_special_employee_gosi:
+                        emp_gosi = rec.special_employee_gosi_rate
+                    else:
+                        emp_gosi = gosi_configuration_id.citizen_employee_portion
                 else:
                     emp_gosi = gosi_configuration_id.resident_employee_portion
 
@@ -203,7 +216,10 @@ class HrContract(models.Model):
             is_citizen = contract.employee_id.country_id.is_homeland if contract.employee_id.country_id else False
 
             if is_citizen:
-                employee_rate = gosi_configuration.citizen_employee_portion
+                if contract.is_special_employee_gosi:
+                    employee_rate = contract.special_employee_gosi_rate
+                else:
+                    employee_rate = gosi_configuration.citizen_employee_portion
 
                 # ⭐ SPECIAL CASE HANDLING (Shahd)
                 if contract.is_special_gosi:
