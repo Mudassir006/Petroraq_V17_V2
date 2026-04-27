@@ -58,6 +58,7 @@ class PayrollBatchXlsxReport extends Component {
             "Early Checkout",
             "GOSI Company Contribution",
             "Gross",
+            "Reimbursement",
             "Advance Allowances",
             "GOSI Company Deduction",
             "GOSI Employee Deduction",
@@ -67,6 +68,7 @@ class PayrollBatchXlsxReport extends Component {
 
     get EXTRA_COLS() {
         return [
+            { code: "REIMBURSEMENT199", name: "Reimbursement" },
             { code: "GOSI_COMP_ADD", name: "GOSI Company Contribution" },
             { code: "GOSI_EMP", name: "GOSI Company Deduction" },
             { code: "GOSI_COMP_DED", name: "GOSI Employee Deduction" },
@@ -310,11 +312,13 @@ async _buildColumns(slips) {
     }
 
     for (const ex of this.EXTRA_COLS) {
-        cols.push({
-            code: ex.code,
-            name: ex.name,
-            hidden: this.HIDE_CODES.has(ex.code),
-        });
+        if (!cols.find((col) => col.code === ex.code)) {
+            cols.push({
+                code: ex.code,
+                name: ex.name,
+                hidden: this.HIDE_CODES.has(ex.code),
+            });
+        }
     }
 
     const orderMap = new Map(this.RULE_NAME_ORDER.map((name, idx) => [name, idx]));

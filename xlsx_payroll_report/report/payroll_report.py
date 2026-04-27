@@ -150,6 +150,7 @@ class PayrollReport(models.AbstractModel):
                 "Unpaid Leave",
                 "Early Checkout",
                 "Gross",
+                "Reimbursement",
                 "Advance Allowances",
                 "Net Salary",
             ]
@@ -170,13 +171,16 @@ class PayrollReport(models.AbstractModel):
                 rules.append(row)
                 col_no += 1
 
-            # Dedicated GOSI columns (Saudi/non-Saudi normalized)
+            # Dedicated additional columns (normalized / explicit ordering)
             extra_cols = [
+                ("REIMBURSEMENT199", "Reimbursement"),
                 ("GOSI_COMP_ADD", "GOSI Company Contribution"),
                 ("GOSI_EMP", "GOSI Company Deduction"),
                 ("GOSI_COMP_DED", "GOSI Employee Deduction"),
             ]
             for code, name in extra_cols:
+                if any(r[1] == code for r in rules):
+                    continue
                 rowx = [None, None, None, None, None]
                 rowx[0] = col_no
                 rowx[1] = code
@@ -203,6 +207,7 @@ class PayrollReport(models.AbstractModel):
                 "Early Checkout",
                 "GOSI Company Contribution",
                 "Gross",
+                "Reimbursement",
                 "Advance Allowances",
                 "GOSI Company Deduction",
                 "GOSI Employee Deduction",

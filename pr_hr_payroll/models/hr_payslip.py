@@ -80,8 +80,9 @@ class HrPayslip(models.Model):
         gosi_employee_ded = totals_by_code.get("GOSI_EMP", 0.0) + totals_by_code.get("GOSI", 0.0)
         gosi_company_ded = totals_by_code.get("GOSI_COMP_DED", 0.0)
         advance_allowances = totals_by_code.get("ADVALL", 0.0)
+        reimbursement_amount = totals_by_code.get("REIMBURSEMENT199", 0.0)
 
-        net_excluded = {"NET", "GROSS", "ADVALL", "GOSI_EMP", "GOSI", "GOSI_COMP_DED"}
+        net_excluded = {"NET", "GROSS", "ADVALL", "GOSI_EMP", "GOSI", "GOSI_COMP_DED", "REIMBURSEMENT199"}
         gross_amount = sum(
             vals.get("total", 0.0) or 0.0
             for vals in line_vals
@@ -89,7 +90,7 @@ class HrPayslip(models.Model):
             and vals.get("code") not in net_excluded
         )
         # Keep formula explicit and in requested order
-        net_amount = gross_amount + advance_allowances + gosi_company_ded + gosi_employee_ded
+        net_amount = gross_amount + reimbursement_amount + advance_allowances + gosi_company_ded + gosi_employee_ded
         return gross_amount, net_amount, gosi_company_add
 
     def _sync_attendance_summary_fields(self):
