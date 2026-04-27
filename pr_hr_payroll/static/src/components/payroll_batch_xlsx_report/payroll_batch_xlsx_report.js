@@ -312,7 +312,7 @@ async _buildColumns(slips) {
     }
 
     for (const ex of this.EXTRA_COLS) {
-        if (!cols.find((col) => col.code === ex.code)) {
+        if (!cols.find((col) => col.code === ex.code || col.name === ex.name)) {
             cols.push({
                 code: ex.code,
                 name: ex.name,
