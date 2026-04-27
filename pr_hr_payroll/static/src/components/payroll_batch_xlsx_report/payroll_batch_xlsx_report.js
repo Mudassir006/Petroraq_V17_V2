@@ -60,9 +60,9 @@ class PayrollBatchXlsxReport extends Component {
             "Gross",
             "Reimbursement",
             "Advance Allowances",
-            "GOSI Company Deduction",
-            "GOSI Employee Deduction",
-            "Net Salary",
+//            "GOSI Company Deduction",
+//            "GOSI Employee Deduction",
+//            "Net Salary",
         ];
     }
 
@@ -71,6 +71,7 @@ class PayrollBatchXlsxReport extends Component {
             { code: "GOSI_COMP_ADD", name: "GOSI Company Contribution" },
             { code: "GOSI_COMP_DED", name: "GOSI Company Deduction" },
             { code: "GOSI_EMP", name: "GOSI Employee Deduction" },
+            { code: "NET", name: "Net Salary" },
         ];
     }
 

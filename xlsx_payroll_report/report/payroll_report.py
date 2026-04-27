@@ -152,7 +152,6 @@ class PayrollReport(models.AbstractModel):
                 "Gross",
                 "Reimbursement",
                 "Advance Allowances",
-                "Net Salary",
             ]
 
             salary_rule_ids = salary_rule_ids.filtered(lambda s: s.name in order)
@@ -177,6 +176,7 @@ class PayrollReport(models.AbstractModel):
                 ("GOSI_COMP_ADD", "GOSI Company Contribution"),
                 ("GOSI_COMP_DED", "GOSI Company Deduction"),
                 ("GOSI_EMP", "GOSI Employee Deduction"),
+                ("NET", "Net Salary"),
             ]
             for code, name in extra_cols:
                 if any(r[1] == code for r in rules):
