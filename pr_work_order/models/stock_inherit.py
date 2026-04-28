@@ -5,6 +5,7 @@ class StockMove(models.Model):
     _inherit = "stock.move"
 
     work_order_id = fields.Many2one("pr.work.order", string="Work Order")
+    work_order_boq_line_id = fields.Many2one("pr.work.order.boq", string="WO BOQ Line")
 
     def _action_done(self, *args, **kwargs):
         res = super()._action_done(*args, **kwargs)
@@ -37,15 +38,17 @@ class StockMove(models.Model):
 
 class StockPicking(models.Model):
     _inherit = "stock.picking"
+    work_order_id = fields.Many2one("pr.work.order", string="Work Order")
 
     @api.model_create_multi
     def create(self, vals_list):
         pickings = super().create(vals_list)
 
         for picking in pickings:
-            sale = picking.sale_id
-            if sale and sale.work_order_id:
-                wo = sale.work_order_id
+            wo = picking.work_order_id or picking.sale_id.work_order_id
+            if wo:
+                if not picking.work_order_id:
+                    picking.work_order_id = wo.id
 
                 picking.move_ids_without_package.write({
                     "work_order_id": wo.id,

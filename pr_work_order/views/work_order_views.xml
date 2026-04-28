@@ -101,6 +101,13 @@
                             groups="pr_custom_purchase.group_custom_pr_end_user"
                             invisible="state not in ['approved','in_progress']"/>
 
+                    <button name="action_create_material_issue"
+                            type="object"
+                            string="Issue Materials"
+                            class="btn-secondary"
+                            groups="pr_work_order.custom_group_work_order_operations,pr_work_order.custom_group_work_order_management"
+                            invisible="state not in ['approved','in_progress','done']"/>
+
 
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,ops_approval,acc_approval,final_approval,approved,in_progress,done,cancel"/>

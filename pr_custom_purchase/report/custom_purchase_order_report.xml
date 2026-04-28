@@ -203,7 +203,7 @@
                                                 # SL
                                             </b>
                                         </td>
-                                        <td width="50%">
+                                        <td t-att-width="'70%' if o.is_rfq_record else '50%'">
                                             <b>                                                    البند أو الوصف
                                                 <br/>
                                                 Description
@@ -225,19 +225,19 @@
                                             </b>
 
                                         </td>
-                                        <td width="10%">
+                                        <td t-if="not o.is_rfq_record" width="10%">
                                             <b>وحدة السعر
                                                 <br/>
                                                 UNIT PRICE
                                             </b>
                                         </td>
-                                        <td width="10%">
+                                        <td t-if="not o.is_rfq_record" width="10%">
                                             <b>                                                    معدل الضريبة
                                                 <br/>
                                                 TAX RATE (15%)
                                             </b>
                                         </td>
-                                        <td width="10%">
+                                        <td t-if="not o.is_rfq_record" width="10%">
                                             <b>                                                    المبلغ الإجمالي
                                                 <br/>
                                                 TOTAL AMOUNT
@@ -269,24 +269,18 @@
                                         <td>
                                             <span t-esc="l.product_uom.name"/>
                                         </td>
-                                        <td>
-                                            <t t-if="not o.is_rfq_record">
-                                                <span t-esc="l.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                            </t>
+                                        <td t-if="not o.is_rfq_record">
+                                            <span t-esc="l.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
-                                        <td>
-                                            <t t-if="not o.is_rfq_record">
-                                                <span t-esc="', '.join(l.taxes_id.mapped('name'))"/>
-                                            </t>
+                                        <td t-if="not o.is_rfq_record">
+                                            <span t-esc="', '.join(l.taxes_id.mapped('name'))"/>
                                         </td>
-                                        <td>
-                                            <t t-if="not o.is_rfq_record">
-                                                <span t-esc="l.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                            </t>
+                                        <td t-if="not o.is_rfq_record">
+                                            <span t-esc="l.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                     </tr>
                                 </table>
-                        <table class="table table-border"
+                        <table t-if="not o.is_rfq_record" class="table table-border"
                                        style="border:1px solid #000000;margin-top:-10px;font-family: 'DroidArabicNaskh';">
 
                                     <tr>
@@ -294,10 +288,7 @@
                                             Amount Excluding VAT
                                         </td>
                                         <td width="23%" style="text-align:center;border:1px solid #000000">
-<!--                                                <span t-esc="'{0:,.2f}'.format(o.amount_untaxed)"-->
-                                            <t t-if="not o.is_rfq_record">
-                                                <span t-esc="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                            </t>
+                                            <span t-esc="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                         <td width="42%" style="text-align:right;border:1px solid #000000">
                                             الإجمالي بإستثناء ضريبة القيمة المضافة
@@ -308,9 +299,7 @@
                                             Total VAT Amount (15%)
                                         </td>
                                         <td width="23%" style="text-align:center;border:1px solid #000000">
-                                            <t t-if="not o.is_rfq_record">
-                                                <span t-esc="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                            </t>
+                                            <span t-esc="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                         <td width="42%" style="text-align:right;border:1px solid #000000">
                                             مجموع ضريبة القيمة المضاف
@@ -321,10 +310,7 @@
                                             Total Amount Including VAT
                                         </td>
                                         <td width="23%" style="text-align:center;border:1px solid #000000">
-<!--                                                <span t-esc="'{0:,.2f}'.format(o.amount_residual)"-->
-                                            <t t-if="not o.is_rfq_record">
-                                                <span t-esc="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                            </t>
+                                            <span t-esc="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                         <td width="42%" style="text-align:right;border:1px solid #000000">
                                              إجمالي المبلغ
@@ -336,18 +322,14 @@
                                 />
                         <t t-if="not o.is_rfq_record" t-set="total_words"
                            t-value="o.amount_to_world(o.amount_total)"/>
-                        <table class="table table-border"
+                        <table t-if="not o.is_rfq_record" class="table table-border"
                                        style="border:1px solid #000000;margin-top:-10px;font-size:15px;font-family: 'Noto Sans Arabic';">
                                     <tr>
                                         <td style="border-left:1px solid black;text-align:left !important;">
-                                            <t t-if="not o.is_rfq_record">
-                                                <span t-esc="total_word"/>
-                                            </t>
+                                            <span t-esc="total_word"/>
                                         </td>
                                         <td style="border-right:1px solid black;text-align:right !important;">
-                                            <t t-if="not o.is_rfq_record">
-                                                <span t-esc="total_words"/>
-                                            </t>
+                                            <span t-esc="total_words"/>
                                         </td>
                                     </tr>
                                 </table>
