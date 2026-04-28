@@ -113,7 +113,7 @@ class PurchaseOrder(models.Model):
     def _compute_is_rfq_record(self):
         for order in self:
             order_name = (order.name or "").upper()
-            order.is_rfq_record = order_name.startswith("RFQ")
+            order.is_rfq_record = "RFQ" in order_name
 
     def _compute_quotation_count(self):
         for order in self:
