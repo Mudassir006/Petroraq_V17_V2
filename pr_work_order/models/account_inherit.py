@@ -76,7 +76,7 @@ class AccountMoveLine(models.Model):
     wo_cost_center_id = fields.Many2one(
         "pr.work.order.cost.center",
         string="WO Cost Center",
-        domain="[('work_order_id', '=', parent.work_order_id)]",
+        domain="[('work_order_id', '=', move_id.work_order_id)]",
     )
 
     @api.onchange("wo_cost_center_id")

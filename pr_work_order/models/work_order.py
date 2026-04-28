@@ -647,7 +647,7 @@ class WorkOrderBOQ(models.Model):
 
     name = fields.Char("Description", required=True)
 
-    product_id = fields.Many2one("product.product", string="Product", tracking=True)
+    product_id = fields.Many2one("product.product", string="Product")
     uom_id = fields.Many2one("uom.uom", string="Unit")
     qty = fields.Float("Qty")
 

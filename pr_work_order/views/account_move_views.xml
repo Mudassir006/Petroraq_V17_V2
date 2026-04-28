@@ -10,20 +10,21 @@
             <xpath expr="//sheet/group/group[1]" position="inside">
                 <field name="work_order_id"
                        domain="[('company_id', '=', company_id)]"
-                       invisible="move_type not in ('in_invoice', 'in_refund')"/>
+                       invisible="move_type not in ['in_invoice', 'in_refund']"/>
             </xpath>
 
             <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='account_id']" position="after">
                 <field name="wo_cost_center_id"
-                       domain="[('work_order_id', '=', parent.work_order_id)]"
-                       invisible="parent.move_type not in ('in_invoice', 'in_refund')"
+                       domain="[('work_order_id', '=', parent.work_order_id.id)]"
+                       column_invisible="parent.move_type not in ['in_invoice', 'in_refund']"
                 />
 
             </xpath>
 
             <xpath expr="//field[@name='invoice_line_ids']/form//field[@name='account_id']" position="after">
                 <field name="wo_cost_center_id"
-                       invisible="parent.move_type not in ('in_invoice', 'in_refund')"/>
+                       domain="[('work_order_id', '=', parent.work_order_id.id)]"
+                       invisible="parent.move_type not in ['in_invoice', 'in_refund']"/>
             </xpath>
 
         </field>
