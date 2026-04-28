@@ -517,8 +517,8 @@ class HrPayslip(models.Model):
             # Project Manager
             if self.employee_id.project_cost_center_id and self.employee_id.project_cost_center_id.project_partner_id:
                 line_vals.update({"partner_id": self.employee_id.project_cost_center_id.project_partner_id.id})
-            if line.salary_rule_id.code in ["LOAN", "ADVALL"]:
-                line_vals["account_id"] = line.slip_id.employee_id.employee_account_id.id
+            # if line.salary_rule_id.code in ["LOAN", "ADVALL"]:
+            #     line_vals["account_id"] = line.slip_id.employee_id.employee_account_id.id
 
             if line.category_id.code in ["BASIC", "ALW"]:
                 line_vals.update({
