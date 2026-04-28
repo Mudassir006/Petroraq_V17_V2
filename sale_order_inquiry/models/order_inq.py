@@ -49,8 +49,15 @@ class OrderInquiry(models.Model):
     sequence = fields.Integer(string="Sequence", default=10)
 
     rejection_reason = fields.Text(string="Rejection Reason", tracking=True)
-    inquiry_type = fields.Selection([('construction', 'Project'), ('trading', 'Trading')], string="Inquiry Type",
-                                    default="trading", required=True)
+    inquiry_type = fields.Selection(
+        [
+            ('construction', 'Project'),
+            # ('trading', 'Trading'),  # Temporarily disabled
+        ],
+        string="Inquiry Type",
+        default="construction",
+        required=True,
+    )
     required_attachment_ids = fields.Many2many(
         "ir.attachment",
         "order_inq_required_attachment_rel",
