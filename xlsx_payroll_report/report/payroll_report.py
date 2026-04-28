@@ -330,14 +330,24 @@ class PayrollReport(models.AbstractModel):
                 for l in slip.line_ids:
                     slip_amount_by_code[l.code] = slip_amount_by_code.get(l.code, 0.0) + (l.amount or 0.0)
 
-                # Normalize GOSI portions to dedicated report columns
-                slip_amount_by_code["GOSI_COMP_ADD"] = (
-                        slip_amount_by_code.get("GOSI_COMP_ADD", 0.0) + slip_amount_by_code.get("GOSIALLOW", 0.0)
+                # Normalize GOSI portions to dedicated report columns.
+                # Legacy payslips may only have "GOSI" as a combined deduction.
+                gosi_company_add = (
+                    slip_amount_by_code.get("GOSI_COMP_ADD", 0.0) + slip_amount_by_code.get("GOSIALLOW", 0.0)
                 )
-                slip_amount_by_code["GOSI_EMP"] = slip_amount_by_code.get("GOSI_EMP", 0.0)
-                slip_amount_by_code["GOSI_COMP_DED"] = (
-                        slip_amount_by_code.get("GOSI_COMP_DED", 0.0) + slip_amount_by_code.get("GOSI", 0.0)
-                )
+                legacy_gosi_ded = slip_amount_by_code.get("GOSI", 0.0)
+                gosi_employee_ded = slip_amount_by_code.get("GOSI_EMP", 0.0)
+                gosi_company_ded = slip_amount_by_code.get("GOSI_COMP_DED", 0.0)
+
+                if not gosi_employee_ded and not gosi_company_ded and legacy_gosi_ded:
+                    gosi_company_ded = -gosi_company_add
+                    gosi_employee_ded = legacy_gosi_ded - gosi_company_ded
+                else:
+                    gosi_company_ded += legacy_gosi_ded
+
+                slip_amount_by_code["GOSI_COMP_ADD"] = gosi_company_add
+                slip_amount_by_code["GOSI_EMP"] = gosi_employee_ded
+                slip_amount_by_code["GOSI_COMP_DED"] = gosi_company_ded
 
                 DEDUCTION_CODES = {
                     "ABS", "LATE", "ECO", "LEAVE90", "DIFFT", "UNPAID", "PAID87",
