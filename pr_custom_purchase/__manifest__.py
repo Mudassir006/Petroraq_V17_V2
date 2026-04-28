@@ -6,7 +6,7 @@
     'author': 'My Company',
     'website': 'https://www.yourcompany.com',
     'category': 'Operations',
-    'version': '17.0.1.0.8',
+    'version': '17.0.1.0.9',
     'license': 'LGPL-3',
     'depends': ['base', 'portal', 'product', 'hr', 'mail', 'web', 'purchase', 'purchase_stock', 'stock', 'bus',
                 'project', 'account', 'account_budget'],
