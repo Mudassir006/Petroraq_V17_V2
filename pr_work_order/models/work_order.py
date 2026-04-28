@@ -620,6 +620,95 @@ class PRWorkOrder(models.Model):
                 raise UserError(_("Work Order must be approved before starting operations."))
             rec.state = "in_progress"
 
+    def _get_issue_picking_type(self):
+        self.ensure_one()
+        warehouse = self.sale_order_id.warehouse_id if self.sale_order_id else False
+        if warehouse and warehouse.int_type_id:
+            return warehouse.int_type_id
+
+        picking_type = self.env["stock.picking.type"].search([
+            ("code", "=", "internal"),
+            ("company_id", "in", [self.company_id.id, False]),
+        ], limit=1)
+        if not picking_type:
+            raise UserError(_("No internal transfer operation type was found for this company."))
+        return picking_type
+
+    def action_create_material_issue(self):
+        self.ensure_one()
+        if self.state not in ("approved", "in_progress", "done"):
+            raise UserError(_("Material issue is allowed only after Work Order approval."))
+
+        picking_type = self._get_issue_picking_type()
+        src_location = picking_type.default_location_src_id
+        if not src_location:
+            raise UserError(_("Please configure source location on the internal operation type."))
+
+        dest_location = self.env.ref("stock.stock_location_production", raise_if_not_found=False)
+        if not dest_location:
+            dest_location = picking_type.default_location_dest_id
+        if not dest_location:
+            raise UserError(_("Please configure destination location on the internal operation type."))
+
+        issueable_lines = self.boq_line_ids.filtered(
+            lambda l: l.display_type == "product"
+                      and l.product_id
+                      and l.product_id.type in ("product", "consu")
+                      and l.qty > 0
+        )
+        if not issueable_lines:
+            raise UserError(_("No stockable/consumable BOQ lines are available for material issue."))
+
+        move_commands = []
+        Move = self.env["stock.move"]
+        for line in issueable_lines:
+            issued_qty = sum(Move.search([
+                ("work_order_id", "=", self.id),
+                ("work_order_boq_line_id", "=", line.id),
+                ("state", "=", "done"),
+                ("picking_id.picking_type_id.code", "=", "internal"),
+            ]).mapped("product_uom_qty"))
+            remaining_qty = (line.qty or 0.0) - issued_qty
+            if remaining_qty <= 0:
+                continue
+
+            move_commands.append((0, 0, {
+                "name": line.name or line.product_id.display_name,
+                "product_id": line.product_id.id,
+                "product_uom_qty": remaining_qty,
+                "product_uom": (line.uom_id or line.product_id.uom_id).id,
+                "location_id": src_location.id,
+                "location_dest_id": dest_location.id,
+                "company_id": self.company_id.id,
+                "work_order_id": self.id,
+                "work_order_boq_line_id": line.id,
+            }))
+
+        if not move_commands:
+            raise UserError(_("All BOQ material quantities are already issued."))
+
+        picking = self.env["stock.picking"].create({
+            "partner_id": self.partner_id.id,
+            "origin": _("%s - Material Issue") % (self.name,),
+            "picking_type_id": picking_type.id,
+            "location_id": src_location.id,
+            "location_dest_id": dest_location.id,
+            "company_id": self.company_id.id,
+            "work_order_id": self.id,
+            "move_ids_without_package": move_commands,
+        })
+        picking.action_confirm()
+        picking.action_assign()
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Material Issue"),
+            "res_model": "stock.picking",
+            "view_mode": "form",
+            "res_id": picking.id,
+            "target": "current",
+        }
+
     def action_mark_done(self):
         for rec in self:
             rec.state = "done"
