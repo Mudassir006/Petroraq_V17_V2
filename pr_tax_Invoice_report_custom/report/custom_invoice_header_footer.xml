@@ -29,9 +29,8 @@
     <!--Template header-->
     <template id="custom_invoice_header_layout">
         <div class="header">
-            <div>
-                <img src='/pr_tax_Invoice_report_custom/static/src/img/petroraq_header_new.png' style="width:101%;"/>
-            </div>
+            <img src='/pr_tax_Invoice_report_custom/static/src/img/petroraq_header_new.png'
+                 style="width:105%;margin-left:-15px !important;"/>
         </div>
     </template>
 
@@ -39,6 +38,18 @@
     <template id="custom_invoice_footer_layout">
 
         <div class="footer" style="border-top:1px solid #305081">
+            <div style="border-bottom:1px solid #305081 !important;">
+                <table class="table table-borderless" style="line-height:0.5;font-family: 'DroidArabicNaskh';">
+                    <tr>
+                        <td width="50%" style="text-align:left;font-size: 18px !important;">
+                            <p>This is computer generated document, no signature and stamp required</p>
+                        </td>
+                        <td width="50%" style="text-align:right;font-size: 18px !important;">
+                            <p>هذه وثيقة تم إنشاؤها بواسطة الكمبيوتر، ولا تتطلب توقيعًا أو ختمًا</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
 
             <div style="border-top:1px solid #305081 !important;">
@@ -50,7 +61,7 @@
                 </div>
 
                 <img src='/pr_tax_Invoice_report_custom/static/src/img/img.png'
-                     style="width:101%"/>
+                     style="width:105%;margin:0px -10px -15px -10px ! important"/>
 
             </div>
         </div>

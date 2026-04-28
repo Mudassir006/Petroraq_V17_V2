@@ -50,7 +50,7 @@ class OrderInquiry(models.Model):
 
     rejection_reason = fields.Text(string="Rejection Reason", tracking=True)
     inquiry_type = fields.Selection([('construction', 'Project'), ('trading', 'Trading')], string="Inquiry Type",
-                                    default="trading", required=True)
+                                    default="construction", required=True)
     required_attachment_ids = fields.Many2many(
         "ir.attachment",
         "order_inq_required_attachment_rel",
@@ -160,6 +160,7 @@ class OrderInquiry(models.Model):
             'sale_order_ids': [(6, 0, [])],
             'state': 'pending',
             'name': 'New',
+            'inquiry_type': 'construction',
         })
         return super().copy(default)
 
@@ -287,6 +288,13 @@ class OrderInquiry(models.Model):
         self.state = 'accept'
 
     def write(self, vals):
+        if "inquiry_type" in vals and vals.get("inquiry_type") == "trading":
+            non_trading_records = self.filtered(lambda rec: rec.inquiry_type != "trading")
+            if non_trading_records:
+                raise UserError(
+                    _("Trading inquiry type is temporarily disabled for new selections.")
+                )
+
         res = super().write(vals)
 
         # if attachments changed, relink them
@@ -311,6 +319,10 @@ class OrderInquiry(models.Model):
 
     @api.model
     def create(self, vals):
+        if vals.get("inquiry_type") == "trading":
+            raise UserError(
+                _("Trading inquiry type is temporarily disabled for new selections.")
+            )
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('order.inq.sequence') or "New"
 
