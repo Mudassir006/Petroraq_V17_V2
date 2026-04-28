@@ -8,6 +8,7 @@
             <tree string="Service Receipt Notes">
                 <field name="name"/>
                 <field name="purchase_id"/>
+                <field name="work_order_id"/>
                 <field name="partner_id"/>
                 <field name="date"/>
                 <field name="state"/>
@@ -23,6 +24,7 @@
             <search string="Service Receipt Notes">
                 <field name="name"/>
                 <field name="purchase_id"/>
+                <field name="work_order_id"/>
                 <field name="partner_id"/>
                 <filter name="filter_ready" string="Ready" domain="[('state','=','ready')]"/>
                 <filter name="filter_done" string="Done" domain="[('state','=','done')]"/>
@@ -31,6 +33,7 @@
                     <filter name="group_state" string="Status" context="{'group_by':'state'}"/>
                     <filter name="group_vendor" string="Vendor" context="{'group_by':'partner_id'}"/>
                     <filter name="group_purchase" string="Purchase Order" context="{'group_by':'purchase_id'}"/>
+                    <filter name="group_work_order" string="Work Order" context="{'group_by':'work_order_id'}"/>
                 </group>
             </search>
         </field>
@@ -77,6 +80,7 @@
                         <group>
                             <field name="name" readonly="1"/>
                             <field name="purchase_id" readonly="1"/>
+                            <field name="work_order_id" readonly="1"/>
                             <field name="partner_id" readonly="1"/>
                             <field name="date" readonly="state == 'done'"/>
                         </group>

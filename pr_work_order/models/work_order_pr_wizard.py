@@ -57,6 +57,28 @@ class WorkOrderCreatePRWizard(models.TransientModel):
         values["line_ids"] = lines
         return values
 
+    def action_select_all_products(self):
+        self.ensure_one()
+        self.line_ids.write({"selected": True})
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self._name,
+            "res_id": self.id,
+            "view_mode": "form",
+            "target": "new",
+        }
+
+    def action_clear_all_products(self):
+        self.ensure_one()
+        self.line_ids.write({"selected": False})
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self._name,
+            "res_id": self.id,
+            "view_mode": "form",
+            "target": "new",
+        }
+
     def action_create_pr(self):
         self.ensure_one()
 

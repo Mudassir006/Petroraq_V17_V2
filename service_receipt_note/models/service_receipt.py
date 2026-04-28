@@ -99,6 +99,13 @@ class ServiceReceiptNote(models.Model):
         store=True,
         readonly=True,
     )
+    work_order_id = fields.Many2one(
+        "pr.work.order",
+        string="Work Order",
+        related="purchase_id.requisition_id.expense_bucket_id.work_order_id",
+        store=True,
+        readonly=True,
+    )
 
     @api.depends("backorder_ids")
     def _compute_backorder_count(self):

@@ -113,7 +113,7 @@ class PurchaseOrder(models.Model):
     def _compute_is_rfq_record(self):
         for order in self:
             order_name = (order.name or "").upper()
-            order.is_rfq_record = order_name.startswith("RFQ")
+            order.is_rfq_record = "RFQ" in order_name
 
     def _compute_quotation_count(self):
         for order in self:
@@ -691,7 +691,7 @@ class PurchaseOrder(models.Model):
                             else False
                         ),
                         "note": _("Purchase Order %s was rejected by %s.<br/>Reason: %s")
-                        % (order.name, rejecting_user.name, reason),
+                                % (order.name, rejecting_user.name, reason),
                     }
                 )
 
@@ -705,13 +705,13 @@ class PurchaseOrder(models.Model):
                             "<p><b>Reason:</b> %s</p>"
                             "<p>Regards,<br/>%s</p>"
                         )
-                        % (
-                            supervisor_partner.name,
-                            order.name,
-                            rejecting_user.name,
-                            reason,
-                            rejecting_user.company_id.name,
-                        ),
+                                     % (
+                                         supervisor_partner.name,
+                                         order.name,
+                                         rejecting_user.name,
+                                         reason,
+                                         rejecting_user.company_id.name,
+                                     ),
                         "email_to": supervisor_partner.email,
                     }
                     self.env["mail.mail"].create(mail_values).send()
@@ -922,6 +922,7 @@ class PurchaseOrder(models.Model):
     def _compute_grn_ses_button_type(self):
         for order in self:
             order.grn_ses_button_type = False
+
 
 class PurchaseOrderRejectWizard(models.TransientModel):
     _name = "purchase.order.reject.wizard"

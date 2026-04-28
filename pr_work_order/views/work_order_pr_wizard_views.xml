@@ -24,6 +24,8 @@
                     </tree>
                 </field>
                 <footer>
+                    <button name="action_select_all_products" type="object" string="Select All" class="btn-secondary"/>
+                    <button name="action_clear_all_products" type="object" string="Clear All" class="btn-secondary"/>
                     <button name="action_create_pr" type="object" string="Create PR" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
