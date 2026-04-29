@@ -2,14 +2,12 @@
 <odoo>
     <template id="petroraq_layout" inherit_id="website.layout">
 
-        <!-- Replace Entire Default Header -->
         <xpath expr="//header" position="replace">
-
             <header id="petroraq_header" class="petroraq-header o_not_editable">
 
-                <nav class="petroraq-navbar container petroraq-nav-links">
+                <nav class="petroraq-navbar">
 
-                    <!-- LEFT: LOGO -->
+                    <!-- LOGO -->
                     <div class="nav-left">
                         <a href="/">
                             <img src="/pr_website/static/images/logo.png"
@@ -18,15 +16,14 @@
                         </a>
                     </div>
 
-                    <!-- CENTER (Desktop Menu) -->
+                    <!-- DESKTOP MENU -->
                     <div class="nav-center">
                         <ul class="nav-menu">
                             <li><a href="/" class="nav-link">HOME</a></li>
                             <li><a href="/about-us" class="nav-link">ABOUT</a></li>
                             <li><a href="/contact-us" class="nav-link">CONTACT US</a></li>
-                            <li><a href="/jobs" class="nav-link">Careers</a></li>
+                            <li><a href="/jobs" class="nav-link">CAREERS</a></li>
 
-                            <!-- SERVICES DROPDOWN -->
                             <li class="dropdown">
                                 <a href="#" class="nav-link dropdown-toggle">SERVICES</a>
                                 <ul class="dropdown-menu">
@@ -40,17 +37,18 @@
                         </ul>
                     </div>
 
-                    <!-- RIGHT (Desktop Button) -->
+                    <!-- RIGHT BUTTONS -->
                     <div class="nav-right">
+                        <a href="/web/login" class="btn-signin">SIGN IN</a>
                         <a href="/contact-us" class="btn-quote">GET A QUOTE</a>
                     </div>
 
                     <!-- MOBILE HAMBURGER -->
-                    <div class="nav-mobile-toggle">
+                    <button type="button" class="nav-mobile-toggle" aria-label="Open Menu">
                         <span></span>
                         <span></span>
                         <span></span>
-                    </div>
+                    </button>
 
                 </nav>
 
@@ -60,6 +58,7 @@
                         <li><a href="/">HOME</a></li>
                         <li><a href="/about-us">ABOUT</a></li>
                         <li><a href="/contact-us">CONTACT US</a></li>
+                        <li><a href="/jobs">CAREERS</a></li>
 
                         <li class="mobile-dropdown">
                             <a href="#">SERVICES</a>
@@ -71,25 +70,25 @@
                                 <li><a href="/services/construction">Construction</a></li>
                             </ul>
                         </li>
+
+                        <li><a href="/web/login" class="mobile-signin">SIGN IN</a></li>
+                        <li><a href="/contact-us" class="mobile-quote">GET A QUOTE</a></li>
                     </ul>
                 </div>
 
             </header>
-
         </xpath>
 
-        <!-- JS TOGGLE SCRIPT -->
         <xpath expr="//body" position="inside">
             <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function () {
-
                     const toggle = document.querySelector(".nav-mobile-toggle");
                     const mobMenu = document.querySelector(".mobile-menu");
 
-                    if (toggle) {
+                    if (toggle &amp;&amp; mobMenu) {
                         toggle.addEventListener("click", function () {
-                            mobMenu.style.display =
-                                mobMenu.style.display === "block" ? "none" : "block";
+                            mobMenu.classList.toggle("active");
+                            toggle.classList.toggle("active");
                         });
                     }
 
@@ -99,7 +98,6 @@
                             this.parentElement.classList.toggle("active");
                         });
                     });
-
                 });
             </script>
         </xpath>

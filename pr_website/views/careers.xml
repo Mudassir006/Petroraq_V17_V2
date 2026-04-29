@@ -9,8 +9,9 @@
                     <t t-foreach="jobs" t-as="job">
                         <div class="col-md-4 mb-3">
                             <div class="card p-3 h-100 text-center">
-                                <h6 class="prq-job-title" t-esc="job.name"/>
-                                <a t-att-href="'/job/%s' % job.id" class="btn btn-sm prq-btn mt-3">View Details</a>
+                                <h5 class="prq-job-title" t-esc="job.name"/>
+                                <p t-esc="job.description.split('\n')[0]"/>
+                                <a t-att-href="'/job/%s' % job.id" class="btn btn-md prq-btn mt-3">View Details</a>
                             </div>
                         </div>
                     </t>
