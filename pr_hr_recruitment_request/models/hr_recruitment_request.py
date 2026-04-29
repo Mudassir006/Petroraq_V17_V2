@@ -1,6 +1,6 @@
 from odoo import models, fields, api, _
 
-from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import UserError
 
 
 class HrRecruitmentRequest(models.Model):
@@ -56,8 +56,8 @@ class HrRecruitmentRequest(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("dept_approval", "Department Manager Approval"),
             ("hr_approval", "HR Supervisor Approval"),
+            ("hrm_approval", "HR Manager Approval"),
             ("md_approval", "MD Approval"),
             ("approved", "Approved"),
             ("rejected", "Rejected"),
@@ -90,14 +90,12 @@ class HrRecruitmentRequest(models.Model):
         string="Created Job (from request)",
         readonly=True,
     )
-    department_approved_by_id = fields.Many2one("res.users", string="Department Approved By", readonly=True, copy=False)
-    department_approved_date = fields.Datetime(string="Department Approved On", readonly=True, copy=False)
     hr_approved_by_id = fields.Many2one("res.users", string="HR Supervisor Approved By", readonly=True, copy=False)
     hr_approved_date = fields.Datetime(string="HR Supervisor Approved On", readonly=True, copy=False)
     md_approved_by_id = fields.Many2one("res.users", string="MD Approved By", readonly=True, copy=False)
     md_approved_date = fields.Datetime(string="MD Approved On", readonly=True, copy=False)
-    is_department_manager_approver = fields.Boolean(compute="_compute_approval_permissions")
     is_hr_supervisor_approver = fields.Boolean(compute="_compute_approval_permissions")
+    is_hrm_approver = fields.Boolean(compute="_compute_approval_permissions")
     is_md_approver = fields.Boolean(compute="_compute_approval_permissions")
 
     @api.model
@@ -136,11 +134,12 @@ class HrRecruitmentRequest(models.Model):
 
     def _compute_approval_permissions(self):
         current_user = self.env.user
-        is_hr_supervisor = current_user.has_group("hr_recruitment.group_hr_recruitment_manager")
-        is_md = current_user.has_group("hr.group_hr_manager")
+        is_hr_supervisor = current_user.has_group("pr_hr_recruitment_request.group_onboarding_supervisor")
+        is_hrm = current_user.has_group("pr_hr_recruitment_request.group_onboarding_manager")
+        is_md = current_user.has_group("pr_hr_recruitment_request.group_onboarding_md")
         for rec in self:
-            rec.is_department_manager_approver = bool(rec.department_manager_user_id and rec.department_manager_user_id == current_user)
             rec.is_hr_supervisor_approver = is_hr_supervisor
+            rec.is_hrm_approver = is_hrm
             rec.is_md_approver = is_md
 
     def action_submit(self):
@@ -152,33 +151,20 @@ class HrRecruitmentRequest(models.Model):
                 raise UserError(_("New job name is required"))
             if not rec.is_new_position and not rec.job_id:
                 raise UserError(_("Job position is required"))
-            if not rec.department_manager_user_id:
-                raise UserError(_("Please set a manager user on the selected department manager employee."))
-            rec.write({"state": "dept_approval"})
+            rec.write({"state": "hr_approval"})
 
-    def _check_department_approver(self):
-        self.ensure_one()
-        if self.department_manager_user_id != self.env.user:
-            raise UserError(_("Only the selected department's manager can perform this approval."))
 
     def _check_hr_supervisor_approver(self):
-        if not self.env.user.has_group("hr_recruitment.group_hr_recruitment_manager"):
+        if not self.env.user.has_group("pr_hr_recruitment_request.group_onboarding_supervisor"):
             raise UserError(_("Only HR Supervisor can perform this approval."))
 
-    def _check_md_approver(self):
-        if not self.env.user.has_group("hr.group_hr_manager"):
-            raise UserError(_("Only MD (HR Manager) can perform this approval."))
+    def _check_hrm_approver(self):
+        if not self.env.user.has_group("pr_hr_recruitment_request.group_onboarding_manager"):
+            raise UserError(_("Only HR Manager can perform this approval."))
 
-    def action_approve_department(self):
-        for rec in self:
-            if rec.state != "dept_approval":
-                continue
-            rec._check_department_approver()
-            rec.sudo().write({
-                "state": "hr_approval",
-                "department_approved_by_id": self.env.user.id,
-                "department_approved_date": fields.Datetime.now(),
-            })
+    def _check_md_approver(self):
+        if not self.env.user.has_group("pr_hr_recruitment_request.group_onboarding_md"):
+            raise UserError(_("Only MD can perform this approval."))
 
     def action_approve_hr_supervisor(self):
         for rec in self:
@@ -186,9 +172,18 @@ class HrRecruitmentRequest(models.Model):
                 continue
             rec._check_hr_supervisor_approver()
             rec.sudo().write({
-                "state": "md_approval",
+                "state": "hrm_approval",
                 "hr_approved_by_id": self.env.user.id,
                 "hr_approved_date": fields.Datetime.now(),
+            })
+
+    def action_approve_hrm(self):
+        for rec in self:
+            if rec.state != "hrm_approval":
+                continue
+            rec._check_hrm_approver()
+            rec.sudo().write({
+                "state": "md_approval",
             })
 
     def action_approve_md(self):
