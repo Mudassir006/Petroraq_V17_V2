@@ -317,23 +317,24 @@ class OrderInquiry(models.Model):
                     return True
         return False
 
-    @api.model
-    def create(self, vals):
-        if vals.get("inquiry_type") == "trading":
-            raise UserError(
-                _("Trading inquiry type is temporarily disabled for new selections.")
-            )
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('order.inq.sequence') or "New"
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("inquiry_type") == "trading":
+                raise UserError(
+                    _("Trading inquiry type is temporarily disabled for new selections.")
+                )
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('order.inq.sequence') or "New"
 
-        if not self._has_required_attachments(vals):
-            raise UserError(_("Please attach at least one file."))
+            if not self._has_required_attachments(vals):
+                raise UserError(_("Please attach at least one file."))
 
-        rec = super().create(vals)
+        records = super().create(vals_list)
 
         # ✅ IMPORTANT: relink uploaded attachments to this new record
-        rec._relink_required_attachments()
-        return rec
+        records._relink_required_attachments()
+        return records
 
     def button_cancel(self):
         if self.state == 'pending':
