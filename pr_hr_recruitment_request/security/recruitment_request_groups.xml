@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_onboarding_supervisor" model="res.groups">
+        <field name="name">Onboarding Supervisor</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+    </record>
+
+    <record id="group_onboarding_manager" model="res.groups">
+        <field name="name">Onboarding Manager</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+        <field name="implied_ids" eval="[(4, ref('pr_hr_recruitment_request.group_onboarding_supervisor'))]"/>
+    </record>
+
+    <record id="group_onboarding_md" model="res.groups">
+        <field name="name">Onboarding MD</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+        <field name="implied_ids" eval="[(4, ref('pr_hr_recruitment_request.group_onboarding_manager'))]"/>
+    </record>
+</odoo>

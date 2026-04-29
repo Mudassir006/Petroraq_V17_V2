@@ -60,8 +60,6 @@
                         domain="[('is_new_position', '=', True)]"/>
                 <filter string="Approved" name="approved"
                         domain="[('state', '=', 'approved')]"/>
-                <filter string="Department Approval" name="dept_approval"
-                        domain="[('state', '=', 'dept_approval')]"/>
                 <filter string="HR Approval" name="hr_approval"
                         domain="[('state', '=', 'hr_approval')]"/>
                 <filter string="MD Approval" name="md_approval"
@@ -79,20 +77,20 @@
 
                 <!-- HEADER BUTTONS -->
                 <header>
-                    <field name="is_department_manager_approver" invisible="1"/>
                     <field name="is_hr_supervisor_approver"  invisible="1"/>
+                    <field name="is_hrm_approver"  invisible="1"/>
                     <field name="is_md_approver"  invisible="1"/>
                     <button name="action_submit" string="Submit"
                             type="object" class="btn-primary"
                             invisible="state != 'draft'"/>
 
-                    <button name="action_approve_department" string="Approve (Department Manager)"
-                            type="object" class="btn-primary"
-                            invisible="state != 'dept_approval' or not is_department_manager_approver"/>
-
                     <button name="action_approve_hr_supervisor" string="Approve (HR Supervisor)"
                             type="object" class="btn-primary"
                             invisible="state != 'hr_approval' or not is_hr_supervisor_approver"/>
+
+                    <button name="action_approve_hrm" string="Approve (HR Manager)"
+                            type="object" class="btn-primary"
+                            invisible="state != 'hrm_approval' or not is_hrm_approver"/>
 
                     <button name="action_approve_md" string="Approve (MD)"
                             type="object" class="btn-primary"
@@ -100,7 +98,7 @@
 
                     <button name="action_reject" string="Reject"
                             type="object" class="btn-secondary"
-                            invisible="state not in ('dept_approval','hr_approval','md_approval')"/>
+                            invisible="state not in ('hr_approval','hrm_approval','md_approval')"/>
 
                     <button name="action_set_done" string="Mark Done"
                             type="object" class="btn-success"
@@ -108,7 +106,7 @@
 
                     <button name="action_cancel" string="Cancel"
                             type="object" class="btn-secondary"
-                            invisible="state not in ('draft','dept_approval','hr_approval','md_approval','approved')"/>
+                            invisible="state not in ('draft','hr_approval','hrm_approval','md_approval','approved')"/>
 
                     <button name="action_reset_to_draft" string="Reset to Draft"
                             type="object" class="btn-secondary"
@@ -116,7 +114,7 @@
 
                     <field name="state"
                            widget="statusbar"
-                           statusbar_visible="draft,dept_approval,hr_approval,md_approval,approved,rejected,done,cancelled"/>
+                           statusbar_visible="draft,hr_approval,hrm_approval,md_approval,approved,rejected,done,cancelled"/>
                 </header>
 
                 <sheet>
@@ -152,7 +150,6 @@
                             <field name="requested_by_id" readonly="1"/>
                             <field name="employee_id"/>
                             <field name="department_id" required="1"/>
-                            <field name="department_manager_user_id" readonly="1"/>
                             <field name="expected_start_date"/>
                         </group>
 
@@ -200,10 +197,6 @@
                         </page>
                         <page string="Approvals">
                             <group>
-                                <group string="Department">
-                                    <field name="department_approved_by_id" readonly="1"/>
-                                    <field name="department_approved_date" readonly="1"/>
-                                </group>
                                 <group string="HR Supervisor">
                                     <field name="hr_approved_by_id" readonly="1"/>
                                     <field name="hr_approved_date" readonly="1"/>

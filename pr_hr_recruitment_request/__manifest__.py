@@ -8,6 +8,7 @@
     'summary': 'HR Recruitment Request',
     'depends': ['hr_recruitment','hr','mail', 'de_hr_workspace'],
     'data': [
+        'security/recruitment_request_groups.xml',
         'security/ir.model.access.csv',
         'data/hr_recruitment_request_sequence.xml',
         'views/hr_recruitment_request_views.xml',
