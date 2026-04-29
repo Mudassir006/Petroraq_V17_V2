@@ -24,7 +24,7 @@
         # "views/about.xml",
         # "views/services.xml",
         # "views/projects.xml",
-        # "views/careers.xml",
+        "views/careers.xml",
         # "views/job_detail.xml",
         # "views/contact.xml",
     ],

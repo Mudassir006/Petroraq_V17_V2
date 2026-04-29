@@ -33,7 +33,7 @@
                     <div class="hero-overlay">
                         <h1 class="hero-title">YOUR LIFE TIME PARTNER FOR</h1>
                         <h2 class="hero-sub">ENGINEERING - PROCUREMENT - PROJECT MANAGEMENT</h2>
-                        <a class="hero-btn" href="/contactus">CONTACT US</a>
+                        <a class="hero-btn" href="/contact-us">CONTACT US</a>
                     </div>
 
                 </section>
@@ -255,7 +255,7 @@
                                     culture to deliver the best services required.
                                 </p>
 
-                                <a href="/contactus" class="left-btn">GET IN TOUCH</a>
+                                <a href="/contact-us" class="left-btn">GET IN TOUCH</a>
                             </div>
                         </div>
 

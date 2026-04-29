@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="careers_jobs" name="Careers Jobs">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5 prq-careers">
+                <div class="prq-banner">Careers</div>
+                <h5 class="mt-3">Open Positions</h5>
+                <div class="row mt-3">
+                    <t t-foreach="jobs" t-as="job">
+                        <div class="col-md-4 mb-3">
+                            <div class="card p-3 h-100 text-center">
+                                <h6 class="prq-job-title" t-esc="job.name"/>
+                                <a t-att-href="'/job/%s' % job.id" class="btn btn-sm prq-btn mt-3">View Details</a>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="careers_job_detail" name="Career Job Detail">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5 prq-careers-detail">
+                <div class="prq-banner">
+                    <h2 class="mb-0" t-esc="job.name"/>
+                    <div t-esc="job.address_id.city if job.address_id else ''"/>
+                </div>
+                <div class="mt-3">
+                    <a href="#apply-form" class="btn prq-btn">Apply Job</a>
+                </div>
+                <h3 class="mt-4">Job Description</h3>
+                <div t-field="job.description"/>
+
+                <h3 class="mt-4">Job Details</h3>
+                <table class="table table-borderless">
+                    <tr><td>Total Positions:</td><td t-esc="job.no_of_recruitment or 1"/></tr>
+                    <tr><td>Job Type:</td><td t-esc="job.contract_type_id.name if job.contract_type_id else 'Full Time'"/></tr>
+                    <tr><td>Department:</td><td t-esc="job.department_id.name if job.department_id else ''"/></tr>
+                </table>
+
+                <h4 id="apply-form" class="mt-4">JOB application form for candidate:</h4>
+                <form t-att-action="'/job/%s/apply' % job.id" method="post" enctype="multipart/form-data" class="row g-3 mt-1">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-md-6"><label>First name*</label><input class="form-control" name="partner_name" required="required"/></div>
+                    <div class="col-md-6"><label>Last name</label><input class="form-control" name="name"/></div>
+                    <div class="col-md-6"><label>Email*</label><input class="form-control" type="email" name="email_from" required="required"/></div>
+                    <div class="col-md-6"><label>Phone*</label><input class="form-control" name="partner_phone" required="required"/></div>
+                    <div class="col-md-6"><label>CNIC*</label><input class="form-control" name="cnic" required="required"/></div>
+                    <div class="col-md-6"><label>Alternate Phone</label><input class="form-control" name="partner_mobile"/></div>
+                    <div class="col-12"><label>Address*</label><textarea class="form-control" name="address" required="required"/></div>
+                    <div class="col-md-6"><label>Last employer</label><input class="form-control" name="last_employer"/></div>
+                    <div class="col-md-6"><label>Total years of experience</label><input class="form-control" name="experience"/></div>
+                    <div class="col-md-6"><label>Gender</label><input class="form-control" name="gender"/></div>
+                    <div class="col-md-6"><label>Location</label><input class="form-control" name="location"/></div>
+                    <div class="col-md-6"><label>Area</label><input class="form-control" name="area"/></div>
+                    <div class="col-md-6"><label>Skills</label><input class="form-control" name="skills"/></div>
+                    <div class="col-md-6"><label>Are you able to work from home?</label><input class="form-control" name="work_from_home"/></div>
+                    <div class="col-md-6"><label>Resume upload*</label><input class="form-control" type="file" name="resume" required="required"/></div>
+                    <div class="col-12"><button class="btn prq-btn" type="submit">Submit</button></div>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>
