@@ -1,6 +1,6 @@
 {
     'name': "Customer Inquiry Management",
-    'version': '1.1',
+    'version': '1.2',
     'summary': "Record customer inquiries and convert them into sale quotations. Simple intake form without product lines.",
     'description': """
     Customer Inquiry Management Module

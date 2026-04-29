@@ -94,6 +94,22 @@
         </field>
     </record>
 
+    <record id="view_payment_term_inherit_petroraq_workflow" model="ir.ui.view">
+        <field name="name">account.payment.term.inherit.sale_worflow</field>
+        <field name="model">account.payment.term</field>
+        <field name="inherit_id" ref="account.view_payment_term_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="is_trading_term"/>
+                <field name="petroraq_selectable"/>
+            </xpath>
+
+        </field>
+
+
+    </record>
+
     <record id="view_order_form_petroraq_payment_terms" model="ir.ui.view">
         <field name="name">sale.order.form.petroraq.payment.terms</field>
         <field name="model">sale.order</field>
