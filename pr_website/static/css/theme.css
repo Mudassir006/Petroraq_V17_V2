@@ -14,6 +14,12 @@
     justify-content: space-between;
 }
 
+.petroraq-navbar {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
 /* LOGO */
 .petroraq-logo {
     height: 55px;
@@ -183,6 +189,10 @@
     background: #002b5c;
     padding: 20px;
     z-index: 9999;
+}
+
+.mobile-menu.active {
+    display: block;
 }
 
 .mobile-menu ul {

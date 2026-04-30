@@ -18,7 +18,7 @@
         # "views/assets.xml",          # CSS/JS
         "views/layout.xml",          # custom header/footer
         "views/footer.xml",
-        # "views/hero.xml",
+        "views/hero.xml",
         # "views/assets.xml",
         # "views/home.xml",
         # "views/about.xml",

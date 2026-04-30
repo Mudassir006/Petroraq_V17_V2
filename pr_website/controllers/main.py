@@ -23,7 +23,7 @@ class CareersController(http.Controller):
         if not job.exists() or not job.website_published:
             return request.not_found()
 
-        applicant = request.env['hr.applicant'].sudo().create({
+        applicant_vals = {
             'name': post.get('name') or post.get('partner_name') or 'Website Candidate',
             'partner_name': post.get('partner_name'),
             'email_from': post.get('email_from'),
@@ -31,8 +31,18 @@ class CareersController(http.Controller):
             'partner_mobile': post.get('partner_mobile'),
             'job_id': job.id,
             'linkedin_profile': post.get('linkedin_profile'),
+            'partner_location': post.get('partner_location'),
+            'will_relocate': post.get('will_relocate'),
+            'notice_period': post.get('notice_period'),
+            'legally_required': post.get('legally_required'),
+            'salary_expected': post.get('salary_expected'),
+            'description': (
+                f"Experience (years): {post.get('experience') or ''}\n"
+                f"Highest Qualification: {post.get('qualification') or ''}"
+            ),
+        }
 
-        })
+        applicant = request.env['hr.applicant'].sudo().create(applicant_vals)
 
         resume = post.get('resume')
         if resume and getattr(resume, 'filename', False):
