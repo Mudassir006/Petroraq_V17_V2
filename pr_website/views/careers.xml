@@ -160,7 +160,7 @@
                                 </div>
                             </div>
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fa fa-map-marker-alt"></i></div>
+                                <div class="prq-info-icon"><i class="fa fa-map-marker"></i></div>
                                 <div>
                                     <strong t-esc="job.address_id.city if job.address_id and job.address_id.city else 'Remote'"/>
                                     <div>Work Location</div>
@@ -246,7 +246,7 @@
                             <div class="prq-form-group prq-full-width">
                                 <label class="prq-form-label required">Resume Upload</label>
                                 <div class="prq-file-upload">
-                                    <div class="prq-file-icon"><i class="fa fa-file-upload"></i></div>
+                                    <div class="prq-file-icon"><i class="fa fa-upload"></i></div>
                                     <input class="prq-form-control prq-file-input" type="file" name="resume" accept=".pdf,.doc,.docx" required="required"/>
                                 </div>
                                 <small class="prq-file-help">PDF, DOC, DOCX (Max 5MB)</small>
