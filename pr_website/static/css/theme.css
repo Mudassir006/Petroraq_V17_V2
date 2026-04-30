@@ -1,11 +1,11 @@
 /* HEADER BASE */
 .petroraq-header {
-
-
-    position: absolute;
-    top: 20px;
+    position: sticky;
+    top: 0;
     width: 100%;
     z-index: 999;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .petroraq-navbar {
@@ -33,7 +33,7 @@
 }
 
 .nav-link {
-    color: white;
+    color: #122AA0;
     font-weight: 600;
     padding: 10px 15px;
     text-transform: uppercase;
@@ -204,7 +204,7 @@
 }
 
 .mobile-menu ul li a {
-    color: white;
+    color: #122AA0;
     font-size: 18px;
     text-transform: uppercase;
     font-weight: 600;
@@ -238,7 +238,7 @@
 /* FOOTER STYLE */
 .petroraq-footer {
     background-color: #1D2940;
-    color: white;
+    color: #122AA0;
     padding-top: 50px;
 }
 
@@ -718,7 +718,7 @@
     text-align: center;
     width: 100%;
     max-width: 420px;
-    color: white;
+    color: #122AA0;
 }
 
 
@@ -884,7 +884,7 @@
     width: 40%;
     padding: 50px;
     border-radius: 4px;
-    color: white;
+    color: #122AA0;
 }
 
 .pr-quote-form h2 {
@@ -1411,3 +1411,14 @@
 .prq-particle{position:absolute;width:6px;height:6px;border-radius:50%;animation:prqBurst 2.2s ease-out forwards;box-shadow:0 0 10px currentColor;}
 @keyframes prqBurst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
 @keyframes prqBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+
+.prq-404-code {animation: prq404Pulse 2.5s ease-in-out infinite;}
+.prq-404-rocket {animation: prq404Rocket 2s ease-in-out infinite;}
+.prq-404-float{position:absolute;color:#FDB514;opacity:.7;font-size:24px;animation:prq404Float 10s linear infinite;}
+.prq-404-float1{top:18%;left:12%;}
+.prq-404-float2{top:30%;right:14%;animation-delay:2s;}
+.prq-404-float3{bottom:18%;left:20%;animation-delay:4s;}
+@keyframes prq404Float{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(180deg)}100%{transform:translateY(0) rotate(360deg)}}
+@keyframes prq404Pulse{0%,100%{text-shadow:0 0 0 rgba(253,181,20,.0)}50%{text-shadow:0 0 24px rgba(253,181,20,.6)}}
+@keyframes prq404Rocket{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
