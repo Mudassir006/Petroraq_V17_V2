@@ -104,13 +104,7 @@
                         <button class="btn prq-btn" type="submit">Submit</button>
                     </div>
                 </form>
-            </div>
-        </t>
-    </template>
-
-    <template id="careers_jobs_location_autocomplete_assets" inherit_id="website.layout" name="Careers Location Autocomplete Script">
-        <xpath expr="//body" position="inside">
-            <script type="text/javascript">
+                <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', () =&gt; {
                     const input = document.querySelector('input[name="partner_location"]');
                     const list = document.getElementById('job-location-suggestions');
@@ -144,7 +138,10 @@
                     });
                 });
             </script>
-        </xpath>
+            </div>
+        </t>
     </template>
+
+    
 
 </odoo>
