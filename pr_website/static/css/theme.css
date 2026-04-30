@@ -1233,3 +1233,30 @@
         max-height: 44px;
     }
 }
+
+.prq-location-suggestions {
+    position: relative;
+    z-index: 20;
+    background: #fff;
+    border: 1px solid #d8d8d8;
+    border-top: 0;
+    border-radius: 0 0 6px 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.prq-suggestion-item {
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 0;
+    border-bottom: 1px solid #efefef;
+    padding: 10px 12px;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.prq-suggestion-item:hover {
+    background: #f8fafc;
+}

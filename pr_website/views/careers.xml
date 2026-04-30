@@ -51,8 +51,8 @@
                     </div>
                     <div class="col-md-6">
                         <label>Location*</label>
-                        <input class="form-control" name="partner_location" required="required" list="job-location-suggestions" autocomplete="off"/>
-                        <datalist id="job-location-suggestions"/>
+                        <input class="form-control" name="partner_location" required="required" autocomplete="off"/>
+                        <div id="job-location-suggestions" class="prq-location-suggestions"></div>
                     </div>
                     <div class="col-md-6">
                         <label>Total years of experience*</label>
@@ -111,6 +111,17 @@
                     if (!input || !list) return;
 
                     let timer = null;
+
+                    list.addEventListener('click', (ev) =&gt; {
+                        const target = ev.target.closest('.prq-suggestion-item');
+                        if (!target) return;
+                        input.value = target.dataset.value || target.textContent || '';
+                        list.innerHTML = '';
+                    });
+
+                    input.addEventListener('blur', () =&gt; {
+                        window.setTimeout(() =&gt; { list.innerHTML = ''; }, 150);
+                    });
                     input.addEventListener('input', () =&gt; {
                         const term = input.value.trim();
                         window.clearTimeout(timer);
@@ -129,7 +140,7 @@
                                 const data = await res.json();
                                 const suggestions = data.result || [];
                                 list.innerHTML = suggestions
-                                    .map((item) =&gt; `&lt;option value="${item.replace(/"/g, '&quot;')}"&gt;&lt;/option&gt;`)
+                                    .map((item) =&gt; `&lt;button type="button" class="prq-suggestion-item" data-value="${item.replace(/"/g, '&quot;')}"&gt;${item}&lt;/button&gt;`)
                                     .join('');
                             } catch (error) {
                                 list.innerHTML = '';

@@ -77,13 +77,24 @@ class CareersController(http.Controller):
         if len(query) < 2:
             return []
 
-        endpoint = f"https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&q={quote_plus(query)}"
+        endpoint = (
+            "https://geocoding-api.open-meteo.com/v1/search"
+            f"?name={quote_plus(query)}&count=8&language=en&format=json"
+        )
         req = Request(endpoint, headers={'User-Agent': 'Petroraq-Odoo/1.0 (careers autocomplete)'})
         try:
-            with urlopen(req, timeout=3) as response:
+            with urlopen(req, timeout=4) as response:
                 payload = json.loads(response.read().decode('utf-8'))
         except Exception as exc:
             _logger.warning('Location suggestion lookup failed: %s', exc)
             return []
 
-        return [item.get('display_name') for item in payload if item.get('display_name')]
+        suggestions = []
+        for item in payload.get('results', []):
+            name = item.get('name')
+            admin = item.get('admin1')
+            country = item.get('country')
+            parts = [part for part in [name, admin, country] if part]
+            if parts:
+                suggestions.append(', '.join(parts))
+        return suggestions
