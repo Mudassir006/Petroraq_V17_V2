@@ -60,7 +60,12 @@
                     </div>
                     <div class="col-md-6">
                         <label>Highest Qualification*</label>
-                        <input class="form-control" name="qualification" required="required"/>
+                        <select class="form-select" name="type_id" required="required">
+                            <option value="">Select qualification</option>
+                            <t t-foreach="degrees" t-as="degree">
+                                <option t-att-value="degree.id" t-esc="degree.name"/>
+                            </t>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <label>Expected Salary*</label>
@@ -76,12 +81,20 @@
                     </div>
                     <div class="col-md-6">
                         <label>Will you able to relocate for this position?*</label>
-                        <input class="form-control" name="will_relocate"/>
+                        <select class="form-select" name="will_relocate" required="required">
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
                     </div>
 
                     <div class="col-md-6">
                         <label>Are you legally authorized to work in KSA?*</label>
-                        <input class="form-control" name="legally_required"/>
+                        <select class="form-select" name="legally_required" required="required">
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
                     </div>
                     <div class="col-md-12">
                         <label>Resume upload*</label>

@@ -22,7 +22,8 @@ class CareersController(http.Controller):
         job = request.env['hr.job'].sudo().browse(job_id)
         if not job.exists() or not job.website_published:
             return request.not_found()
-        return request.render('pr_website.careers_job_detail', {'job': job})
+        degrees = request.env['hr.recruitment.degree'].sudo().search([], order='name')
+        return request.render('pr_website.careers_job_detail', {'job': job, 'degrees': degrees})
 
     @http.route('/job/<int:job_id>/apply', type='http', auth='public', website=True, methods=['POST'], csrf=True)
     def job_apply(self, job_id, **post):
@@ -43,9 +44,10 @@ class CareersController(http.Controller):
             'notice_period': post.get('notice_period'),
             'legally_required': post.get('legally_required'),
             'salary_expected': post.get('salary_expected'),
+            'type_id': int(post['type_id']) if post.get('type_id') and post.get('type_id').isdigit() else False,
             'description': (
                 f"Experience (years): {post.get('experience') or ''}\n"
-                f"Highest Qualification: {post.get('qualification') or ''}"
+                f"Highest Qualification ID: {post.get('type_id') or ''}"
             ),
         }
 
