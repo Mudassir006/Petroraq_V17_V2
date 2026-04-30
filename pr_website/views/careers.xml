@@ -135,7 +135,7 @@
                                 const data = await res.json();
                                 const suggestions = data.result || [];
                                 list.innerHTML = suggestions
-                                    .map((item) =&gt; `<option value="${item.replace(/"/g, '&quot;')}"></option>`)
+                                    .map((item) =&gt; `&lt;option value="${item.replace(/"/g, '&quot;')}"&gt;&lt;/option&gt;`)
                                     .join('');
                             } catch (error) {
                                 list.innerHTML = '';
