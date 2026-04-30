@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="petroraq_404" inherit_id="website.404" name="Petroraq 404 Override">
+    <template id="petroraq_404" inherit_id="http_routing.404" name="Petroraq 404 Override">
         <xpath expr="//div[@id='wrap']" position="replace">
             <div id="wrap" class="prq-404-page">
                 <div class="prq-404-bg"></div>
