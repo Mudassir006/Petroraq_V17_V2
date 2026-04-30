@@ -6,7 +6,6 @@
             <header id="petroraq_header" class="petroraq-header o_not_editable">
 
                 <nav class="petroraq-navbar">
-
                     <!-- LOGO -->
                     <div class="nav-left">
                         <a href="/">
@@ -19,19 +18,37 @@
                     <!-- DESKTOP MENU -->
                     <div class="nav-center">
                         <ul class="nav-menu">
-                            <li><a href="/" class="nav-link">HOME</a></li>
-                            <li><a href="/about-us" class="nav-link">ABOUT</a></li>
-                            <li><a href="/contact-us" class="nav-link">CONTACT US</a></li>
-                            <li><a href="/jobs" class="nav-link">CAREERS</a></li>
+                            <li>
+                                <a href="/" class="nav-link">HOME</a>
+                            </li>
+                            <li>
+                                <a href="/about-us" class="nav-link">ABOUT</a>
+                            </li>
+                            <li>
+                                <a href="/contact-us" class="nav-link">CONTACT US</a>
+                            </li>
+                            <li>
+                                <a href="/jobs" class="nav-link">CAREERS</a>
+                            </li>
 
                             <li class="dropdown">
                                 <a href="#" class="nav-link dropdown-toggle">SERVICES</a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="/services/mechanical">Mechanical Services</a></li>
-                                    <li><a href="/services/electrical">Electrical Services</a></li>
-                                    <li><a href="/services/hvac">HVAC</a></li>
-                                    <li><a href="/services/procurement">Procurement</a></li>
-                                    <li><a href="/services/construction">Construction</a></li>
+                                    <li>
+                                        <a href="/services/mechanical">Mechanical Services</a>
+                                    </li>
+                                    <li>
+                                        <a href="/services/electrical">Electrical Services</a>
+                                    </li>
+                                    <li>
+                                        <a href="/services/hvac">HVAC</a>
+                                    </li>
+                                    <li>
+                                        <a href="/services/procurement">Procurement</a>
+                                    </li>
+                                    <li>
+                                        <a href="/services/construction">Construction</a>
+                                    </li>
                                 </ul>
                             </li>
                         </ul>
@@ -49,58 +66,517 @@
                         <span></span>
                         <span></span>
                     </button>
-
                 </nav>
 
                 <!-- MOBILE MENU -->
                 <div class="mobile-menu">
                     <ul>
-                        <li><a href="/">HOME</a></li>
-                        <li><a href="/about-us">ABOUT</a></li>
-                        <li><a href="/contact-us">CONTACT US</a></li>
-                        <li><a href="/jobs">CAREERS</a></li>
+                        <li>
+                            <a href="/">HOME</a>
+                        </li>
+                        <li>
+                            <a href="/about-us">ABOUT</a>
+                        </li>
+                        <li>
+                            <a href="/contact-us">CONTACT US</a>
+                        </li>
+                        <li>
+                            <a href="/jobs">CAREERS</a>
+                        </li>
 
                         <li class="mobile-dropdown">
                             <a href="#">SERVICES</a>
                             <ul>
-                                <li><a href="/services/mechanical">Mechanical Services</a></li>
-                                <li><a href="/services/electrical">Electrical Services</a></li>
-                                <li><a href="/services/hvac">HVAC</a></li>
-                                <li><a href="/services/procurement">Procurement</a></li>
-                                <li><a href="/services/construction">Construction</a></li>
+                                <li>
+                                    <a href="/services/mechanical">Mechanical Services</a>
+                                </li>
+                                <li>
+                                    <a href="/services/electrical">Electrical Services</a>
+                                </li>
+                                <li>
+                                    <a href="/services/hvac">HVAC</a>
+                                </li>
+                                <li>
+                                    <a href="/services/procurement">Procurement</a>
+                                </li>
+                                <li>
+                                    <a href="/services/construction">Construction</a>
+                                </li>
                             </ul>
                         </li>
 
-                        <li><a href="/web/login" class="mobile-signin">SIGN IN</a></li>
-                        <li><a href="/contact-us" class="mobile-quote">GET A QUOTE</a></li>
+                        <li>
+                            <a href="/web/login" class="mobile-signin">SIGN IN</a>
+                        </li>
+                        <li>
+                            <a href="/contact-us" class="mobile-quote">GET A QUOTE</a>
+                        </li>
                     </ul>
                 </div>
 
             </header>
         </xpath>
 
+        <!-- ADD STYLES -->
+        <xpath expr="//head" position="inside">
+            <style>
+                :root {
+                --primary-gold: #FFC03D;
+                --primary-navy: #17326F;
+                --white: #FFFFFF;
+                --gold-light: #FFD872;
+                --navy-dark: #0F224F;
+                --gold-glow: rgba(255, 192, 61, 0.6);
+                --navy-glow: rgba(23, 50, 111, 0.4);
+                }
+
+                /* NAVBAR */
+                .petroraq-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                backdrop-filter: blur(20px);
+                background: rgba(23, 50, 111, 0.95);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .petroraq-navbar {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 1rem 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                position: relative;
+                }
+
+                /* LOGO */
+                .petroraq-logo {
+                height: 50px;
+                width: auto;
+                transition: all 0.3s ease;
+                filter: drop-shadow(0 4px 12px rgba(255, 192, 61, 0.3));
+                }
+
+                .petroraq-logo:hover {
+                transform: scale(1.05);
+                filter: drop-shadow(0 6px 20px var(--gold-glow));
+                }
+
+                /* NAV CENTER */
+                .nav-center {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                }
+
+                .nav-menu {
+                display: flex;
+                list-style: none;
+                gap: 2.5rem;
+                margin: 0;
+                padding: 0;
+                align-items: center;
+                }
+
+                .nav-link {
+                color: var(--white);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 1rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                position: relative;
+                transition: all 0.3s ease;
+                padding: 0.5rem 0;
+                }
+
+                .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: linear-gradient(90deg, var(--primary-gold), var(--gold-light));
+                transition: width 0.3s ease;
+                }
+
+                .nav-link:hover::after,
+                .nav-link.active::after {
+                width: 100%;
+                }
+
+                .nav-link:hover {
+                color: var(--primary-gold);
+                text-shadow: 0 0 10px var(--gold-glow);
+                }
+
+                /* DROPDOWN */
+                .dropdown {
+                position: relative;
+                }
+
+                .dropdown-toggle {
+                cursor: pointer;
+                }
+
+                .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(23, 50, 111, 0.98);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 20px;
+                list-style: none;
+                padding: 1.5rem 0;
+                margin: 1rem 0 0 0;
+                min-width: 250px;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateX(-50%) translateY(-10px);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 20px 60px rgba(23, 50, 111, 0.5);
+                }
+
+                .dropdown:hover .dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(-50%) translateY(0);
+                }
+
+                .dropdown-menu li {
+                padding: 0;
+                }
+
+                .dropdown-menu a {
+                display: block;
+                padding: 0.8rem 2rem;
+                color: var(--white);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+                border-radius: 10px;
+                margin: 0.2rem 1rem;
+                }
+
+                .dropdown-menu a:hover {
+                background: rgba(255, 192, 61, 0.2);
+                color: var(--primary-gold);
+                transform: translateX(5px);
+                text-shadow: 0 0 10px var(--gold-glow);
+                }
+
+                /* BUTTONS */
+                .nav-right {
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+                }
+
+                .btn-signin,
+                .btn-quote {
+                padding: 0.8rem 2rem;
+                border-radius: 50px;
+                font-weight: 600;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.9rem;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+                }
+
+                .btn-signin {
+                color: var(--white);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                background: transparent;
+                }
+
+                .btn-signin:hover {
+                border-color: var(--primary-gold);
+                color: var(--primary-gold);
+                box-shadow: 0 8px 25px var(--gold-glow);
+                transform: translateY(-2px);
+                }
+
+                .btn-quote {
+                background: linear-gradient(45deg, var(--primary-gold), var(--gold-light));
+                color: var(--primary-navy);
+                box-shadow: 0 8px 25px var(--gold-glow);
+                }
+
+                .btn-quote:hover {
+                transform: translateY(-3px) scale(1.05);
+                box-shadow: 0 15px 40px var(--gold-glow);
+                }
+
+                /* HAMBURGER */
+                .nav-mobile-toggle {
+                display: none;
+                flex-direction: column;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 0.5rem;
+                gap: 4px;
+                z-index: 1001;
+                }
+
+                .nav-mobile-toggle span {
+                width: 28px;
+                height: 3px;
+                background: var(--white);
+                border-radius: 3px;
+                transition: all 0.3s ease;
+                transform-origin: center;
+                }
+
+                .nav-mobile-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(6px, 6px);
+                }
+
+                .nav-mobile-toggle.active span:nth-child(2) {
+                opacity: 0;
+                }
+
+                .nav-mobile-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(6px, -5px);
+                }
+
+                /* MOBILE MENU */
+                .mobile-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 100%;
+                max-width: 350px;
+                height: 100vh;
+                background: linear-gradient(135deg, var(--primary-navy), var(--navy-dark));
+                backdrop-filter: blur(20px);
+                transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 1000;
+                padding: 6rem 2rem 2rem;
+                overflow-y: auto;
+                }
+
+                .mobile-menu.active {
+                right: 0;
+                }
+
+                .mobile-menu ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                }
+
+                .mobile-menu li {
+                margin-bottom: 1rem;
+                }
+
+                .mobile-menu a {
+                color: var(--white);
+                text-decoration: none;
+                font-size: 1.3rem;
+                font-weight: 500;
+                display: block;
+                padding: 1rem 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                transition: all 0.3s ease;
+                }
+
+                .mobile-menu a:hover {
+                color: var(--primary-gold);
+                text-shadow: 0 0 15px var(--gold-glow);
+                padding-left: 1rem;
+                }
+
+                .mobile-dropdown {
+                position: relative;
+                }
+
+                .mobile-dropdown ul {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s ease;
+                margin-left: 1rem;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 15px;
+                padding: 0;
+                }
+
+                .mobile-dropdown.active ul {
+                max-height: 500px;
+                padding: 1rem;
+                }
+
+                .mobile-dropdown ul li {
+                margin: 0.5rem 0;
+                border-bottom: none;
+                }
+
+                .mobile-dropdown ul a {
+                font-size: 1.1rem;
+                padding: 0.7rem 0;
+                }
+
+                .mobile-signin,
+                .mobile-quote {
+                border-radius: 50px !important;
+                padding: 1.2rem !important;
+                text-align: center;
+                margin-top: 1rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                }
+
+                .mobile-signin {
+                border: 2px solid var(--primary-gold);
+                background: transparent;
+                }
+
+                .mobile-quote {
+                background: linear-gradient(45deg, var(--primary-gold), var(--gold-light));
+                color: var(--primary-navy) !important;
+                box-shadow: 0 10px 30px var(--gold-glow);
+                }
+
+                /* SCROLL EFFECT */
+                body.scrolled .petroraq-header {
+                background: rgba(23, 50, 111, 0.98);
+                box-shadow: 0 10px 40px rgba(23, 50, 111, 0.5);
+                padding: 0.5rem 2rem;
+                }
+
+                body.scrolled .petroraq-logo {
+                height: 45px;
+                }
+
+                /* RESPONSIVE */
+                @media (max-width: 1024px) {
+                .nav-center {
+                display: none;
+                }
+
+                .nav-mobile-toggle {
+                display: flex;
+                }
+
+                .nav-right {
+                gap: 0.5rem;
+                }
+
+                .btn-signin,
+                .btn-quote {
+                padding: 0.6rem 1.5rem;
+                font-size: 0.85rem;
+                }
+                }
+
+                @media (max-width: 768px) {
+                .petroraq-navbar {
+                padding: 1rem;
+                }
+
+                .nav-right {
+                display: none;
+                }
+                }
+
+                /* ANIMATIONS */
+                @keyframes fadeInUp {
+                from {
+                opacity: 0;
+                transform: translateY(-20px);
+                }
+                to {
+                opacity: 1;
+                transform: translateY(0);
+                }
+                }
+
+                .nav-menu li {
+                animation: fadeInUp 0.6s ease-out forwards;
+                }
+
+                .nav-menu li:nth-child(1) { animation-delay: 0.1s; }
+                .nav-menu li:nth-child(2) { animation-delay: 0.2s; }
+                .nav-menu li:nth-child(3) { animation-delay: 0.3s; }
+                .nav-menu li:nth-child(4) { animation-delay: 0.4s; }
+                .nav-menu li:nth-child(5) { animation-delay: 0.5s; }
+            </style>
+        </xpath>
+
         <xpath expr="//body" position="inside">
             <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function () {
-                    const toggle = document.querySelector(".nav-mobile-toggle");
-                    const mobMenu = document.querySelector(".mobile-menu");
+                const toggle = document.querySelector(".nav-mobile-toggle");
+                const mobMenu = document.querySelector(".mobile-menu");
+                const header = document.querySelector(".petroraq-header");
 
-                    if (toggle &amp;&amp; mobMenu) {
-                        toggle.addEventListener("click", function () {
-                            mobMenu.classList.toggle("active");
-                            toggle.classList.toggle("active");
-                        });
-                    }
+                // Mobile menu toggle
+                if (toggle &amp;&amp; mobMenu) {
+                toggle.addEventListener("click", function () {
+                mobMenu.classList.toggle("active");
+                toggle.classList.toggle("active");
+                document.body.classList.toggle("menu-open");
+                });
+                }
 
-                    document.querySelectorAll(".mobile-dropdown > a").forEach(item => {
-                        item.addEventListener("click", function (e) {
-                            e.preventDefault();
-                            this.parentElement.classList.toggle("active");
-                        });
-                    })
+                // Mobile dropdowns
+                document.querySelectorAll(".mobile-dropdown &gt; a").forEach(item =&gt; {
+                item.addEventListener("click", function (e) {
+                e.preventDefault();
+                this.parentElement.classList.toggle("active");
+                });
+                });
+
+                // Close mobile menu on link click
+                document.querySelectorAll(".mobile-menu a").forEach(link =&gt; {
+                link.addEventListener("click", function() {
+                mobMenu.classList.remove("active");
+                toggle.classList.remove("active");
+                document.body.classList.remove("menu-open");
+                });
+                });
+
+                // Navbar scroll effect
+                let lastScroll = 0;
+                window.addEventListener("scroll", function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (scrollTop &gt; 50) {
+                document.body.classList.add("scrolled");
+                } else {
+                document.body.classList.remove("scrolled");
+                }
+
+                // Hide/show on scroll direction
+                if (scrollTop &gt; lastScroll &amp;&amp; scrollTop &gt; 100) {
+                header.style.transform = "translateY(-100%)";
+                } else {
+                header.style.transform = "translateY(0)";
+                }
+                lastScroll = scrollTop;
+                });
+
+                // Active link highlighting
+                const currentPath = window.location.pathname;
+                document.querySelectorAll(".nav-link, .mobile-menu a").forEach(link =&gt; {
+                if (link.getAttribute("href") === currentPath ||
+                link.closest("a")?.getAttribute("href") === currentPath) {
+                link.classList.add("active");
+                }
+                });
                 });
             </script>
         </xpath>
-
     </template>
 </odoo>
