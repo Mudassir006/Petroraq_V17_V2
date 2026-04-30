@@ -10,7 +10,7 @@
                         <div class="col-md-4 mb-3">
                             <div class="card p-3 h-100 text-center">
                                 <h5 class="prq-job-title" t-esc="job.name"/>
-                                <p t-esc="job.description.split('\n')[0]"/>
+                                <p t-esc="(job.description or '').split('\n')[0]"/>
                                 <a t-att-href="'/job/%s' % job.id" class="btn btn-md prq-btn mt-3">View Details</a>
                             </div>
                         </div>
@@ -51,7 +51,8 @@
                     </div>
                     <div class="col-md-6">
                         <label>Location*</label>
-                        <input class="form-control" name="partner_location" required="required"/>
+                        <input class="form-control" name="partner_location" required="required" autocomplete="off"/>
+                        <div id="job-location-suggestions" class="prq-location-suggestions"></div>
                     </div>
                     <div class="col-md-6">
                         <label>Total years of experience*</label>
@@ -59,7 +60,12 @@
                     </div>
                     <div class="col-md-6">
                         <label>Highest Qualification*</label>
-                        <input class="form-control" name="type_id" required="required"/>
+                        <select class="form-select" name="type_id" required="required">
+                            <option value="">Select qualification</option>
+                            <t t-foreach="degrees" t-as="degree">
+                                <option t-att-value="degree.id" t-esc="degree.name"/>
+                            </t>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <label>Expected Salary*</label>
@@ -75,12 +81,20 @@
                     </div>
                     <div class="col-md-6">
                         <label>Will you able to relocate for this position?*</label>
-                        <input class="form-control" name="will_relocate"/>
+                        <select class="form-select" name="will_relocate" required="required">
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
                     </div>
 
                     <div class="col-md-6">
                         <label>Are you legally authorized to work in KSA?*</label>
-                        <input class="form-control" name="legally_required"/>
+                        <select class="form-select" name="legally_required" required="required">
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
                     </div>
                     <div class="col-md-12">
                         <label>Resume upload*</label>
@@ -90,7 +104,104 @@
                         <button class="btn prq-btn" type="submit">Submit</button>
                     </div>
                 </form>
+                <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', () =&gt; {
+                    const input = document.querySelector('input[name="partner_location"]');
+                    const list = document.getElementById('job-location-suggestions');
+                    if (!input || !list) return;
+
+                    let timer = null;
+
+                    list.addEventListener('click', (ev) =&gt; {
+                        const target = ev.target.closest('.prq-suggestion-item');
+                        if (!target) return;
+                        input.value = target.dataset.value || target.textContent || '';
+                        list.innerHTML = '';
+                    });
+
+                    input.addEventListener('blur', () =&gt; {
+                        window.setTimeout(() =&gt; { list.innerHTML = ''; }, 150);
+                    });
+                    input.addEventListener('input', () =&gt; {
+                        const term = input.value.trim();
+                        window.clearTimeout(timer);
+                        if (term.length &lt; 2) {
+                            list.innerHTML = '';
+                            return;
+                        }
+
+                        timer = window.setTimeout(async () =&gt; {
+                            try {
+                                const res = await fetch('/jobs/location_suggest', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {term}, id: Date.now()})
+                                });
+                                const data = await res.json();
+                                const suggestions = data.result || [];
+                                list.innerHTML = suggestions
+                                    .map((item) =&gt; `&lt;button type="button" class="prq-suggestion-item" data-value="${item.replace(/"/g, '&quot;')}"&gt;${item}&lt;/button&gt;`)
+                                    .join('');
+                            } catch (error) {
+                                list.innerHTML = '';
+                            }
+                        }, 250);
+                    });
+                });
+            </script>
             </div>
         </t>
     </template>
+
+    
+
+
+
+    <template id="careers_thank_you" name="Careers Thank You">
+        <t t-call="website.layout">
+            <section class="prq-success-page">
+                <div class="prq-success-bg"></div>
+                <div class="particles" id="prqParticles"></div>
+                <div class="container prq-success-container">
+                    <div class="checkmark">✔</div>
+                    <h1 class="success-title">SUCCESS!</h1>
+                    <p class="success-message">Application Submitted</p>
+                    <div class="details">
+                        Thank you for applying! Your application has been successfully received and our team will review it within 3–5 business days.
+                        You will receive next-step communication if your profile matches the role.
+                    </div>
+                    <div class="buttons">
+                        <a href="/" class="primary-btn">Back to Home</a>
+                        <a href="mailto:hr@petroraq.com" class="secondary-btn">Contact HR</a>
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', () =&gt; {
+                        const particlesContainer = document.getElementById('prqParticles');
+                        if (!particlesContainer) return;
+
+                        const createParticles = () =&gt; {
+                            const colors = ['#FFC03D', '#FFD872', '#FFFFFF'];
+                            for (let i = 0; i &lt; 60; i++) {
+                                const p = document.createElement('div');
+                                const color = colors[Math.floor(Math.random() * colors.length)];
+                                p.className = 'prq-particle';
+                                p.style.background = color;
+                                p.style.left = `${40 + Math.random() * 20}%`;
+                                p.style.top = `${25 + Math.random() * 20}%`;
+                                p.style.setProperty('--dx', `${-120 + Math.random() * 240}px`);
+                                p.style.setProperty('--dy', `${-120 + Math.random() * 240}px`);
+                                particlesContainer.appendChild(p);
+                                setTimeout(() =&gt; p.remove(), 2200);
+                            }
+                        };
+
+                        createParticles();
+                        setInterval(createParticles, 3000);
+                    });
+                </script>
+            </section>
+        </t>
+    </template>
+
 </odoo>

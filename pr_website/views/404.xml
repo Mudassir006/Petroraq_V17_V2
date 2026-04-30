@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="petroraq_404" inherit_id="http_routing.404" name="Petroraq 404 Override">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="prq-404-page">
+                <span class="prq-404-float prq-404-float1">✦</span>
+                <span class="prq-404-float prq-404-float2">✧</span>
+                <span class="prq-404-float prq-404-float3">✦</span>
+                <div class="prq-404-bg"></div>
+                <div class="container prq-404-container">
+                    <div class="prq-404-rocket">🚀</div>
+                    <h1 class="prq-404-code">404</h1>
+                    <h2 class="prq-404-title">Oops! Page Not Found</h2>
+                    <p class="prq-404-subtext">This page has launched into the cosmos. Let’s get you back on track!</p>
+                    <a href="/" class="prq-404-home-btn">Back to Home</a>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

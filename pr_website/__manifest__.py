@@ -18,16 +18,18 @@
         # "views/assets.xml",          # CSS/JS
         "views/layout.xml",          # custom header/footer
         "views/footer.xml",
-        # "views/hero.xml",
+        "views/hero.xml",
         # "views/assets.xml",
         # "views/home.xml",
         # "views/about.xml",
         # "views/services.xml",
         # "views/projects.xml",
         # "views/careers.xml",
+        "views/404.xml",
         # "views/job_detail.xml",
         # "views/contact.xml",
         "views/careers.xml",
+        "views/404.xml",
     ],
 
     # QWeb templates (loaded globally)
