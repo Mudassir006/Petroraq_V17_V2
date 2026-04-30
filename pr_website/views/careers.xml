@@ -90,7 +90,8 @@
                     const searchBtn = document.querySelector('.prq-search-btn');
                     const jobCards = document.querySelectorAll('.prq-job-card');
 
-                    const observer = new IntersectionObserver((entries) =&gt; {
+                    document.getElementById('prqErrorClose')?.addEventListener('click', () => { document.getElementById('prqErrorPopup')?.remove(); });
+                const observer = new IntersectionObserver((entries) =&gt; {
                         entries.forEach((entry) =&gt; {
                             if (entry.isIntersecting) entry.target.style.animationPlayState = 'running';
                         });
@@ -123,6 +124,13 @@
             <section class="prq-job-detail-page">
                 <div class="prq-detail-bg-animation"></div>
                 <div class="prq-detail-container">
+                    <t t-if="error_message">
+                        <div class="prq-error-popup" id="prqErrorPopup">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span t-esc="error_message"/>
+                            <button type="button" class="prq-error-close" id="prqErrorClose">×</button>
+                        </div>
+                    </t>
                     <div class="prq-detail-header">
                         <a href="/careers" class="prq-back-btn">
                             <i class="fa fa-arrow-left"></i>
@@ -187,19 +195,19 @@
 
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Full Name</label>
-                                <input class="prq-form-control" name="partner_name" placeholder="Enter your full name" required="required"/>
+                                <input class="prq-form-control" name="partner_name" placeholder="Enter your full name" pattern="[A-Za-z][A-Za-z\s'\.-]{1,79}" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Email</label>
-                                <input class="prq-form-control" type="email" name="email_from" placeholder="your@email.com" required="required"/>
+                                <input class="prq-form-control" type="email" name="email_from" placeholder="your@email.com" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Phone</label>
-                                <input class="prq-form-control" name="partner_phone" placeholder="+966 5X XXX XXXX" required="required"/>
+                                <input class="prq-form-control" name="partner_phone" placeholder="+966 5X XXX XXXX" pattern="\+?[0-9][0-9\s().-]{7,19}" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Location</label>
-                                <input class="prq-form-control" name="partner_location" placeholder="Current city, country" required="required" autocomplete="off"/>
+                                <input class="prq-form-control" name="partner_location" placeholder="Current city, country" pattern="[A-Za-z0-9][A-Za-z0-9,\s'\.-]{1,99}" required="required" autocomplete="off"/>
                                 <div id="job-location-suggestions" class="prq-location-suggestions"></div>
                             </div>
                             <div class="prq-form-group">
@@ -225,7 +233,7 @@
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">LinkedIn Profile</label>
-                                <input class="prq-form-control" name="linkedin_profile" placeholder="https://linkedin.com/in/yourprofile" required="required"/>
+                                <input class="prq-form-control" name="linkedin_profile" placeholder="https://linkedin.com/in/yourprofile" pattern="https?://([a-z]{2,3}\.)?linkedin\.com/.*" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Will you relocate?</label>
@@ -262,6 +270,7 @@
             .prq-detail-bg-animation{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle at 20% 80%,rgba(255,192,61,.6) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.05) 0%,transparent 50%);animation:prqBgShift2 20s ease-in-out infinite}
             .prq-detail-container{max-width:1200px;margin:0 auto;padding:2rem;position:relative;z-index:2}.prq-detail-header{text-align:center;margin-bottom:4rem;animation:prqFadeInUp 1s ease-out}
             .prq-detail-header h1{font-family:'Orbitron',monospace;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;background:linear-gradient(45deg,#FFC03D,#FFD872,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;filter:drop-shadow(0 0 30px rgba(255,192,61,.6));animation:prqGradientShift2 3s ease-in-out infinite}
+            .prq-error-popup{display:flex;align-items:center;gap:.75rem;background:rgba(200,36,36,.2);border:1px solid rgba(255,120,120,.6);color:#fff;padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem;backdrop-filter:blur(10px)}.prq-error-popup i{color:#FFD872}.prq-error-close{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.4rem;cursor:pointer}
             .prq-back-btn{display:inline-flex;align-items:center;gap:.5rem;color:#fff;text-decoration:none;font-weight:500;margin-bottom:1rem;transition:.3s}.prq-back-btn:hover{color:#FFC03D;transform:translateX(-5px)}
             .prq-job-details-card,.prq-application-section{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);border-radius:25px;padding:3rem}
             .prq-job-details-card{margin-bottom:4rem;animation:prqSlideInUp2 .8s ease-out .2s both}.prq-application-section{animation:prqSlideInUp2 .8s ease-out .4s both}
