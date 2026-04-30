@@ -59,7 +59,6 @@ class HrPayslipRun(models.Model):
 
             batch_employee_list = []
             salary_rule_total_dict = defaultdict(float)
-            hidden_summary_codes = {"GOSI_EMP", "GOSI_COMP_DED"}
 
             for payslip in batch.slip_ids:
                 employee = payslip.employee_id
@@ -96,9 +95,9 @@ class HrPayslipRun(models.Model):
                         net_amount = total
                         total_net_amount += total
 
-                    # Aggregated salary rule totals (hide GOSI deduction rules from batch summary visibility)
+                    # Aggregated salary rule totals
                     line_code = line.code
-                    if total != 0 and line_code not in hidden_summary_codes:
+                    if total != 0 and line_code:
                         salary_rule_total_dict[rule.id] += total
 
                 employee_data.update({

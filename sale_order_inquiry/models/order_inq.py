@@ -50,7 +50,7 @@ class OrderInquiry(models.Model):
 
     rejection_reason = fields.Text(string="Rejection Reason", tracking=True)
     inquiry_type = fields.Selection([('construction', 'Project'), ('trading', 'Trading')], string="Inquiry Type",
-                                    default="trading", required=True)
+                                    default="construction", required=True)
     required_attachment_ids = fields.Many2many(
         "ir.attachment",
         "order_inq_required_attachment_rel",
@@ -160,6 +160,7 @@ class OrderInquiry(models.Model):
             'sale_order_ids': [(6, 0, [])],
             'state': 'pending',
             'name': 'New',
+            'inquiry_type': 'construction',
         })
         return super().copy(default)
 
@@ -287,6 +288,13 @@ class OrderInquiry(models.Model):
         self.state = 'accept'
 
     def write(self, vals):
+        if "inquiry_type" in vals and vals.get("inquiry_type") == "trading":
+            non_trading_records = self.filtered(lambda rec: rec.inquiry_type != "trading")
+            if non_trading_records:
+                raise UserError(
+                    _("Trading inquiry type is temporarily disabled for new selections.")
+                )
+
         res = super().write(vals)
 
         # if attachments changed, relink them
@@ -309,19 +317,23 @@ class OrderInquiry(models.Model):
                     return True
         return False
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('order.inq.sequence') or "New"
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("inquiry_type") == "trading":
+                raise UserError(
+                    _("Trading inquiry type is temporarily disabled for new selections.")
+                )
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('order.inq.sequence') or "New"
 
-        if not self._has_required_attachments(vals):
-            raise UserError(_("Please attach at least one file."))
+            if not self._has_required_attachments(vals):
+                raise UserError(_("Please attach at least one file."))
 
-        rec = super().create(vals)
+        records = super().create(vals_list)
 
-        # ✅ IMPORTANT: relink uploaded attachments to this new record
-        rec._relink_required_attachments()
-        return rec
+        records._relink_required_attachments()
+        return records
 
     def button_cancel(self):
         if self.state == 'pending':

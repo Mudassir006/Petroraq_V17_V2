@@ -1,21 +1,57 @@
 from odoo import models, api, SUPERUSER_ID, _
 from odoo.tools.translate import _
 from odoo.http import request
+
 import ast
+
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class ir_ui_view(models.Model):
     _inherit = 'ir.ui.view'
+
+    def _combine(self, hierarchy):
+        """Skip inherited views with invalid/non-string arch while preserving hierarchy shape."""
+        if not isinstance(hierarchy, dict):
+            return super()._combine(hierarchy)
+
+        sanitized_hierarchy = {parent_view: [] for parent_view in hierarchy}
+        for parent_view, inherited_views in hierarchy.items():
+            valid_children = []
+            for inherited_view in inherited_views:
+                if not getattr(inherited_view, '_name', None) == 'ir.ui.view':
+                    _logger.warning(
+                        "Skipping invalid inherited view object %r while combining view %r",
+                        inherited_view,
+                        parent_view,
+                    )
+                    continue
+                if isinstance(inherited_view.arch, str):
+                    valid_children.append(inherited_view)
+                    sanitized_hierarchy.setdefault(inherited_view, [])
+                else:
+                    _logger.warning(
+                        "Skipping invalid inherited view %s (id=%s) because arch is %s",
+                        inherited_view.xml_id or inherited_view.name,
+                        inherited_view.id,
+                        type(inherited_view.arch).__name__,
+                    )
+            sanitized_hierarchy[parent_view] = valid_children
+
+        return super()._combine(sanitized_hierarchy)
 
     def _postprocess_tag_field(self, node, name_manager, node_info):
         super()._postprocess_tag_field(node, name_manager, node_info)
         try:
             hide_field_obj = self.env['hide.field'].sudo()
             hide_fields = hide_field_obj.search(
-                        [('model_id.model', '=', name_manager.model._name), ('access_management_id.active', '=', True),
-                         ('access_management_id.user_ids', 'in', request.env.uid)])
-            
-            hide_fields -= hide_fields.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
+                [('model_id.model', '=', name_manager.model._name), ('access_management_id.active', '=', True),
+                 ('access_management_id.user_ids', 'in', request.env.uid)])
+
+            hide_fields -= hide_fields.filtered(lambda
+                                                    x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
 
             if node.tag == 'field' or node.tag == 'label':
                 for hide_field in hide_fields:
@@ -28,20 +64,21 @@ class ir_ui_view(models.Model):
                             if hide_field.external_link:
                                 options_dict = {}
                                 if 'widget' in node.attrib.keys():
-                                    if node.attrib['widget'] == 'product_configurator' or node.attrib['widget'] == 'many2one_avatar_user':
+                                    if node.attrib['widget'] == 'product_configurator' or node.attrib[
+                                        'widget'] == 'many2one_avatar_user':
                                         del node.attrib['widget']
-                                        
+
                                 if 'options' in node.attrib.keys():
                                     options_dict = ast.literal_eval(node.attrib['options'])
                                     options_dict.update({"no_edit": True, "no_create": True, "no_open": True})
                                     node.attrib['options'] = str(options_dict)
                                 else:
                                     # node.attrib.update({'can_create': 'false', 'can_write': 'false','no_open':'true'})
-                                    options_dict.update({'no_create': True, 'no_edit': True,'no_open': True})
+                                    options_dict.update({'no_create': True, 'no_edit': True, 'no_open': True})
                                     node.attrib['options'] = str(options_dict)
-                                    
+
                                 # node.attrib.update({'can_create': 'false', 'can_write': 'false','no_open':'true'})
-                                    
+
                             if hide_field.invisible:
                                 node_info['column_invisible'] = True
                                 node.set('column_invisible', 'True')
@@ -55,7 +92,7 @@ class ir_ui_view(models.Model):
                                 node_info['required'] = True
                                 node.set('required', '1')
 
-            
+
         except Exception:
             pass
 
@@ -70,8 +107,9 @@ class ir_ui_view(models.Model):
         hide_button_ids = hide_button_obj.sudo().search(
             [('model_id.model', '=', name_manager.model._name), ('access_management_id.active', '=', True),
              ('access_management_id.user_ids', 'in', request.env.uid)])
-        
-        hide_button_ids -= hide_button_ids.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
+
+        hide_button_ids -= hide_button_ids.filtered(lambda
+                                                        x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
         # Filtered with same env user and current model
         btn_store_model_nodes_ids = hide_button_ids.mapped('btn_store_model_nodes_ids')
         # translation_obj = self.env['ir.translation']
@@ -80,7 +118,7 @@ class ir_ui_view(models.Model):
                 if btn.attribute_name == node.get('name'):
                     hide = [btn]
                     break
-                    
+
         if hide:
             node.set('invisible', '1')
             if 'attrs' in node.attrib.keys() and node.attrib['attrs']:
@@ -100,8 +138,9 @@ class ir_ui_view(models.Model):
         hide_tab_ids = hide_tab_obj.sudo().search([('model_id.model', '=', name_manager.model._name),
                                                    ('access_management_id.active', '=', True),
                                                    ('access_management_id.user_ids', 'in', request.env.uid)])
-        
-        hide_tab_ids -= hide_tab_ids.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
+
+        hide_tab_ids -= hide_tab_ids.filtered(lambda
+                                                  x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
         page_store_model_nodes_ids = hide_tab_ids.mapped('page_store_model_nodes_ids')
         if page_store_model_nodes_ids:
 
@@ -116,7 +155,7 @@ class ir_ui_view(models.Model):
                 if attribute_string == node.get('string'):
                     hide = [tab]
                     break
-                    
+
         if hide:
             node.set('invisible', '1')
             if 'attrs' in node.attrib.keys() and node.attrib['attrs']:
@@ -137,16 +176,17 @@ class ir_ui_view(models.Model):
         hide_tab_ids = hide_tab_obj.sudo().search([('model_id.model', '=', name_manager.model._name),
                                                    ('access_management_id.active', '=', True),
                                                    ('access_management_id.user_ids', 'in', request.env.uid)])
-        
-        hide_tab_ids -= hide_tab_ids.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
+
+        hide_tab_ids -= hide_tab_ids.filtered(lambda
+                                                  x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
         link_store_model_nodes_ids = hide_tab_ids.mapped('link_store_model_nodes_ids')
         if link_store_model_nodes_ids:
             for link in link_store_model_nodes_ids:
-                
+
                 if _(link.attribute_name) == node.get('name'):
                     hide = [link]
                     break
-                      
+
         if hide:
             node.set('invisible', '1')
             if 'attrs' in node.attrib.keys() and node.attrib['attrs']:
@@ -164,10 +204,11 @@ class ir_ui_view(models.Model):
 
         hide_button_obj = self.env['hide.view.nodes']
         setting_tabs = hide_button_obj.sudo().search([('model_id.model', '=', name_manager.model._name),
-                                                       ('access_management_id.active', '=', True),
-                                                       ('access_management_id.user_ids', 'in', request.env.uid)])
-        
-        setting_tabs -= setting_tabs.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
+                                                      ('access_management_id.active', '=', True),
+                                                      ('access_management_id.user_ids', 'in', request.env.uid)])
+
+        setting_tabs -= setting_tabs.filtered(lambda
+                                                  x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
 
         if name_manager.model._name == 'res.config.settings' and node.tag == 'app' and node.get('string'):
             for setting_tab in setting_tabs.mapped('page_store_model_nodes_ids'):
@@ -196,8 +237,9 @@ class ir_ui_view(models.Model):
             hide_filter_group_obj = self.env['hide.filters.groups'].sudo().search(
                 [('model_id.model', '=', name_manager.model._name), ('access_management_id.active', '=', True),
                  ('access_management_id.user_ids', 'in', request.env.uid)])
-            
-            hide_filter_group_obj -= hide_filter_group_obj.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
+
+            hide_filter_group_obj -= hide_filter_group_obj.filtered(lambda
+                                                                        x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
 
             for hide_field_obj in hide_filter_group_obj:
                 for hide_filter in hide_field_obj.filters_store_model_nodes_ids.mapped('attribute_name'):
@@ -210,18 +252,19 @@ class ir_ui_view(models.Model):
                         node_info['invisible'] = True
                         node.set('invisible', '1')
         return None
-        
+
     def _postprocess_tag_label(self, node, name_manager, node_info):
         postprocessor = getattr(super(ir_ui_view, self), '_postprocess_tag_label', False)
         hide_field_obj = self.env['hide.field'].sudo()
         if postprocessor:
             super(ir_ui_view, self)._postprocess_tag_label(node, name_manager, node_info)
             if node.get('for'):
-                hide_lable = hide_field_obj.search([('model_id.model','=',name_manager.model._name),
-                                                    ('access_management_id.active','=',True),
-                                                    ('access_management_id.user_ids','in',request.env.uid)])
-                
-                hide_lable -= hide_lable.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
+                hide_lable = hide_field_obj.search([('model_id.model', '=', name_manager.model._name),
+                                                    ('access_management_id.active', '=', True),
+                                                    ('access_management_id.user_ids', 'in', request.env.uid)])
+
+                hide_lable -= hide_lable.filtered(lambda
+                                                      x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
 
                 for hide_field in hide_lable:
                     for field_id in hide_field.field_id:
@@ -240,14 +283,14 @@ class ir_ui_view(models.Model):
     #     access_recs = self.env['access.domain.ah'].sudo().search(
     #         [('access_management_id.user_ids', 'in', self.env.user.id), ('access_management_id.active', '=', True),
     #          ('model_id.model', '=', self._name)])
-        
+
     #     access_recs -= access_recs.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
 
     #     access_model_recs = self.env['remove.action'].sudo().search(
     #         [('access_management_id.user_ids', 'in', self.env.user.id),
     #          ('access_management_id.active', '=', True),
     #          ('model_id.model', '=', self._name)])
-        
+
     #     access_model_recs -= access_model_recs.filtered(lambda x: x.access_management_id.is_apply_on_without_company == False and self.env.company.id not in x.access_management_id.company_ids.ids)
 
     #     if view_type == 'form':
@@ -268,7 +311,7 @@ class ir_ui_view(models.Model):
     #                                                 ('model_id.model', '=', self._name),
     #                                                 ('hide_chatter', '=', True)],
     #                                                limit=1)
-                
+
     #             if hide_chatter_id and hide_chatter_id.access_management_id.is_apply_on_without_company:
     #                 for chatter_path in arch.xpath("//div[@class='oe_chatter']"):
     #                     chatter_path.getparent().remove(chatter_path)
@@ -282,7 +325,6 @@ class ir_ui_view(models.Model):
     #                                                         ('active', '=', True),
     #                                                         ('user_ids', 'in', self.env.user.id),
     #                                                         ('hide_import', '=', True)], limit=1)
-            
 
     #         if access_model_recs.filtered(lambda x: x.restrict_import) or restrict_import and restrict_import.is_apply_on_without_company:
     #             doc = arch
@@ -355,7 +397,6 @@ class ir_ui_view(models.Model):
     #                 arch.attrib.update({'create': create, 'delete': delete, 'edit': edit})
 
     #     return arch, view
-            
 
     # @api.model
     # def _get_view(self, view_id=None, view_type='form', **options):

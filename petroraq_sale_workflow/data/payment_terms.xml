@@ -34,7 +34,6 @@
         <record id="payment_term_trading_credit" model="account.payment.term">
             <field name="name">Credit</field>
             <field name="petroraq_selectable">True</field>
-            <field name="is_trading_term">True</field>
         </record>
 
     </data>

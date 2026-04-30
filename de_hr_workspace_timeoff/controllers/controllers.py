@@ -4,6 +4,7 @@ from odoo import http, fields
 from odoo.http import request
 from odoo.exceptions import ValidationError, UserError
 from datetime import datetime
+from werkzeug.exceptions import NotFound
 import base64
 
 
@@ -11,16 +12,20 @@ class LeaveRequestTemplate(http.Controller):
 
     @http.route('/leave_request', auth='user', type='http')
     def display_leave_request_form(self, **kw):
-        current_user = request.env.user
-        current_employee_id = request.env["hr.employee"].sudo().search([("user_id", "=", current_user.id)], limit=1)
-        email = current_employee_id.work_email
-        return http.request.render('de_hr_workspace_timeoff.leave_request_template', {
-            "current_employee_id": current_employee_id,
-            "employee_email": email,
-            "company_name": current_employee_id.company_id.name,
-            "form_values": {},
-            "error_message": False,
-        })
+
+        if request.env.user.has_group('base.group_user'):
+            current_user = request.env.user
+            current_employee_id = request.env["hr.employee"].sudo().search([("user_id", "=", current_user.id)], limit=1)
+            email = current_employee_id.work_email
+            return http.request.render('de_hr_workspace_timeoff.leave_request_template', {
+                "current_employee_id": current_employee_id,
+                "employee_email": email,
+                "company_name": current_employee_id.company_id.name,
+                "form_values": {},
+                "error_message": False,
+            })
+        else:
+            return NotFound()
 
     @http.route('/leave_request/create', type='http', auth="user")
     def leave_created(self, **kw):
@@ -116,15 +121,15 @@ class LeaveRequestTemplate(http.Controller):
 
                     # region [Leaves]
                     leave_ids = request.env["hr.leave"].sudo().search([("employee_id", "=", current_employee_id.id),
-                                                                    ("holiday_status_id", "=", leave_type.id),
-                                                                    ("state", "=", "validate")])
+                                                                       ("holiday_status_id", "=", leave_type.id),
+                                                                       ("state", "=", "validate")])
                     if leave_ids:
                         leave_days = round(sum(leave_ids.mapped("number_of_days")), 2)
                     else:
                         leave_days = 0
                     # endregion [Leaves]
                     # if allocation_days > 0 or leave_days > 0:
-                    if allocation_days > 0 :
+                    if allocation_days > 0:
                         summary.append({
                             "leave_name": leave_type.name,
                             "allocation_days": allocation_days,
@@ -158,7 +163,8 @@ class LeaveRequestTemplate(http.Controller):
                 'to': l.date_to.strftime('%d/%m/%Y'),
                 'days': (l.date_to - l.date_from).days + 1,
                 'status': l.state,
-            } for l in request.env["pr.hr.leave.request"].sudo().search([("employee_id", "=", current_employee_id.id), ('state', 'in', ['draft', 'manager_approve', 'hr_supervisor'])], limit=5)]
+            } for l in request.env["pr.hr.leave.request"].sudo().search([("employee_id", "=", current_employee_id.id), (
+                'state', 'in', ['draft', 'manager_approve', 'hr_supervisor'])], limit=5)]
             # } for l in request.env["hr.leave"].sudo().search([('state', 'in', ['draft', 'confirm', 'validate1'])], limit=5)]
 
             chart_data = {

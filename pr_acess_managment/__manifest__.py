@@ -1,6 +1,6 @@
 {
     "name": "PR Access Management",
-    "version": "17.0.1.0.0",
+    "version": "17.0.1.0.1",
     "summary": "Unified access management and advanced domain widget tools.",
     "category": "Tools",
     "author": "Mudassir",

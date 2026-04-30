@@ -48,10 +48,9 @@ class PRWorkOrder(models.Model):
             if rec.state == "draft":
                 continue
 
-            rec._remove_linked_expense_bucket()
-
             rec.write({"state": "draft"})
             rec._reset_approval_metadata()
+            rec._sync_work_order_budget_state("draft")
             rec.message_post(body=_("Work Order has been reset to draft."))
 
     def _remove_linked_expense_bucket(self):
@@ -69,6 +68,48 @@ class PRWorkOrder(models.Model):
                 )
             rec.expense_bucket_id.sudo().unlink()
             rec.expense_bucket_id = False
+
+    def _sync_work_order_budget_state(self, target):
+        for rec in self:
+            bucket = rec.expense_bucket_id.sudo()
+            if not bucket:
+                continue
+
+            if target == "draft":
+                bucket.write({"state": "draft", "approval_state": "draft"})
+                continue
+
+            if target == "pm_approved":
+                if bucket.state == "draft":
+                    bucket.write({"state": "confirm"})
+                bucket.write({"approval_state": "accounts_approval"})
+                continue
+
+            if target == "accounts_approved":
+                if bucket.state == "draft":
+                    bucket.write({"state": "confirm"})
+                bucket.write({"approval_state": "md_approval"})
+                continue
+
+            if target == "md_approved":
+                if bucket.state == "draft":
+                    bucket.write({"state": "confirm"})
+                bucket.write({"approval_state": "approved"})
+                if bucket.state not in ("validate", "done"):
+                    bucket.write({"state": "validate"})
+                bucket._sync_cost_center_budget_allowance()
+                continue
+
+            if target == "rejected":
+                bucket.write({"approval_state": "rejected"})
+                if bucket.state != "cancel":
+                    bucket.write({"state": "cancel"})
+                continue
+
+            if target == "cancel":
+                bucket.write({"approval_state": "rejected"})
+                if bucket.state != "cancel":
+                    bucket.write({"state": "cancel"})
 
     name = fields.Char(
         string="Work Order",
@@ -286,8 +327,8 @@ class PRWorkOrder(models.Model):
     @api.constrains("drawings_attachment_ids", "scope_attachment_ids", "boq_attachment_ids")
     def _check_required_attachments(self):
         for rec in self:
-            if not rec.drawings_attachment_ids:
-                raise ValidationError(_("Please upload at least one Drawing attachment."))
+            # if not rec.drawings_attachment_ids:
+            #     raise ValidationError(_("Please upload at least one Drawing attachment."))
             if not rec.scope_attachment_ids:
                 raise ValidationError(_("Please upload at least one Scope of Work attachment."))
             if not rec.boq_attachment_ids:
@@ -364,13 +405,22 @@ class PRWorkOrder(models.Model):
         for vals in vals_list:
             if vals.get("name", _("New")) == _("New"):
                 vals["name"] = self.env["ir.sequence"].next_by_code("pr.work.order") or _("New")
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        records._ensure_project_expense_bucket(sync_budget=True)
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        sync_fields = {"name", "date_start", "date_end", "cost_center_ids", "boq_line_ids"}
+        if sync_fields.intersection(vals.keys()):
+            self._ensure_project_expense_bucket(sync_budget=True)
+        return res
 
     def action_submit_ops(self):
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft work orders can be submitted for approval"))
-            rec._ensure_project_expense_bucket(sync_budget=False)
+            rec._ensure_project_expense_bucket(sync_budget=True)
             rec.state = "ops_approval"
             rec.rejection_reason = ""
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
@@ -448,6 +498,7 @@ class PRWorkOrder(models.Model):
                 rec.name, record_url),
             )
             rec._ensure_project_expense_bucket(sync_budget=True)
+            rec._sync_work_order_budget_state("pm_approved")
 
     def _ensure_project_expense_bucket(self, sync_budget=False):
         Budget = self.env["crossovered.budget"].sudo()
@@ -455,11 +506,17 @@ class PRWorkOrder(models.Model):
         today = fields.Date.context_today(self)
 
         for rec in self:
-            cost_centers = rec.cost_center_ids.mapped("analytic_account_id").filtered(lambda a: a)
+            cost_center_lines = rec.cost_center_ids.filtered("analytic_account_id")
+            cost_centers = cost_center_lines.mapped("analytic_account_id").filtered(lambda a: a)
             if not cost_centers:
                 continue
 
-            total_budget = sum(cost_centers.mapped("budget_allowance"))
+            planned_by_analytic = {}
+            for line in cost_center_lines:
+                analytic = line.analytic_account_id
+                planned_by_analytic[analytic.id] = planned_by_analytic.get(analytic.id, 0.0) + (line.estimated_cost or 0.0)
+
+            total_budget = sum(planned_by_analytic.values())
 
             if not rec.expense_bucket_id:
                 bucket = Budget.create({
@@ -478,23 +535,41 @@ class PRWorkOrder(models.Model):
                 bucket = rec.expense_bucket_id.sudo()
                 if bucket.work_order_id != rec:
                     bucket.write({"work_order_id": rec.id})
+                if sync_budget:
+                    bucket.write({
+                        "name": _("%s - CAPEX Budget") % rec.name,
+                        "scope": "project",
+                        "expense_type": "capex",
+                        "date_from": rec.date_start or bucket.date_from or today,
+                        "date_to": rec.date_end or bucket.date_to or today,
+                        "source_budget_limit": total_budget,
+                    })
 
-            existing_cc_ids = set(bucket.crossovered_budget_line.mapped("analytic_account_id").ids)
-            for analytic in cost_centers:
-                if analytic.id in existing_cc_ids:
-                    continue
-                BudgetLine.create({
-                    "crossovered_budget_id": bucket.id,
-                    "analytic_account_id": analytic.id,
-                    "date_from": bucket.date_from or today,
-                    "date_to": bucket.date_to or today,
-                    "planned_amount": analytic.budget_allowance or 0.0,
-                })
+            existing_lines = {
+                line.analytic_account_id.id: line
+                for line in bucket.crossovered_budget_line.filtered("analytic_account_id")
+            }
+            wanted_ids = set(planned_by_analytic.keys())
 
-            if sync_budget and not bucket.source_budget_limit:
-                bucket.write({
-                    "source_budget_limit": rec.budgeted_cost or total_budget,
-                })
+            for analytic_id, planned in planned_by_analytic.items():
+                if analytic_id in existing_lines:
+                    existing_lines[analytic_id].write({
+                        "planned_amount": planned,
+                        "date_from": bucket.date_from or today,
+                        "date_to": bucket.date_to or today,
+                    })
+                else:
+                    BudgetLine.create({
+                        "crossovered_budget_id": bucket.id,
+                        "analytic_account_id": analytic_id,
+                        "date_from": bucket.date_from or today,
+                        "date_to": bucket.date_to or today,
+                        "planned_amount": planned,
+                    })
+
+            for analytic_id, line in existing_lines.items():
+                if analytic_id not in wanted_ids:
+                    line.unlink()
 
     def action_acc_approve(self):
         for rec in self:
@@ -511,6 +586,7 @@ class PRWorkOrder(models.Model):
                 _("""<p>Dear Approver,</p><p>Work Order <b>%s</b> requires Management final approval.</p><p><a href=\"%s\">Open Work Order</a></p>""") % (
                 rec.name, record_url),
             )
+            rec._sync_work_order_budget_state("accounts_approved")
 
     def action_final_approve(self):
         for rec in self:
@@ -519,6 +595,7 @@ class PRWorkOrder(models.Model):
             rec.final_approver_id = self.env.user
             rec.final_approved_date = fields.Datetime.now()
             rec.state = "approved"
+            rec._sync_work_order_budget_state("md_approved")
 
     def action_reject(self):
         self.ensure_one()
@@ -543,14 +620,103 @@ class PRWorkOrder(models.Model):
                 raise UserError(_("Work Order must be approved before starting operations."))
             rec.state = "in_progress"
 
+    def _get_issue_picking_type(self):
+        self.ensure_one()
+        warehouse = self.sale_order_id.warehouse_id if self.sale_order_id else False
+        if warehouse and warehouse.int_type_id:
+            return warehouse.int_type_id
+
+        picking_type = self.env["stock.picking.type"].search([
+            ("code", "=", "internal"),
+            ("company_id", "in", [self.company_id.id, False]),
+        ], limit=1)
+        if not picking_type:
+            raise UserError(_("No internal transfer operation type was found for this company."))
+        return picking_type
+
+    def action_create_material_issue(self):
+        self.ensure_one()
+        if self.state not in ("approved", "in_progress", "done"):
+            raise UserError(_("Material issue is allowed only after Work Order approval."))
+
+        picking_type = self._get_issue_picking_type()
+        src_location = picking_type.default_location_src_id
+        if not src_location:
+            raise UserError(_("Please configure source location on the internal operation type."))
+
+        dest_location = self.env.ref("stock.stock_location_production", raise_if_not_found=False)
+        if not dest_location:
+            dest_location = picking_type.default_location_dest_id
+        if not dest_location:
+            raise UserError(_("Please configure destination location on the internal operation type."))
+
+        issueable_lines = self.boq_line_ids.filtered(
+            lambda l: l.display_type == "product"
+                      and l.product_id
+                      and l.product_id.type in ("product", "consu")
+                      and l.qty > 0
+        )
+        if not issueable_lines:
+            raise UserError(_("No stockable/consumable BOQ lines are available for material issue."))
+
+        move_commands = []
+        Move = self.env["stock.move"]
+        for line in issueable_lines:
+            issued_qty = sum(Move.search([
+                ("work_order_id", "=", self.id),
+                ("work_order_boq_line_id", "=", line.id),
+                ("state", "=", "done"),
+                ("picking_id.picking_type_id.code", "=", "internal"),
+            ]).mapped("product_uom_qty"))
+            remaining_qty = (line.qty or 0.0) - issued_qty
+            if remaining_qty <= 0:
+                continue
+
+            move_commands.append((0, 0, {
+                "name": line.name or line.product_id.display_name,
+                "product_id": line.product_id.id,
+                "product_uom_qty": remaining_qty,
+                "product_uom": (line.uom_id or line.product_id.uom_id).id,
+                "location_id": src_location.id,
+                "location_dest_id": dest_location.id,
+                "company_id": self.company_id.id,
+                "work_order_id": self.id,
+                "work_order_boq_line_id": line.id,
+            }))
+
+        if not move_commands:
+            raise UserError(_("All BOQ material quantities are already issued."))
+
+        picking = self.env["stock.picking"].create({
+            "partner_id": self.partner_id.id,
+            "origin": _("%s - Material Issue") % (self.name,),
+            "picking_type_id": picking_type.id,
+            "location_id": src_location.id,
+            "location_dest_id": dest_location.id,
+            "company_id": self.company_id.id,
+            "work_order_id": self.id,
+            "move_ids_without_package": move_commands,
+        })
+        picking.action_confirm()
+        picking.action_assign()
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Material Issue"),
+            "res_model": "stock.picking",
+            "view_mode": "form",
+            "res_id": picking.id,
+            "target": "current",
+        }
+
     def action_mark_done(self):
         for rec in self:
             rec.state = "done"
 
     def action_cancel(self):
         for rec in self:
-            rec._remove_linked_expense_bucket()
             rec.state = "cancel"
+            rec._sync_work_order_budget_state("cancel")
 
 
 class WorkOrderBOQ(models.Model):
@@ -570,7 +736,7 @@ class WorkOrderBOQ(models.Model):
 
     name = fields.Char("Description", required=True)
 
-    product_id = fields.Many2one("product.product", string="Product", tracking=True)
+    product_id = fields.Many2one("product.product", string="Product")
     uom_id = fields.Many2one("uom.uom", string="Unit")
     qty = fields.Float("Qty")
 
@@ -597,6 +763,23 @@ class WorkOrderBOQ(models.Model):
     def _compute_total(self):
         for rec in self:
             rec.total = (rec.qty or 0.0) * (rec.unit_cost or 0.0)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records.mapped("work_order_id")._ensure_project_expense_bucket(sync_budget=True)
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        self.mapped("work_order_id")._ensure_project_expense_bucket(sync_budget=True)
+        return res
+
+    def unlink(self):
+        work_orders = self.mapped("work_order_id")
+        res = super().unlink()
+        work_orders._ensure_project_expense_bucket(sync_budget=True)
+        return res
 
 
 class WorkOrderCostCenter(models.Model):
@@ -699,6 +882,23 @@ class WorkOrderCostCenter(models.Model):
                     "section_id": rec.section_id.id,
                 })
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records.mapped("work_order_id")._ensure_project_expense_bucket(sync_budget=True)
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        self.mapped("work_order_id")._ensure_project_expense_bucket(sync_budget=True)
+        return res
+
+    def unlink(self):
+        work_orders = self.mapped("work_order_id")
+        res = super().unlink()
+        work_orders._ensure_project_expense_bucket(sync_budget=True)
+        return res
+
 
 class PRWorkOrderRejectWizard(models.TransientModel):
     _name = "pr.work.order.reject.wizard"
@@ -733,6 +933,7 @@ class PRWorkOrderRejectWizard(models.TransientModel):
             "rejected_by": self.env.user.id,
             "rejected_date": fields.Datetime.now(),
         })
+        wo._sync_work_order_budget_state("rejected")
 
         wo.message_post(
             body=_(

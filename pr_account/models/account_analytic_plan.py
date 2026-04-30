@@ -13,4 +13,4 @@ class AccountAnalyticAccount(models.Model):
         ("project", "Project"),
         ("employee", "Employee"),
         ("asset", "Asset"),
-    ], string="Plan Type", required=True)
+    ], string="Plan Type", required=False)

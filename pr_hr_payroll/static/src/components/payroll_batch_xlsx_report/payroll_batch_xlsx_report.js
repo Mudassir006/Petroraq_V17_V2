@@ -43,43 +43,40 @@ class PayrollBatchXlsxReport extends Component {
     get RULE_NAME_ORDER() {
         return [
             "Basic Salary",
-                     "Accommodation",
-                     "Transportation",
-                     "Food",
-//                     "Car Allowance",
-                     "Fixed Overtime",
-                     "Overtime",
-
-
-                     "Sick Time Off",
-                     "Annual Time Off",
-                     "Late In",
-                     "Early Checkout",
-                     "Absence",
-                      //            "GOSI",
-                     "Unpaid Leave",
-
-
-                     "Gross",
-                      "HRA",
-                     "Advance Allowances",
-
-                     "Annual Time Off DED",
-                     "Sick Time Off DED",
-                     "Net Salary",
+            "Accommodation",
+            "Transportation",
+            "Food",
+            "Fixed Overtime",
+            "Overtime",
+            "Annual Time Off DED",
+            "Sick Time Off DED",
+            "Annual Time Off",
+            "Sick Time Off",
+            "Absence",
+            "Late In",
+//            "Unpaid Leave",
+            "Early Checkout",
+            "GOSI Company Contribution",
+            "Gross",
+            "Reimbursement",
+            "Advance Allowances",
+//            "GOSI Company Deduction",
+//            "GOSI Employee Deduction",
+//            "Net Salary",
         ];
     }
 
     get EXTRA_COLS() {
         return [
             { code: "GOSI_COMP_ADD", name: "GOSI Company Contribution" },
-            { code: "GOSI_EMP", name: "GOSI Employee Deduction" },
             { code: "GOSI_COMP_DED", name: "GOSI Company Deduction" },
+            { code: "GOSI_EMP", name: "GOSI Employee Deduction" },
+            { code: "NET", name: "Net Salary" },
         ];
     }
 
     get HIDE_CODES() {
-        return new Set(["GOSI", "GOSI_COMP_ADD", "GOSI_EMP", "GOSI_COMP_DED"]);
+        return new Set(["GOSI"]);
     }
 
     // Header info from batch record
@@ -206,6 +203,27 @@ get payrollMonth() {
                 valsByCode.set(code, (valsByCode.get(code) || 0) + v);
             }
 
+            // Normalize GOSI portions across Saudi / non-Saudi implementations.
+            // Some older batches only have legacy "GOSI" (combined deduction).
+            // In that case, split combined deduction using company add amount:
+            //   company deduction = -company contribution
+            //   employee deduction = combined deduction - company deduction
+            const gosiCompanyAdd = (valsByCode.get("GOSI_COMP_ADD") || 0) + (valsByCode.get("GOSIALLOW") || 0);
+            const legacyGosiDed = valsByCode.get("GOSI") || 0;
+            let gosiEmployeeDed = valsByCode.get("GOSI_EMP") || 0;
+            let gosiCompanyDed = valsByCode.get("GOSI_COMP_DED") || 0;
+
+            if (!gosiEmployeeDed && !gosiCompanyDed && legacyGosiDed) {
+                gosiCompanyDed = -gosiCompanyAdd;
+                gosiEmployeeDed = legacyGosiDed - gosiCompanyDed;
+            } else {
+                gosiCompanyDed += legacyGosiDed;
+            }
+
+            valsByCode.set("GOSI_COMP_ADD", gosiCompanyAdd);
+            valsByCode.set("GOSI_EMP", gosiEmployeeDed);
+            valsByCode.set("GOSI_COMP_DED", gosiCompanyDed);
+
             // Ensure all columns exist even if missing
             for (const col of columns) {
                 if (!valsByCode.has(col.code)) valsByCode.set(col.code, 0);
@@ -298,21 +316,26 @@ async _buildColumns(slips) {
     const cols = [];
     for (const ruleName of this.RULE_NAME_ORDER) {
         const code = nameToCode.get(ruleName);
-        // if not found, keep a safe fallback but mark it obvious for debugging
+        if (!code) continue;
         cols.push({
-            code: code || `__MISSING__${ruleName}`,
+            code: code,
             name: ruleName,
             hidden: this.HIDE_CODES.has(code),
         });
     }
 
     for (const ex of this.EXTRA_COLS) {
-        cols.push({
-            code: ex.code,
-            name: ex.name,
-            hidden: this.HIDE_CODES.has(ex.code),
-        });
+        if (!cols.find((col) => col.code === ex.code || col.name === ex.name)) {
+            cols.push({
+                code: ex.code,
+                name: ex.name,
+                hidden: this.HIDE_CODES.has(ex.code),
+            });
+        }
     }
+
+    const orderMap = new Map(this.RULE_NAME_ORDER.map((name, idx) => [name, idx]));
+    cols.sort((a, b) => (orderMap.get(a.name) ?? 9999) - (orderMap.get(b.name) ?? 9999));
 
     return cols;
 }
