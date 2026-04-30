@@ -159,16 +159,47 @@
 
     <template id="careers_thank_you" name="Careers Thank You">
         <t t-call="website.layout">
-            <section class="prq-thankyou-wrapper">
-                <div class="container">
-                    <div class="prq-thankyou-card">
-                        <div class="prq-thankyou-icon">✓</div>
-                        <h1>Thank You!</h1>
-                        <p>We received your application successfully.</p>
-                        <p>Our hiring team will review your profile and contact you if your background matches the role.</p>
-                        <a href="/" class="prq-thankyou-btn">Go Back to Homepage</a>
+            <section class="prq-success-page">
+                <div class="prq-success-bg"></div>
+                <div class="particles" id="prqParticles"></div>
+                <div class="container prq-success-container">
+                    <div class="checkmark">✔</div>
+                    <h1 class="success-title">SUCCESS!</h1>
+                    <p class="success-message">Application Submitted</p>
+                    <div class="details">
+                        Thank you for applying! Your application has been successfully received and our team will review it within 3–5 business days.
+                        You will receive next-step communication if your profile matches the role.
+                    </div>
+                    <div class="buttons">
+                        <a href="/" class="primary-btn">Back to Home</a>
+                        <a href="mailto:hr@petroraq.com" class="secondary-btn">Contact HR</a>
                     </div>
                 </div>
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', () =&gt; {
+                        const particlesContainer = document.getElementById('prqParticles');
+                        if (!particlesContainer) return;
+
+                        const createParticles = () =&gt; {
+                            const colors = ['#FFC03D', '#FFD872', '#FFFFFF'];
+                            for (let i = 0; i &lt; 60; i++) {
+                                const p = document.createElement('div');
+                                const color = colors[Math.floor(Math.random() * colors.length)];
+                                p.className = 'prq-particle';
+                                p.style.background = color;
+                                p.style.left = `${40 + Math.random() * 20}%`;
+                                p.style.top = `${25 + Math.random() * 20}%`;
+                                p.style.setProperty('--dx', `${-120 + Math.random() * 240}px`);
+                                p.style.setProperty('--dy', `${-120 + Math.random() * 240}px`);
+                                particlesContainer.appendChild(p);
+                                setTimeout(() =&gt; p.remove(), 2200);
+                            }
+                        };
+
+                        createParticles();
+                        setInterval(createParticles, 3000);
+                    });
+                </script>
             </section>
         </t>
     </template>

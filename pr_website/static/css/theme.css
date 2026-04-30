@@ -1388,3 +1388,26 @@
     background: #fff;
     color: #122AA0;
 }
+
+
+.prq-success-page {
+    position: relative;
+    min-height: 85vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #17326F 0%, #0F224F 50%, #17326F 100%);
+}
+.prq-success-bg {position:absolute;inset:0;background:radial-gradient(circle at 20% 80%, rgba(255,192,61,.35) 0%, transparent 48%),radial-gradient(circle at 80% 20%, rgba(255,255,255,.10) 0%, transparent 48%);} 
+.prq-success-container {position:relative;z-index:5;min-height:85vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;}
+.prq-success-page .checkmark {font-size: clamp(4rem, 10vw, 7rem);color:#FFC03D;filter: drop-shadow(0 0 20px rgba(255,192,61,.6));animation: prqBounce 1.2s ease-in-out infinite;}
+.prq-success-page .success-title {font-size: clamp(3rem, 9vw, 6rem);font-weight:900;line-height:1;background: linear-gradient(45deg,#FFC03D,#FFD872,#fff,#FFC03D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.prq-success-page .success-message {font-size: clamp(1.3rem, 3vw, 2rem);color:#fff;margin-top:8px;}
+.prq-success-page .details {max-width:760px;color:#e5e7eb;font-size:1.08rem;margin:16px auto 28px;line-height:1.7;}
+.prq-success-page .buttons {display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+.primary-btn,.secondary-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 28px;border-radius:40px;font-weight:700;text-decoration:none;border:2px solid #fff;}
+.primary-btn{background:linear-gradient(45deg,#FFC03D,#FFD872);color:#17326F;}
+.secondary-btn{background:transparent;color:#fff;}
+.primary-btn:hover{background:#fff;color:#17326F;}
+.secondary-btn:hover{background:#fff;color:#17326F;}
+.prq-particle{position:absolute;width:6px;height:6px;border-radius:50%;animation:prqBurst 2.2s ease-out forwards;box-shadow:0 0 10px currentColor;}
+@keyframes prqBurst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+@keyframes prqBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
