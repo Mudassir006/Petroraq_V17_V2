@@ -25,9 +25,11 @@
         # "views/services.xml",
         # "views/projects.xml",
         # "views/careers.xml",
+        "views/404.xml",
         # "views/job_detail.xml",
         # "views/contact.xml",
         "views/careers.xml",
+        "views/404.xml",
     ],
 
     # QWeb templates (loaded globally)
