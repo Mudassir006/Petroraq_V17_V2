@@ -12,6 +12,10 @@ _logger = logging.getLogger(__name__)
 
 
 class CareersController(http.Controller):
+    @http.route('/', type='http', auth='public', website=True, sitemap=True)
+    def homepage(self, **kwargs):
+        return request.render('pr_website.petroraq_homepage_custom')
+
     @http.route('/jobs', type='http', auth='public', website=True, sitemap=True)
     def jobs(self, **kwargs):
         jobs = request.env['hr.job'].sudo().search([('website_published', '=', True)], order='create_date desc')
