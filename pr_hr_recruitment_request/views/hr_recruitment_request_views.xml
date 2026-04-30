@@ -34,6 +34,7 @@
                 <field name="name"/>
                 <field name="department_id"/>
                 <field name="is_new_position"/>
+                <field name="hiring_request_type"/>
                 <field name="job_id"/>
                 <field name="new_job_name"/>
                 <field name="requested_employees"/>
@@ -54,6 +55,7 @@
                 <field name="name"/>
                 <field name="department_id"/>
                 <field name="job_id"/>
+                <field name="hiring_request_type"/>
                 <field name="state"/>
 
                 <filter string="New Positions" name="new_positions"
@@ -98,7 +100,7 @@
 
                     <button name="action_reject" string="Reject"
                             type="object" class="btn-secondary"
-                            invisible="state not in ('hr_approval','hrm_approval','md_approval')"/>
+                            invisible="(state == 'hr_approval' and not is_hr_supervisor_approver) or (state == 'hrm_approval' and not is_hrm_approver) or (state == 'md_approval' and not is_md_approver) or state not in ('hr_approval','hrm_approval','md_approval')"/>
 
                     <button name="action_set_done" string="Mark Done"
                             type="object" class="btn-success"
@@ -157,6 +159,7 @@
                         <!-- RIGHT SIDE: Position Details -->
                         <group string="Position Details">
                             <field name="is_new_position"/>
+                            <field name="hiring_request_type"/>
                             <field name="job_id" invisible="is_new_position"/>
                             <field name="new_job_name" invisible="not is_new_position"/>
                             <field name="requested_employees"/>

@@ -2,154 +2,350 @@
 <odoo>
     <template id="careers_jobs" name="Careers Jobs">
         <t t-call="website.layout">
-            <div class="container mt-5 mb-5 prq-careers">
-                <div class="prq-banner">Careers</div>
-                <h5 class="mt-3">Open Positions</h5>
-                <div class="row mt-3">
+            <section class="prq-jobs-page">
+                <div class="prq-bg-animation"></div>
+                <i class="fa fa-star prq-floating prq-float1"></i>
+                <i class="fa fa-briefcase prq-floating prq-float2"></i>
+                <i class="fa fa-gem prq-floating prq-float3"></i>
+
+                <header class="prq-header">
+                    <h1>Open Positions</h1>
+                    <p>Join our amazing team and help us build the future. We're always looking for talented people like you!</p>
+                </header>
+
+                <div class="prq-search-container">
+                    <div class="prq-search-box">
+                        <i class="fa fa-search prq-search-icon"></i>
+                        <input type="text" class="prq-job-search" placeholder="Search jobs by title, department, or location..."/>
+                        <button class="prq-search-btn" type="button">
+                            <i class="fa fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+
+                <div class="prq-jobs-grid">
                     <t t-foreach="jobs" t-as="job">
-                        <div class="col-md-4 mb-3">
-                            <div class="card p-3 h-100 text-center">
-                                <h5 class="prq-job-title" t-esc="job.name"/>
-                                <p t-esc="(job.description or '').split('\n')[0]"/>
-                                <a t-att-href="'/job/%s' % job.id" class="btn btn-md prq-btn mt-3">View Details</a>
+                        <div class="prq-job-card">
+                            <div class="prq-job-header">
+                                <div class="prq-job-icon"><i class="fa fa-briefcase"></i></div>
+                                <div>
+                                    <div class="prq-job-title" t-esc="job.name"/>
+                                    <div class="prq-job-company">
+                                        <t t-esc="request.website.name"/>
+                                        <t t-if="job.address_id and job.address_id.city"> • <t t-esc="job.address_id.city"/></t>
+                                        <t t-else=""> • Remote</t>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="prq-job-desc" t-esc="(job.description or '').replace('&lt;br&gt;', ' ')"/>
+                            <div class="prq-job-meta">
+                                <span class="prq-job-type" t-esc="job.contract_type_id.name if job._fields.get('contract_type_id') and job.contract_type_id else 'Full-time'"/>
+                                <span>
+                                    <t t-if="job.no_of_recruitment">Openings: <t t-esc="job.no_of_recruitment"/></t>
+                                    <t t-else="">Apply now</t>
+                                </span>
+                            </div>
+                            <a t-att-href="'/job/%s' % job.id" class="prq-view-details">
+                                <i class="fa fa-eye"></i> View Details
+                            </a>
                         </div>
                     </t>
                 </div>
-            </div>
+            </section>
+
+            <style>
+                .prq-jobs-page {position: relative; min-height: 100vh; overflow-x: hidden; color: #fff; background: linear-gradient(135deg, #17326F 0%, #0F224F 50%, #17326F 100%); padding-bottom: 2rem;}
+                .prq-bg-animation {position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 20% 80%, rgba(255, 192, 61, 0.22) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,.05) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(255, 216, 114, 0.14) 0%, transparent 52%); animation: prqBgShift 20s ease-in-out infinite;}
+                .prq-header,.prq-search-container,.prq-jobs-grid{position: relative; z-index: 2;}
+                .prq-header{text-align:center;padding:4rem 2rem 2rem;}
+                .prq-header h1{font-family:'Orbitron',monospace;font-size:clamp(3rem,8vw,5rem);font-weight:900;background:linear-gradient(45deg,#FFC03D,#FFD872,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px rgba(255,192,61,.6));animation:prqGradientShift 3s ease-in-out infinite;}
+                .prq-header p{font-size:clamp(1.2rem,3vw,1.5rem);opacity:.9;max-width:600px;margin:1rem auto 0;}
+                .prq-search-container{max-width:600px;margin:2rem auto;padding:0 2rem;}
+                .prq-search-box{display:flex;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:50px;padding:1rem 1.5rem;backdrop-filter:blur(10px);transition:.3s;}
+                .prq-search-box:hover{border-color:#FFC03D;box-shadow:0 10px 30px rgba(255,192,61,.6);} .prq-search-icon{color:rgba(255,255,255,.6);margin-right:1rem;align-self:center;}
+                .prq-job-search{flex:1;background:transparent;border:none;color:#fff;font-size:1.1rem;outline:none;padding:.5rem;}
+                .prq-job-search::placeholder{color:rgba(255,255,255,.6);} .prq-search-btn{background:#FFC03D;color:#17326F;border:none;padding:.8rem 1.5rem;border-radius:50px;font-weight:600;cursor:pointer;transition:.3s;}
+                .prq-search-btn:hover{transform:scale(1.05);box-shadow:0 5px 15px rgba(255,192,61,.6);} .prq-jobs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:2rem;max-width:1400px;margin:0 auto;padding:2rem;}
+                .prq-job-card{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:2rem;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;animation:prqSlideInUp .8s ease-out forwards;opacity:0;transform:translateY(50px);} 
+                .prq-job-card:nth-child(1){animation-delay:.1s}.prq-job-card:nth-child(2){animation-delay:.2s}.prq-job-card:nth-child(3){animation-delay:.3s}.prq-job-card:nth-child(4){animation-delay:.4s}.prq-job-card:nth-child(5){animation-delay:.5s}.prq-job-card:nth-child(6){animation-delay:.6s}
+                .prq-job-card:hover{transform:translateY(-15px) scale(1.02);box-shadow:0 20px 60px rgba(23,50,111,.3);border-color:#FFC03D;}
+                .prq-job-card:before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#FFC03D,#FFD872);transform:scaleX(0);transition:transform .4s ease}.prq-job-card:hover:before{transform:scaleX(1)}
+                .prq-job-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem}.prq-job-icon{width:60px;height:60px;background:linear-gradient(135deg,#FFC03D,#FFD872);border-radius:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#17326F;font-size:1.5rem}
+                .prq-job-title{font-size:1.4rem;font-weight:700;line-height:1.3}.prq-job-company{font-size:.95rem;color:#FFD872;font-weight:500}
+                .prq-job-desc{color:rgba(255,255,255,.9);line-height:1.6;margin-bottom:1.5rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.95rem}
+                .prq-job-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;font-size:.9rem;opacity:.8}.prq-job-type{background:rgba(255,192,61,.2);color:#FFC03D;padding:.3rem .8rem;border-radius:20px;font-weight:500;font-size:.85rem}
+                .prq-view-details{display:block;width:100%;text-align:center;text-decoration:none;background:linear-gradient(45deg,#FFC03D,#FFD872);color:#17326F;border:none;padding:1rem 2rem;border-radius:50px;font-size:1rem;font-weight:600;transition:.3s;position:relative;overflow:hidden}
+                .prq-view-details:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(255,192,61,.6);color:#17326F}.prq-view-details:before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .5s}.prq-view-details:hover:before{left:100%}
+                .prq-floating{position:fixed;color:#FFC03D;filter:drop-shadow(0 0 10px rgba(255,192,61,.6));animation:prqFloatAround 20s linear infinite;z-index:1;pointer-events:none}.prq-float1{top:10%;left:5%;font-size:1.5rem}.prq-float2{top:70%;right:10%;font-size:1.2rem;animation-delay:7s}.prq-float3{bottom:20%;left:15%;font-size:2rem;animation-delay:14s}
+                @keyframes prqBgShift{0%,100%{transform:scale(1) rotate(0);opacity:.8}50%{transform:scale(1.1) rotate(180deg);opacity:1}}
+                @keyframes prqGradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+                @keyframes prqSlideInUp{to{opacity:1;transform:translateY(0)}}
+                @keyframes prqFloatAround{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-100vh) rotate(360deg)}}
+                @media (max-width:768px){.prq-jobs-grid{grid-template-columns:1fr;gap:1.5rem;padding:1rem}.prq-header{padding:2rem 1rem 1rem}}
+            </style>
+
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', () =&gt; {
+                    const searchInput = document.querySelector('.prq-job-search');
+                    const searchBtn = document.querySelector('.prq-search-btn');
+                    const jobCards = document.querySelectorAll('.prq-job-card');
+
+                    document.getElementById('prqErrorClose')?.addEventListener('click', () => { document.getElementById('prqErrorPopup')?.remove(); });
+                const observer = new IntersectionObserver((entries) =&gt; {
+                        entries.forEach((entry) =&gt; {
+                            if (entry.isIntersecting) entry.target.style.animationPlayState = 'running';
+                        });
+                    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+                    jobCards.forEach((card) =&gt; observer.observe(card));
+
+                    const filterJobs = (query) =&gt; {
+                        jobCards.forEach((card) =&gt; {
+                            const title = (card.querySelector('.prq-job-title')?.textContent || '').toLowerCase();
+                            const company = (card.querySelector('.prq-job-company')?.textContent || '').toLowerCase();
+                            const desc = (card.querySelector('.prq-job-desc')?.textContent || '').toLowerCase();
+                            if (title.includes(query) || company.includes(query) || desc.includes(query)) {
+                                card.style.display = 'block';
+                                card.style.animation = 'none';
+                                setTimeout(() =&gt; { card.style.animation = 'prqSlideInUp 0.8s ease-out forwards'; }, 100);
+                            } else card.style.display = 'none';
+                        });
+                    };
+
+                    searchInput?.addEventListener('input', (e) =&gt; filterJobs(e.target.value.toLowerCase()));
+                    searchBtn?.addEventListener('click', () =&gt; filterJobs((searchInput?.value || '').toLowerCase()));
+                });
+            </script>
         </t>
     </template>
 
     <template id="careers_job_detail" name="Career Job Detail">
         <t t-call="website.layout">
-            <div class="container mt-5 mb-5 prq-careers-detail">
-                <div class="prq-banner">
-                    <h2 class="mb-0" t-esc="job.name"/>
-                    <div t-esc="job.address_id.city if job.address_id else ''"/>
+            <section class="prq-job-detail-page">
+                <div class="prq-detail-bg-animation"></div>
+                <div class="prq-detail-container">
+                    <t t-if="error_message">
+                        <div class="prq-error-popup" id="prqErrorPopup">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span t-esc="error_message"/>
+                            <button type="button" class="prq-error-close" id="prqErrorClose">×</button>
+                        </div>
+                    </t>
+                    <div class="prq-detail-header">
+                        <a href="/careers" class="prq-back-btn">
+                            <i class="fa fa-arrow-left"></i>
+                            Back to Jobs
+                        </a>
+                        <h1>Job Details</h1>
+                    </div>
+
+                    <section class="prq-job-details-card">
+                        <div class="prq-job-detail-header">
+                            <div class="prq-job-icon-large"><i class="fa fa-briefcase"></i></div>
+                            <div class="prq-job-meta">
+                                <h2 t-esc="job.name"/>
+                                <div class="prq-job-company">
+                                    <t t-esc="request.website.name"/>
+                                    <t t-if="job.address_id and job.address_id.city"> • <t t-esc="job.address_id.city"/></t>
+                                    <t t-else=""> • Remote</t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prq-job-info-grid">
+                            <div class="prq-info-item">
+                                <div class="prq-info-icon"><i class="fa fa-briefcase"></i></div>
+                                <div>
+                                    <strong t-esc="job.contract_type_id.name if job._fields.get('contract_type_id') and job.contract_type_id else 'Full-time'"/>
+                                    <div>Employment Type</div>
+                                </div>
+                            </div>
+                            <div class="prq-info-item">
+                                <div class="prq-info-icon"><i class="fa fa-users"></i></div>
+                                <div>
+                                    <strong><t t-if="job.no_of_recruitment" t-esc="job.no_of_recruitment"/><t t-else="">Open</t></strong>
+                                    <div>Openings</div>
+                                </div>
+                            </div>
+                            <div class="prq-info-item">
+                                <div class="prq-info-icon"><i class="fa fa-map-marker"></i></div>
+                                <div>
+                                    <strong t-esc="job.address_id.city if job.address_id and job.address_id.city else 'Remote'"/>
+                                    <div>Work Location</div>
+                                </div>
+                            </div>
+                            <div class="prq-info-item">
+                                <div class="prq-info-icon"><i class="fa fa-building"></i></div>
+                                <div>
+                                    <strong t-esc="request.website.name"/>
+                                    <div>Hiring Company</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prq-job-description">
+                            <div t-field="job.description"/>
+                        </div>
+                    </section>
+
+                    <section id="apply-form" class="prq-application-section">
+                        <h2 class="prq-section-title"><i class="fa fa-paper-plane"></i> Apply Now</h2>
+                        <form t-att-action="'/job/%s/apply' % job.id" method="post" enctype="multipart/form-data" class="prq-form-grid">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Full Name</label>
+                                <input class="prq-form-control" name="partner_name" placeholder="Enter your full name" pattern="[A-Za-z][A-Za-z\s'\.-]{1,79}" required="required"/>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Email</label>
+                                <input class="prq-form-control" type="email" name="email_from" placeholder="your@email.com" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" required="required"/>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Phone</label>
+                                <input class="prq-form-control" name="partner_phone" placeholder="+966 5X XXX XXXX" pattern="\+?[0-9][0-9\s().-]{7,19}" required="required"/>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Location</label>
+                                <input class="prq-form-control" name="partner_location" placeholder="Current city, country" pattern="[A-Za-z0-9][A-Za-z0-9,\s'\.-]{1,99}" required="required" autocomplete="off"/>
+                                <div id="job-location-suggestions" class="prq-location-suggestions"></div>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Total Years of Experience</label>
+                                <input type="number" min="0" class="prq-form-control" name="experience" placeholder="5" required="required"/>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Highest Qualification</label>
+                                <select class="prq-form-select" name="type_id" required="required">
+                                    <option value="">Select qualification</option>
+                                    <t t-foreach="degrees" t-as="degree">
+                                        <option t-att-value="degree.id" t-esc="degree.name"/>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Expected Salary</label>
+                                <input type="number" class="prq-form-control" name="salary_expected" placeholder="12000" required="required"/>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Notice Period (Days)</label>
+                                <input type="number" min="0" class="prq-form-control" name="notice_period" placeholder="30" required="required"/>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">LinkedIn Profile</label>
+                                <input class="prq-form-control" name="linkedin_profile" placeholder="https://linkedin.com/in/yourprofile" pattern="https?://([a-z]{2,3}\.)?linkedin\.com/.*" required="required"/>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Will you relocate?</label>
+                                <select class="prq-form-select" name="will_relocate" required="required">
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="prq-form-group">
+                                <label class="prq-form-label required">Authorized to work in KSA?</label>
+                                <select class="prq-form-select" name="legally_required" required="required">
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="prq-form-group prq-full-width">
+                                <label class="prq-form-label required">Resume Upload</label>
+                                <div class="prq-file-upload">
+                                    <div class="prq-file-icon"><i class="fa fa-upload"></i></div>
+                                    <input class="prq-form-control prq-file-input" type="file" name="resume" accept=".pdf,.doc,.docx" required="required"/>
+                                </div>
+                                <small class="prq-file-help">PDF, DOC, DOCX (Max 5MB)</small>
+                            </div>
+                            <button class="prq-submit-btn" type="submit"><i class="fa fa-rocket"></i> Submit Application</button>
+                        </form>
+                    </section>
                 </div>
-                <div class="mt-3">
-                    <a href="#apply-form" class="btn prq-btn">Apply Job</a>
-                </div>
-                <h3 class="mt-4">Job Description</h3>
-                <div t-field="job.description"/>
+            </section>
 
-                <h3 id="apply-form" class="mt-4 text-center">Apply For Job</h3>
-                <form t-att-action="'/job/%s/apply' % job.id" method="post" enctype="multipart/form-data"
-                      class="row g-3 mt-1">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <div class="col-md-6">
-                        <label>Full Name*</label>
-                        <input class="form-control" name="partner_name" required="required"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Email*</label>
-                        <input class="form-control" type="email" name="email_from" required="required"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Phone*</label>
-                        <input class="form-control" name="partner_phone" required="required"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Location*</label>
-                        <input class="form-control" name="partner_location" required="required" autocomplete="off"/>
-                        <div id="job-location-suggestions" class="prq-location-suggestions"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Total years of experience*</label>
-                        <input type="number" class="form-control" required="required" name="experience"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Highest Qualification*</label>
-                        <select class="form-select" name="type_id" required="required">
-                            <option value="">Select qualification</option>
-                            <t t-foreach="degrees" t-as="degree">
-                                <option t-att-value="degree.id" t-esc="degree.name"/>
-                            </t>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Expected Salary*</label>
-                        <input type="number" class="form-control" required="required" name="salary_expected"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Notice Period (in Days)*</label>
-                        <input type="number" class="form-control" required="required" name="notice_period"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Linkedin Profile*</label>
-                        <input class="form-control" name="linkedin_profile" required="required"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Will you able to relocate for this position?*</label>
-                        <select class="form-select" name="will_relocate" required="required">
-                            <option value="">Select</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
+            <style>
+            .prq-job-detail-page{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#17326F 0%,#0F224F 50%,#17326F 100%);min-height:100vh;color:#fff;position:relative;overflow-x:hidden}
+            .prq-detail-bg-animation{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle at 20% 80%,rgba(255,192,61,.18) 0%,transparent 52%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.05) 0%,transparent 50%);animation:prqBgShift2 20s ease-in-out infinite}
+            .prq-detail-container{max-width:1200px;margin:0 auto;padding:2rem;position:relative;z-index:2}.prq-detail-header{text-align:center;margin-bottom:4rem;animation:prqFadeInUp 1s ease-out}
+            .prq-detail-header h1{font-family:'Orbitron',monospace;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;background:linear-gradient(45deg,#FFC03D,#FFD872,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;filter:drop-shadow(0 0 30px rgba(255,192,61,.6));animation:prqGradientShift2 3s ease-in-out infinite}
+            .prq-error-popup{display:flex;align-items:center;gap:.75rem;background:rgba(200,36,36,.2);border:1px solid rgba(255,120,120,.6);color:#fff;padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem;backdrop-filter:blur(10px)}.prq-error-popup i{color:#FFD872}.prq-error-close{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.4rem;cursor:pointer}
+            .prq-back-btn{display:inline-flex;align-items:center;gap:.5rem;color:#fff;text-decoration:none;font-weight:500;margin-bottom:1rem;transition:.3s}.prq-back-btn:hover{color:#FFC03D;transform:translateX(-5px)}
+            .prq-job-details-card,.prq-application-section{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);border-radius:25px;padding:3rem}
+            .prq-job-details-card{margin-bottom:4rem;animation:prqSlideInUp2 .8s ease-out .2s both}.prq-application-section{animation:prqSlideInUp2 .8s ease-out .4s both}
+            .prq-job-detail-header{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem}.prq-job-icon-large{width:80px;height:80px;background:linear-gradient(135deg,#FFC03D,#FFD872);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#17326F;flex-shrink:0}
+            .prq-job-meta h2{font-size:2.2rem;font-weight:700;margin-bottom:.5rem}.prq-job-company{font-size:1.2rem;color:#FFD872;font-weight:500}
+            .prq-job-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-bottom:2rem}.prq-info-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:rgba(255,255,255,.05);border-radius:15px;border:1px solid rgba(255,255,255,.1)}
+            .prq-info-icon{width:45px;height:45px;background:#FFC03D;color:#17326F;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+            .prq-job-description{line-height:1.7;color:rgba(255,255,255,.95);font-size:1.05rem}
+            .prq-section-title{font-size:2rem;font-weight:700;text-align:center;margin-bottom:2.5rem;background:linear-gradient(45deg,#FFC03D,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+            .prq-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-bottom:2rem}.prq-form-group{position:relative}.prq-form-label{display:block;font-weight:600;margin-bottom:.75rem;color:#fff;font-size:.95rem}.prq-form-label.required:after{content:'*';color:#FFC03D;margin-left:.25rem}
+            .prq-form-control,.prq-form-select{width:100%;padding:1.2rem 1.5rem;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:15px;color:#fff;font-size:1rem;transition:.3s;backdrop-filter:blur(10px)}
+            .prq-form-control::placeholder{color:rgba(255,255,255,.6)} .prq-form-control:focus,.prq-form-select:focus{outline:none;border-color:#FFC03D;box-shadow:0 0 0 4px rgba(255,192,61,.6);background:rgba(255,255,255,.15)}
+            .prq-form-select{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 20 20'%3e%3cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3e%3c/svg%3e");background-position:right 1rem center;background-repeat:no-repeat;background-size:16px;padding-right:3rem;appearance:none;cursor:pointer}.prq-form-select option{background:#17326F;color:#FFFFFF}.prq-form-select option:checked{background:#0F224F;color:#FFC03D}
+            .prq-full-width{grid-column:1/-1}.prq-file-upload{display:flex;align-items:center;gap:1rem}.prq-file-input{flex:1}.prq-file-icon{width:50px;height:50px;background:#FFC03D;color:#17326F;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}.prq-file-help{color:#FFD872;display:block;margin-top:.5rem}
+            .prq-submit-btn{grid-column:1/-1;background:linear-gradient(45deg,#FFC03D,#FFD872);color:#17326F;border:none;padding:1.5rem 4rem;border-radius:50px;font-size:1.3rem;font-weight:700;cursor:pointer;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;box-shadow:0 15px 40px rgba(255,192,61,.6);text-transform:uppercase;letter-spacing:1px}
+            .prq-submit-btn:hover{transform:translateY(-5px) scale(1.05);box-shadow:0 25px 60px rgba(255,192,61,.6)}.prq-submit-btn:before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .6s}.prq-submit-btn:hover:before{left:100%}
+            @keyframes prqBgShift2{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.1) rotate(180deg)}}@keyframes prqGradientShift2{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}@keyframes prqFadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}@keyframes prqSlideInUp2{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
+            @media (max-width:768px){.prq-detail-container{padding:1rem}.prq-job-detail-header{flex-direction:column;text-align:center}.prq-form-grid{grid-template-columns:1fr;gap:1.5rem}.prq-job-details-card,.prq-application-section{padding:2rem 1.5rem}}
+            </style>
 
-                    <div class="col-md-6">
-                        <label>Are you legally authorized to work in KSA?*</label>
-                        <select class="form-select" name="legally_required" required="required">
-                            <option value="">Select</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <label>Resume upload*</label>
-                        <input class="form-control" type="file" name="resume" required="required"/>
-                    </div>
-                    <div class="col-12 text-center">
-                        <button class="btn prq-btn" type="submit">Submit</button>
-                    </div>
-                </form>
-                <script type="text/javascript">
-                document.addEventListener('DOMContentLoaded', () =&gt; {
-                    const input = document.querySelector('input[name="partner_location"]');
-                    const list = document.getElementById('job-location-suggestions');
-                    if (!input || !list) return;
-
-                    let timer = null;
-
-                    list.addEventListener('click', (ev) =&gt; {
-                        const target = ev.target.closest('.prq-suggestion-item');
-                        if (!target) return;
-                        input.value = target.dataset.value || target.textContent || '';
-                        list.innerHTML = '';
-                    });
-
-                    input.addEventListener('blur', () =&gt; {
-                        window.setTimeout(() =&gt; { list.innerHTML = ''; }, 150);
-                    });
-                    input.addEventListener('input', () =&gt; {
-                        const term = input.value.trim();
-                        window.clearTimeout(timer);
-                        if (term.length &lt; 2) {
-                            list.innerHTML = '';
-                            return;
-                        }
-
-                        timer = window.setTimeout(async () =&gt; {
-                            try {
-                                const res = await fetch('/jobs/location_suggest', {
-                                    method: 'POST',
-                                    headers: {'Content-Type': 'application/json'},
-                                    body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {term}, id: Date.now()})
-                                });
-                                const data = await res.json();
-                                const suggestions = data.result || [];
-                                list.innerHTML = suggestions
-                                    .map((item) =&gt; `&lt;button type="button" class="prq-suggestion-item" data-value="${item.replace(/"/g, '&quot;')}"&gt;${item}&lt;/button&gt;`)
-                                    .join('');
-                            } catch (error) {
-                                list.innerHTML = '';
-                            }
-                        }, 250);
+            <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', () =&gt; {
+                const observer = new IntersectionObserver((entries) =&gt; {
+                    entries.forEach((entry) =&gt; {
+                        if (entry.isIntersecting) entry.target.style.animationPlayState = 'running';
                     });
                 });
+                document.querySelectorAll('.prq-job-details-card, .prq-application-section').forEach((el) =&gt; observer.observe(el));
+
+                document.querySelectorAll('.prq-form-control, .prq-form-select').forEach((input) =&gt; {
+                    input.addEventListener('focus', function () { this.parentElement.classList.add('focused'); });
+                    input.addEventListener('blur', function () { this.parentElement.classList.remove('focused'); });
+                });
+
+                const fileInput = document.querySelector('input[type="file"]');
+                fileInput?.addEventListener('change', () =&gt; {});
+
+                const form = document.querySelector('.prq-form-grid');
+                form?.addEventListener('submit', function () {
+                    const btn = this.querySelector('.prq-submit-btn');
+                    if (btn) {
+                        btn.innerHTML = '&lt;i class="fa fa-spinner fa-spin"&gt;&lt;/i&gt; Submitting...';
+                        btn.style.transform = 'scale(1.05)';
+                    }
+                });
+
+                const input = document.querySelector('input[name="partner_location"]');
+                const list = document.getElementById('job-location-suggestions');
+                if (!input || !list) return;
+                let timer = null;
+                list.addEventListener('click', (ev) =&gt; {
+                    const target = ev.target.closest('.prq-suggestion-item');
+                    if (!target) return;
+                    input.value = target.dataset.value || target.textContent || '';
+                    list.innerHTML = '';
+                });
+                input.addEventListener('blur', () =&gt; { window.setTimeout(() =&gt; { list.innerHTML = ''; }, 150); });
+                input.addEventListener('input', () =&gt; {
+                    const term = input.value.trim();
+                    window.clearTimeout(timer);
+                    if (term.length &lt; 2) { list.innerHTML = ''; return; }
+                    timer = window.setTimeout(async () =&gt; {
+                        try {
+                            const res = await fetch('/jobs/location_suggest', {
+                                method: 'POST', headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {term}, id: Date.now()})
+                            });
+                            const data = await res.json();
+                            const suggestions = data.result || [];
+                            list.innerHTML = suggestions.map((item) =&gt; `&lt;button type="button" class="prq-suggestion-item" data-value="${item.replace(/"/g, '&quot;')}"&gt;${item}&lt;/button&gt;`).join('');
+                        } catch (error) { list.innerHTML = ''; }
+                    }, 250);
+                });
+            });
             </script>
-            </div>
         </t>
     </template>
 

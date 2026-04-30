@@ -31,6 +31,16 @@ class HrRecruitmentRequest(models.Model):
         domain="[('department_id', '=', department_id)]",
     )
     is_new_position = fields.Boolean(string="New Position", )
+    hiring_request_type = fields.Selection(
+        [
+            ("ramp", "Ramp"),
+            ("replacement", "Replacement"),
+        ],
+        string="Ramp or Replacement",
+        default="ramp",
+        required=True,
+        tracking=True,
+    )
     new_job_name = fields.Char('New Job Name')
     contract_type_id = fields.Many2one(
         "hr.contract.type",
@@ -199,39 +209,39 @@ class HrRecruitmentRequest(models.Model):
             })
 
     def action_approve_md(self):
-        HrJob = self.env["hr.job"]
         for rec in self:
             if rec.state != "md_approval":
                 continue
             rec._check_md_approver()
-            job = rec.job_id
-            if rec.is_new_position:
-                job_vals = {
-                    "name": rec.new_job_name,
-                    "department_id": rec.department_id.id,
-                    "no_of_recruitment": rec.requested_employees,
-
-                    # new fields
-                    "contract_type_id": rec.contract_type_id.id,
-                    "job_salary": rec.job_salary,
-                    "experience_years": rec.experience_years,
-                    "description": rec.job_summary,
-                }
-
-                job = HrJob.create(job_vals)
-                rec.created_job_id = job
-
-            else:
-                if job:
-                    job.no_of_recruitment += rec.requested_employees
-                else:
-                    raise UserError(_("no job position is configured for this request"))
+            rec._apply_job_changes()
 
             rec.sudo().write({
                 "state": "approved",
                 "md_approved_by_id": self.env.user.id,
                 "md_approved_date": fields.Datetime.now(),
             })
+
+    def _apply_job_changes(self):
+        self.ensure_one()
+        HrJob = self.env["hr.job"]
+        job = self.job_id
+        if self.is_new_position:
+            job_vals = {
+                "name": self.new_job_name,
+                "department_id": self.department_id.id,
+                "no_of_recruitment": self.requested_employees,
+                "contract_type_id": self.contract_type_id.id,
+                "job_salary": self.job_salary,
+                "experience_years": self.experience_years,
+                "description": self.job_summary,
+            }
+            job = HrJob.create(job_vals)
+            self.created_job_id = job
+        else:
+            if job:
+                job.no_of_recruitment += self.requested_employees
+            else:
+                raise UserError(_("no job position is configured for this request"))
 
     def action_approve(self):
         return self.action_approve_md()
