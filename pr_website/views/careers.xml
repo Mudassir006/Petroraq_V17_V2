@@ -55,7 +55,7 @@
 
             <style>
                 .prq-jobs-page {position: relative; min-height: 100vh; overflow-x: hidden; color: #fff; background: linear-gradient(135deg, #17326F 0%, #0F224F 50%, #17326F 100%); padding-bottom: 2rem;}
-                .prq-bg-animation {position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 20% 80%, rgba(255, 192, 61, 0.6) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,.05) 0%, transparent 50%), radial-gradient(circle at 40% 40%, #FFD872 0%, transparent 50%); animation: prqBgShift 20s ease-in-out infinite;}
+                .prq-bg-animation {position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 20% 80%, rgba(255, 192, 61, 0.22) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,.05) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(255, 216, 114, 0.14) 0%, transparent 52%); animation: prqBgShift 20s ease-in-out infinite;}
                 .prq-header,.prq-search-container,.prq-jobs-grid{position: relative; z-index: 2;}
                 .prq-header{text-align:center;padding:4rem 2rem 2rem;}
                 .prq-header h1{font-family:'Orbitron',monospace;font-size:clamp(3rem,8vw,5rem);font-weight:900;background:linear-gradient(45deg,#FFC03D,#FFD872,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px rgba(255,192,61,.6));animation:prqGradientShift 3s ease-in-out infinite;}
@@ -267,7 +267,7 @@
 
             <style>
             .prq-job-detail-page{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#17326F 0%,#0F224F 50%,#17326F 100%);min-height:100vh;color:#fff;position:relative;overflow-x:hidden}
-            .prq-detail-bg-animation{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle at 20% 80%,rgba(255,192,61,.6) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.05) 0%,transparent 50%);animation:prqBgShift2 20s ease-in-out infinite}
+            .prq-detail-bg-animation{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle at 20% 80%,rgba(255,192,61,.18) 0%,transparent 52%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.05) 0%,transparent 50%);animation:prqBgShift2 20s ease-in-out infinite}
             .prq-detail-container{max-width:1200px;margin:0 auto;padding:2rem;position:relative;z-index:2}.prq-detail-header{text-align:center;margin-bottom:4rem;animation:prqFadeInUp 1s ease-out}
             .prq-detail-header h1{font-family:'Orbitron',monospace;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;background:linear-gradient(45deg,#FFC03D,#FFD872,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;filter:drop-shadow(0 0 30px rgba(255,192,61,.6));animation:prqGradientShift2 3s ease-in-out infinite}
             .prq-error-popup{display:flex;align-items:center;gap:.75rem;background:rgba(200,36,36,.2);border:1px solid rgba(255,120,120,.6);color:#fff;padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem;backdrop-filter:blur(10px)}.prq-error-popup i{color:#FFD872}.prq-error-close{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.4rem;cursor:pointer}
