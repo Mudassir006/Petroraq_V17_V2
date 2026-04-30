@@ -4,9 +4,9 @@
         <t t-call="website.layout">
             <section class="prq-jobs-page">
                 <div class="prq-bg-animation"></div>
-                <i class="fas fa-star prq-floating prq-float1"></i>
-                <i class="fas fa-briefcase prq-floating prq-float2"></i>
-                <i class="fas fa-gem prq-floating prq-float3"></i>
+                <i class="fa fa-star prq-floating prq-float1"></i>
+                <i class="fa fa-briefcase prq-floating prq-float2"></i>
+                <i class="fa fa-gem prq-floating prq-float3"></i>
 
                 <header class="prq-header">
                     <h1>Open Positions</h1>
@@ -15,10 +15,10 @@
 
                 <div class="prq-search-container">
                     <div class="prq-search-box">
-                        <i class="fas fa-search prq-search-icon"></i>
+                        <i class="fa fa-search prq-search-icon"></i>
                         <input type="text" class="prq-job-search" placeholder="Search jobs by title, department, or location..."/>
                         <button class="prq-search-btn" type="button">
-                            <i class="fas fa-search"></i> Search
+                            <i class="fa fa-search"></i> Search
                         </button>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                     <t t-foreach="jobs" t-as="job">
                         <div class="prq-job-card">
                             <div class="prq-job-header">
-                                <div class="prq-job-icon"><i class="fas fa-briefcase"></i></div>
+                                <div class="prq-job-icon"><i class="fa fa-briefcase"></i></div>
                                 <div>
                                     <div class="prq-job-title" t-esc="job.name"/>
                                     <div class="prq-job-company">
@@ -46,7 +46,7 @@
                                 </span>
                             </div>
                             <a t-att-href="'/job/%s' % job.id" class="prq-view-details">
-                                <i class="fas fa-eye"></i> View Details
+                                <i class="fa fa-eye"></i> View Details
                             </a>
                         </div>
                     </t>
@@ -125,7 +125,7 @@
                 <div class="prq-detail-container">
                     <div class="prq-detail-header">
                         <a href="/careers" class="prq-back-btn">
-                            <i class="fas fa-arrow-left"></i>
+                            <i class="fa fa-arrow-left"></i>
                             Back to Jobs
                         </a>
                         <h1>Job Details</h1>
@@ -133,7 +133,7 @@
 
                     <section class="prq-job-details-card">
                         <div class="prq-job-detail-header">
-                            <div class="prq-job-icon-large"><i class="fas fa-briefcase"></i></div>
+                            <div class="prq-job-icon-large"><i class="fa fa-briefcase"></i></div>
                             <div class="prq-job-meta">
                                 <h2 t-esc="job.name"/>
                                 <div class="prq-job-company">
@@ -146,28 +146,28 @@
 
                         <div class="prq-job-info-grid">
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fas fa-briefcase"></i></div>
+                                <div class="prq-info-icon"><i class="fa fa-briefcase"></i></div>
                                 <div>
                                     <strong t-esc="job.contract_type_id.name if job._fields.get('contract_type_id') and job.contract_type_id else 'Full-time'"/>
                                     <div>Employment Type</div>
                                 </div>
                             </div>
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fas fa-users"></i></div>
+                                <div class="prq-info-icon"><i class="fa fa-users"></i></div>
                                 <div>
                                     <strong><t t-if="job.no_of_recruitment" t-esc="job.no_of_recruitment"/><t t-else="">Open</t></strong>
                                     <div>Openings</div>
                                 </div>
                             </div>
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div class="prq-info-icon"><i class="fa fa-map-marker-alt"></i></div>
                                 <div>
                                     <strong t-esc="job.address_id.city if job.address_id and job.address_id.city else 'Remote'"/>
                                     <div>Work Location</div>
                                 </div>
                             </div>
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fas fa-building"></i></div>
+                                <div class="prq-info-icon"><i class="fa fa-building"></i></div>
                                 <div>
                                     <strong t-esc="request.website.name"/>
                                     <div>Hiring Company</div>
@@ -181,7 +181,7 @@
                     </section>
 
                     <section id="apply-form" class="prq-application-section">
-                        <h2 class="prq-section-title"><i class="fas fa-paper-plane"></i> Apply Now</h2>
+                        <h2 class="prq-section-title"><i class="fa fa-paper-plane"></i> Apply Now</h2>
                         <form t-att-action="'/job/%s/apply' % job.id" method="post" enctype="multipart/form-data" class="prq-form-grid">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
@@ -246,12 +246,12 @@
                             <div class="prq-form-group prq-full-width">
                                 <label class="prq-form-label required">Resume Upload</label>
                                 <div class="prq-file-upload">
-                                    <div class="prq-file-icon"><i class="fas fa-file-upload"></i></div>
+                                    <div class="prq-file-icon"><i class="fa fa-file-upload"></i></div>
                                     <input class="prq-form-control prq-file-input" type="file" name="resume" accept=".pdf,.doc,.docx" required="required"/>
                                 </div>
                                 <small class="prq-file-help">PDF, DOC, DOCX (Max 5MB)</small>
                             </div>
-                            <button class="prq-submit-btn" type="submit"><i class="fas fa-rocket"></i> Submit Application</button>
+                            <button class="prq-submit-btn" type="submit"><i class="fa fa-rocket"></i> Submit Application</button>
                         </form>
                     </section>
                 </div>
@@ -303,7 +303,7 @@
                 form?.addEventListener('submit', function () {
                     const btn = this.querySelector('.prq-submit-btn');
                     if (btn) {
-                        btn.innerHTML = '&lt;i class="fas fa-spinner fa-spin"&gt;&lt;/i&gt; Submitting...';
+                        btn.innerHTML = '&lt;i class="fa fa-spinner fa-spin"&gt;&lt;/i&gt; Submitting...';
                         btn.style.transform = 'scale(1.05)';
                     }
                 });
