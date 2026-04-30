@@ -39,7 +39,7 @@
                             </div>
                             <div class="prq-job-desc" t-esc="(job.description or '').replace('&lt;br&gt;', ' ')"/>
                             <div class="prq-job-meta">
-                                <span class="prq-job-type" t-esc="job.employment_type_id.name if job.employment_type_id else 'Full-time'"/>
+                                <span class="prq-job-type" t-esc="job.contract_type_id.name if job._fields.get('contract_type_id') and job.contract_type_id else 'Full-time'"/>
                                 <span>
                                     <t t-if="job.no_of_recruitment">Openings: <t t-esc="job.no_of_recruitment"/></t>
                                     <t t-else="">Apply now</t>
