@@ -2,21 +2,119 @@
 <odoo>
     <template id="careers_jobs" name="Careers Jobs">
         <t t-call="website.layout">
-            <div class="container mt-5 mb-5 prq-careers">
-                <div class="prq-banner">Careers</div>
-                <h5 class="mt-3">Open Positions</h5>
-                <div class="row mt-3">
+            <section class="prq-jobs-page">
+                <div class="prq-bg-animation"></div>
+                <i class="fas fa-star prq-floating prq-float1"></i>
+                <i class="fas fa-briefcase prq-floating prq-float2"></i>
+                <i class="fas fa-gem prq-floating prq-float3"></i>
+
+                <header class="prq-header">
+                    <h1>Open Positions</h1>
+                    <p>Join our amazing team and help us build the future. We're always looking for talented people like you!</p>
+                </header>
+
+                <div class="prq-search-container">
+                    <div class="prq-search-box">
+                        <i class="fas fa-search prq-search-icon"></i>
+                        <input type="text" class="prq-job-search" placeholder="Search jobs by title, department, or location..."/>
+                        <button class="prq-search-btn" type="button">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+
+                <div class="prq-jobs-grid">
                     <t t-foreach="jobs" t-as="job">
-                        <div class="col-md-4 mb-3">
-                            <div class="card p-3 h-100 text-center">
-                                <h5 class="prq-job-title" t-esc="job.name"/>
-                                <p t-esc="(job.description or '').split('\n')[0]"/>
-                                <a t-att-href="'/job/%s' % job.id" class="btn btn-md prq-btn mt-3">View Details</a>
+                        <div class="prq-job-card">
+                            <div class="prq-job-header">
+                                <div class="prq-job-icon"><i class="fas fa-briefcase"></i></div>
+                                <div>
+                                    <div class="prq-job-title" t-esc="job.name"/>
+                                    <div class="prq-job-company">
+                                        <t t-esc="request.website.name"/>
+                                        <t t-if="job.address_id and job.address_id.city"> • <t t-esc="job.address_id.city"/></t>
+                                        <t t-else=""> • Remote</t>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="prq-job-desc" t-esc="(job.description or '').replace('&lt;br&gt;', ' ')"/>
+                            <div class="prq-job-meta">
+                                <span class="prq-job-type" t-esc="job.employment_type_id.name if job.employment_type_id else 'Full-time'"/>
+                                <span>
+                                    <t t-if="job.no_of_recruitment">Openings: <t t-esc="job.no_of_recruitment"/></t>
+                                    <t t-else="">Apply now</t>
+                                </span>
+                            </div>
+                            <a t-att-href="'/job/%s' % job.id" class="prq-view-details">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
                         </div>
                     </t>
                 </div>
-            </div>
+            </section>
+
+            <style>
+                .prq-jobs-page {position: relative; min-height: 100vh; overflow-x: hidden; color: #fff; background: linear-gradient(135deg, #17326F 0%, #0F224F 50%, #17326F 100%); padding-bottom: 2rem;}
+                .prq-bg-animation {position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 20% 80%, rgba(255, 192, 61, 0.6) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,.05) 0%, transparent 50%), radial-gradient(circle at 40% 40%, #FFD872 0%, transparent 50%); animation: prqBgShift 20s ease-in-out infinite;}
+                .prq-header,.prq-search-container,.prq-jobs-grid{position: relative; z-index: 2;}
+                .prq-header{text-align:center;padding:4rem 2rem 2rem;}
+                .prq-header h1{font-family:'Orbitron',monospace;font-size:clamp(3rem,8vw,5rem);font-weight:900;background:linear-gradient(45deg,#FFC03D,#FFD872,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px rgba(255,192,61,.6));animation:prqGradientShift 3s ease-in-out infinite;}
+                .prq-header p{font-size:clamp(1.2rem,3vw,1.5rem);opacity:.9;max-width:600px;margin:1rem auto 0;}
+                .prq-search-container{max-width:600px;margin:2rem auto;padding:0 2rem;}
+                .prq-search-box{display:flex;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:50px;padding:1rem 1.5rem;backdrop-filter:blur(10px);transition:.3s;}
+                .prq-search-box:hover{border-color:#FFC03D;box-shadow:0 10px 30px rgba(255,192,61,.6);} .prq-search-icon{color:rgba(255,255,255,.6);margin-right:1rem;align-self:center;}
+                .prq-job-search{flex:1;background:transparent;border:none;color:#fff;font-size:1.1rem;outline:none;padding:.5rem;}
+                .prq-job-search::placeholder{color:rgba(255,255,255,.6);} .prq-search-btn{background:#FFC03D;color:#17326F;border:none;padding:.8rem 1.5rem;border-radius:50px;font-weight:600;cursor:pointer;transition:.3s;}
+                .prq-search-btn:hover{transform:scale(1.05);box-shadow:0 5px 15px rgba(255,192,61,.6);} .prq-jobs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:2rem;max-width:1400px;margin:0 auto;padding:2rem;}
+                .prq-job-card{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:2rem;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;animation:prqSlideInUp .8s ease-out forwards;opacity:0;transform:translateY(50px);} 
+                .prq-job-card:nth-child(1){animation-delay:.1s}.prq-job-card:nth-child(2){animation-delay:.2s}.prq-job-card:nth-child(3){animation-delay:.3s}.prq-job-card:nth-child(4){animation-delay:.4s}.prq-job-card:nth-child(5){animation-delay:.5s}.prq-job-card:nth-child(6){animation-delay:.6s}
+                .prq-job-card:hover{transform:translateY(-15px) scale(1.02);box-shadow:0 20px 60px rgba(23,50,111,.3);border-color:#FFC03D;}
+                .prq-job-card:before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#FFC03D,#FFD872);transform:scaleX(0);transition:transform .4s ease}.prq-job-card:hover:before{transform:scaleX(1)}
+                .prq-job-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem}.prq-job-icon{width:60px;height:60px;background:linear-gradient(135deg,#FFC03D,#FFD872);border-radius:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#17326F;font-size:1.5rem}
+                .prq-job-title{font-size:1.4rem;font-weight:700;line-height:1.3}.prq-job-company{font-size:.95rem;color:#FFD872;font-weight:500}
+                .prq-job-desc{color:rgba(255,255,255,.9);line-height:1.6;margin-bottom:1.5rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.95rem}
+                .prq-job-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;font-size:.9rem;opacity:.8}.prq-job-type{background:rgba(255,192,61,.2);color:#FFC03D;padding:.3rem .8rem;border-radius:20px;font-weight:500;font-size:.85rem}
+                .prq-view-details{display:block;width:100%;text-align:center;text-decoration:none;background:linear-gradient(45deg,#FFC03D,#FFD872);color:#17326F;border:none;padding:1rem 2rem;border-radius:50px;font-size:1rem;font-weight:600;transition:.3s;position:relative;overflow:hidden}
+                .prq-view-details:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(255,192,61,.6);color:#17326F}.prq-view-details:before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .5s}.prq-view-details:hover:before{left:100%}
+                .prq-floating{position:fixed;color:#FFC03D;filter:drop-shadow(0 0 10px rgba(255,192,61,.6));animation:prqFloatAround 20s linear infinite;z-index:1;pointer-events:none}.prq-float1{top:10%;left:5%;font-size:1.5rem}.prq-float2{top:70%;right:10%;font-size:1.2rem;animation-delay:7s}.prq-float3{bottom:20%;left:15%;font-size:2rem;animation-delay:14s}
+                @keyframes prqBgShift{0%,100%{transform:scale(1) rotate(0);opacity:.8}50%{transform:scale(1.1) rotate(180deg);opacity:1}}
+                @keyframes prqGradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+                @keyframes prqSlideInUp{to{opacity:1;transform:translateY(0)}}
+                @keyframes prqFloatAround{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-100vh) rotate(360deg)}}
+                @media (max-width:768px){.prq-jobs-grid{grid-template-columns:1fr;gap:1.5rem;padding:1rem}.prq-header{padding:2rem 1rem 1rem}}
+            </style>
+
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', () =&gt; {
+                    const searchInput = document.querySelector('.prq-job-search');
+                    const searchBtn = document.querySelector('.prq-search-btn');
+                    const jobCards = document.querySelectorAll('.prq-job-card');
+
+                    const observer = new IntersectionObserver((entries) =&gt; {
+                        entries.forEach((entry) =&gt; {
+                            if (entry.isIntersecting) entry.target.style.animationPlayState = 'running';
+                        });
+                    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+                    jobCards.forEach((card) =&gt; observer.observe(card));
+
+                    const filterJobs = (query) =&gt; {
+                        jobCards.forEach((card) =&gt; {
+                            const title = (card.querySelector('.prq-job-title')?.textContent || '').toLowerCase();
+                            const company = (card.querySelector('.prq-job-company')?.textContent || '').toLowerCase();
+                            const desc = (card.querySelector('.prq-job-desc')?.textContent || '').toLowerCase();
+                            if (title.includes(query) || company.includes(query) || desc.includes(query)) {
+                                card.style.display = 'block';
+                                card.style.animation = 'none';
+                                setTimeout(() =&gt; { card.style.animation = 'prqSlideInUp 0.8s ease-out forwards'; }, 100);
+                            } else card.style.display = 'none';
+                        });
+                    };
+
+                    searchInput?.addEventListener('input', (e) =&gt; filterJobs(e.target.value.toLowerCase()));
+                    searchBtn?.addEventListener('click', () =&gt; filterJobs((searchInput?.value || '').toLowerCase()));
+                });
+            </script>
         </t>
     </template>
 
