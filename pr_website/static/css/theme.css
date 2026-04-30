@@ -4,8 +4,8 @@
     top: 0;
     width: 100%;
     z-index: 999;
-    background: #fff;
-    border-bottom: 1px solid #e5e7eb;
+    background: #17326F;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .petroraq-navbar {
@@ -33,7 +33,7 @@
 }
 
 .nav-link {
-    color: #122AA0;
+    color: #fff;
     font-weight: 600;
     padding: 10px 15px;
     text-transform: uppercase;
@@ -41,6 +41,10 @@
 
 .nav-link:hover {
     color: #FDB514; /* Yellow hover */
+}
+
+.dropdown-toggle {
+    color: #fff;
 }
 
 /* DROPDOWN */
@@ -1031,7 +1035,7 @@
 }
 
 .nav-link {
-    color: #111;
+    color: #fff;
     text-decoration: none;
     font-weight: 600;
     font-size: 14px;
@@ -1065,7 +1069,7 @@
 .dropdown-menu li a {
     display: block;
     padding: 10px 18px;
-    color: #111;
+    color: #fff;
     text-decoration: none;
     font-size: 14px;
 }
@@ -1095,14 +1099,14 @@
 }
 
 .btn-signin {
-    color: #111;
-    border: 1px solid #111;
+    color: #fff;
+    border: 1px solid #fff;
     background: transparent;
 }
 
 .btn-signin:hover {
-    background: #111;
-    color: #fff;
+    background: #fff;
+    color: #17326F;
 }
 
 .btn-quote {
@@ -1113,7 +1117,7 @@
 
 .btn-quote:hover {
     background: #111;
-    border-color: #111;
+    border-color: #fff;
     color: #fff;
 }
 
@@ -1136,8 +1140,8 @@
 
 .mobile-menu {
     display: none;
-    background: #fff;
-    border-top: 1px solid #eee;
+    background: #17326F;
+    border-top: 1px solid rgba(255,255,255,.15);
 }
 
 .mobile-menu.active {
@@ -1154,7 +1158,7 @@
 .mobile-dropdown > a {
     display: block;
     padding: 14px 24px;
-    color: #111;
+    color: #fff;
     text-decoration: none;
     font-weight: 600;
     border-bottom: 1px solid #eee;
@@ -1172,7 +1176,7 @@
 .mobile-dropdown ul li a {
     display: block;
     padding: 12px 38px;
-    color: #111;
+    color: #fff;
     text-decoration: none;
     border-bottom: 1px solid #e5e5e5;
 }
