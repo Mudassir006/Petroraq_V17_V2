@@ -34,6 +34,7 @@
                 <field name="name"/>
                 <field name="department_id"/>
                 <field name="is_new_position"/>
+                <field name="hiring_request_type"/>
                 <field name="job_id"/>
                 <field name="new_job_name"/>
                 <field name="requested_employees"/>
@@ -54,6 +55,7 @@
                 <field name="name"/>
                 <field name="department_id"/>
                 <field name="job_id"/>
+                <field name="hiring_request_type"/>
                 <field name="state"/>
 
                 <filter string="New Positions" name="new_positions"
@@ -157,6 +159,7 @@
                         <!-- RIGHT SIDE: Position Details -->
                         <group string="Position Details">
                             <field name="is_new_position"/>
+                            <field name="hiring_request_type"/>
                             <field name="job_id" invisible="is_new_position"/>
                             <field name="new_job_name" invisible="not is_new_position"/>
                             <field name="requested_employees"/>
