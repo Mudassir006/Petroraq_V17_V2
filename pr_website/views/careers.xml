@@ -51,7 +51,8 @@
                     </div>
                     <div class="col-md-6">
                         <label>Location*</label>
-                        <input class="form-control" name="partner_location" required="required"/>
+                        <input class="form-control" name="partner_location" required="required" list="job-location-suggestions" autocomplete="off"/>
+                        <datalist id="job-location-suggestions"/>
                     </div>
                     <div class="col-md-6">
                         <label>Total years of experience*</label>
@@ -93,4 +94,44 @@
             </div>
         </t>
     </template>
+
+    <template id="careers_jobs_location_autocomplete_assets" inherit_id="website.layout" name="Careers Location Autocomplete Script">
+        <xpath expr="//body" position="inside">
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', () =&gt; {
+                    const input = document.querySelector('input[name="partner_location"]');
+                    const list = document.getElementById('job-location-suggestions');
+                    if (!input || !list) return;
+
+                    let timer = null;
+                    input.addEventListener('input', () =&gt; {
+                        const term = input.value.trim();
+                        window.clearTimeout(timer);
+                        if (term.length &lt; 2) {
+                            list.innerHTML = '';
+                            return;
+                        }
+
+                        timer = window.setTimeout(async () =&gt; {
+                            try {
+                                const res = await fetch('/jobs/location_suggest', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {term}, id: Date.now()})
+                                });
+                                const data = await res.json();
+                                const suggestions = data.result || [];
+                                list.innerHTML = suggestions
+                                    .map((item) =&gt; `<option value="${item.replace(/"/g, '&quot;')}"></option>`)
+                                    .join('');
+                            } catch (error) {
+                                list.innerHTML = '';
+                            }
+                        }, 250);
+                    });
+                });
+            </script>
+        </xpath>
+    </template>
+
 </odoo>

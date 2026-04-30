@@ -1,7 +1,14 @@
+import logging
 import base64
+import json
+from urllib.parse import quote_plus
+from urllib.request import Request, urlopen
 
 from odoo import http
 from odoo.http import request
+
+
+_logger = logging.getLogger(__name__)
 
 
 class CareersController(http.Controller):
@@ -57,3 +64,20 @@ class CareersController(http.Controller):
             })
 
         return request.redirect('/jobs?applied=1')
+
+    @http.route('/jobs/location_suggest', type='json', auth='public', website=True, methods=['POST'], csrf=False)
+    def location_suggest(self, term=None, **kwargs):
+        query = (term or '').strip()
+        if len(query) < 2:
+            return []
+
+        endpoint = f"https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&q={quote_plus(query)}"
+        req = Request(endpoint, headers={'User-Agent': 'Petroraq-Odoo/1.0 (careers autocomplete)'})
+        try:
+            with urlopen(req, timeout=3) as response:
+                payload = json.loads(response.read().decode('utf-8'))
+        except Exception as exc:
+            _logger.warning('Location suggestion lookup failed: %s', exc)
+            return []
+
+        return [item.get('display_name') for item in payload if item.get('display_name')]
