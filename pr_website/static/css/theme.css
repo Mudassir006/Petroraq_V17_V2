@@ -992,10 +992,11 @@
 
 .petroraq-header {
     width: 100%;
-    background: #fff;
-    position: relative;
+    background: #17326F;
+    position: sticky;
+    top: 0;
     z-index: 999;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
 }
 
 .petroraq-navbar {
@@ -1044,7 +1045,7 @@
 }
 
 .nav-link:hover {
-    color: #c49a3a;
+    color: #FDB514;
 }
 
 .dropdown-menu {
@@ -1069,14 +1070,14 @@
 .dropdown-menu li a {
     display: block;
     padding: 10px 18px;
-    color: #fff;
+    color: #17326F;
     text-decoration: none;
     font-size: 14px;
 }
 
 .dropdown-menu li a:hover {
     background: #f5f5f5;
-    color: #c49a3a;
+    color: #FDB514;
 }
 
 .nav-right {
@@ -1116,9 +1117,9 @@
 }
 
 .btn-quote:hover {
-    background: #111;
-    border-color: #fff;
-    color: #fff;
+    background: #FDB514;
+    border-color: #FDB514;
+    color: #17326F;
 }
 
 .nav-mobile-toggle {
@@ -1133,7 +1134,7 @@
     display: block;
     width: 26px;
     height: 3px;
-    background: #111;
+    background: #fff;
     margin: 5px 0;
     transition: 0.3s;
 }
@@ -1161,7 +1162,7 @@
     color: #fff;
     text-decoration: none;
     font-weight: 600;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid rgba(255,255,255,.18);
 }
 
 .mobile-dropdown ul {
