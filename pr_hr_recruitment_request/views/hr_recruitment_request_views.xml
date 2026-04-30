@@ -100,7 +100,7 @@
 
                     <button name="action_reject" string="Reject"
                             type="object" class="btn-secondary"
-                            invisible="state not in ('hr_approval','hrm_approval','md_approval')"/>
+                            invisible="(state == 'hr_approval' and not is_hr_supervisor_approver) or (state == 'hrm_approval' and not is_hrm_approver) or (state == 'md_approval' and not is_md_approver) or state not in ('hr_approval','hrm_approval','md_approval')"/>
 
                     <button name="action_set_done" string="Mark Done"
                             type="object" class="btn-success"

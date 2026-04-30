@@ -193,16 +193,11 @@ class HrRecruitmentRequest(models.Model):
             if rec.state != "hr_approval":
                 continue
             rec._check_hr_supervisor_approver()
-            vals = {
+            rec.sudo().write({
+                "state": "hrm_approval",
                 "hr_approved_by_id": self.env.user.id,
                 "hr_approved_date": fields.Datetime.now(),
-            }
-            if rec.hiring_request_type == "replacement":
-                rec._apply_job_changes()
-                vals["state"] = "approved"
-            else:
-                vals["state"] = "md_approval"
-            rec.sudo().write(vals)
+            })
 
     def action_approve_hrm(self):
         for rec in self:
