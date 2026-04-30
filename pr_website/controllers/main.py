@@ -69,7 +69,11 @@ class CareersController(http.Controller):
                 'type': 'binary',
             })
 
-        return request.redirect('/jobs?applied=1')
+        return request.redirect('/jobs/thank-you')
+
+    @http.route('/jobs/thank-you', type='http', auth='public', website=True, sitemap=False)
+    def job_thank_you(self, **kwargs):
+        return request.render('pr_website.careers_thank_you')
 
     @http.route('/jobs/location_suggest', type='json', auth='public', website=True, methods=['POST'], csrf=False)
     def location_suggest(self, term=None, **kwargs):

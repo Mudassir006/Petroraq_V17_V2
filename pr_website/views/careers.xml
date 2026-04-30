@@ -155,4 +155,22 @@
 
     
 
+
+
+    <template id="careers_thank_you" name="Careers Thank You">
+        <t t-call="website.layout">
+            <section class="prq-thankyou-wrapper">
+                <div class="container">
+                    <div class="prq-thankyou-card">
+                        <div class="prq-thankyou-icon">✓</div>
+                        <h1>Thank You!</h1>
+                        <p>We received your application successfully.</p>
+                        <p>Our hiring team will review your profile and contact you if your background matches the role.</p>
+                        <a href="/" class="prq-thankyou-btn">Go Back to Homepage</a>
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
+
 </odoo>
