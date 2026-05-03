@@ -3,69 +3,90 @@
 
         <xpath expr="//footer" position="replace">
 
-            <footer id="petroraq-footer" class="petroraq-footer o_not_editable">
-                <div class="footer-main container">
+            <footer style="background-color:#06294B; color:#fff; font-family: 'Arial', sans-serif; padding: 40px 20px;" id="petroraq-footer" class="o_not_editable">
+                <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap;">
 
-                    <!-- COLUMN 1: LOGO -->
-                    <div class="footer-col footer-logo">
-                        <img src="/pr_website/static/images/logo-white.png"
-                             alt="Petroraq Logo"
-                             class="footer-logo-img"/>
+                    <!-- Logo and Description -->
+                    <div style="flex: 1; min-width: 220px; margin-right: 40px;">
+                        <div style="margin-bottom: 20px;">
+                            <div style="width: 150px; height: 80px; background-color: transparent; margin-bottom: 15px;">
+                                <img src="/pr_website/static/images/logo-white.png" alt="Pertoraq Logo" style="width: 150px; height: 80px; object-fit: contain;"/>
+                            </div>
+
+                            <p style="font-size: 14px; line-height: 1.5; color: #fff;">
+                                We deliver world-class engineering, procurement, and construction solutions that build a stronger tomorrow.
+                            </p>
+                        </div>
+
+                        <!-- Social Media Icons -->
+                        <div style="display: flex; gap: 15px; font-size: 20px;">
+                            <a href="#" aria-label="Linkedin" style="color: white;">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" aria-label="Facebook" style="color: white;">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" aria-label="Twitter" style="color: white;">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" aria-label="YouTube" style="color: white;">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
                     </div>
 
-                    <!-- COLUMN 2: OUR SERVICES -->
-                    <div class="footer-col">
-                        <h3 class="footer-title">Our Services</h3>
-                        <ul class="footer-list">
-                            <li>Design &amp; Engineering</li>
-                            <li>Architecture &amp; Planning</li>
-                            <li>Civil &amp; Structural</li>
-                            <li>Electrical &amp; Telecommunication</li>
-                            <li>Mechanical &amp; Piping</li>
-                            <li>Civil &amp; Structural</li>
-                            <li>CAD Services</li>
-                            <li>Other Services</li>
+                    <!-- Divider -->
+                    <div style="width: 1px; background-color: #243b70; margin: 0 40px; min-height: 200px;"></div>
+
+                    <!-- Quick Links -->
+                    <div style="flex: 1; min-width: 140px; color: #fff; font-size: 14px;">
+                        <h4 style="font-weight: 600; margin-bottom: 15px;">Quick Links</h4>
+                        <ul style="list-style: none; padding: 0; margin: 0; line-height: 2;">
+                            <li><a href="#" style="color: #fff; text-decoration: none;">Home</a></li>
+                            <li><a href="#" style="color: #fff; text-decoration: none;">About Us</a></li>
+                            <li><a href="#" style="color: #fff; text-decoration: none;">Services</a></li>
+                            <li><a href="#" style="color: #fff; text-decoration: none;">Projects</a></li>
+                            <li><a href="#" style="color: #fff; text-decoration: none;">Certifications</a></li>
+                            <li><a href="#" style="color: #fff; text-decoration: none;">Contact</a></li>
                         </ul>
                     </div>
 
-                    <!-- COLUMN 3: OUR OFFICE -->
-                    <div class="footer-col">
-                        <h3 class="footer-title">Our Office</h3>
-
-                        <p class="footer-text">
-                            Majd Square Building, King Faisal (West) Rd, AlJubail, KSA.
+                    <!-- Contact Us -->
+                    <div style="flex: 1; min-width: 180px; color: #fff; font-size: 14px;">
+                        <h4 style="font-weight: 600; margin-bottom: 15px;">Contact Us</h4>
+                        <p style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-map-marker-alt" style="color:#e9a23e;"></i> Al Mansour, Baghdad, Iraq
                         </p>
-
-                        <p class="footer-subtitle">CONTACT US</p>
-                        <p class="footer-text">PHONE: (+966) 13-361-4446</p>
-
-                        <p class="footer-subtitle">FOR COMPANIES:</p>
-                        <p class="footer-text">
-                            (Partnership, Sales, Investments, etc.)<br/>
-                            info@petroraq.com<br/>
-                            procurement@petroraq.com
+                        <p style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-phone-alt" style="color:#e9a23e;"></i> +964 770 123 4567
                         </p>
-
-                        <hr class="footer-line"/>
-
-                        <p class="footer-subtitle">FOR INDIVIDUALS:</p>
-                        <p class="footer-text">
-                            (Job Application, Complaint, etc.)<br/>
-                            hr@petroraq.com
+                        <p style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-envelope" style="color:#e9a23e;"></i> info@pertoraq.com
+                        </p>
+                        <p style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-globe" style="color:#e9a23e;"></i> www.pertoraq.com
                         </p>
                     </div>
 
-                    <!-- COLUMN 4: ABOUT US -->
-                    <div class="footer-col">
-                        <h3 class="footer-title">About Us</h3>
-                        <a href="/about-us" class="footer-about-btn">ABOUT</a>
+                    <!-- Request a Quote -->
+                    <div style="flex: 1; min-width: 220px; color: #fff; font-size: 14px;">
+                        <h4 style="font-weight: 600; margin-bottom: 15px;">Request a Quote</h4>
+                        <p style="margin-bottom: 20px;">
+                            Tell us about your project and our team will get back to you.
+                        </p>
+                        <button style="background-color: #e9a23e; border: none; color: #fff; padding: 10px 22px; border-radius: 4px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            Request a Quote <i class="fas fa-arrow-right"></i>
+                        </button>
                     </div>
 
                 </div>
 
-                <!-- COPYRIGHT BAR -->
-                <div class="footer-bottom">
-                    <p>Copyright © 2025 Petroraq Engineering Company. Ltd</p>
+                <!-- Footer Bottom -->
+                <div style="border-top: 1px solid #1b3961; margin-top: 35px; padding-top: 20px; font-size: 12px; color: #7a8fbf; max-width: 1200px; margin-left: auto; margin-right: auto; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                    <div>© 2024 PERTORAQ Engineering &amp; Construction. All Rights Reserved.</div>
+                    <div>
+                        <a href="#" style="color: #7a8fbf; text-decoration: none;">Privacy Policy</a> <span style="margin: 0 7px;">|</span> <a href="#" style="color: #7a8fbf; text-decoration: none;">Terms of Use</a>
+                    </div>
                 </div>
 
             </footer>
