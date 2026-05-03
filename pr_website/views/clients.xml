@@ -474,7 +474,7 @@
                             <div class="why-grid">
                                 <div class="why-card">
                                     <div class="why-icon">
-                                        <i class="fa fa-hard-hat"></i>
+                                        <i class="fa fa-wrench"></i>
                                     </div>
                                     <h4>Engineering Excellence</h4>
                                     <p>Advanced engineering solutions delivered with precision and technical
@@ -483,7 +483,7 @@
                                 </div>
                                 <div class="why-card">
                                     <div class="why-icon">
-                                        <i class="fa fa-clipboard-list"></i>
+                                        <i class="fa fa-list-alt"></i>
                                     </div>
                                     <h4>Reliable Delivery</h4>
                                     <p>Proven track record of on-time delivery within scope, budget, and quality
