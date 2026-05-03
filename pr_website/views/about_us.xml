@@ -469,22 +469,22 @@
                                 </div>
                                 <div class="who-stats">
                                     <div class="stat-card">
-                                        <i class="fa-solid fa-user-group"></i>
+                                        <i class="fa fa-users"></i>
                                         <h3>Multidisciplinary<br/>Expertise</h3>
                                         <p>End-to-end solutions across all engineering and construction disciplines.</p>
                                     </div>
                                     <div class="stat-card">
-                                        <i class="fa-solid fa-users"></i>
+                                        <i class="fa fa-users"></i>
                                         <h3>801+<br/><span style="font-weight: 500; font-size: 13px;">Workforce</span></h3>
                                         <p>Skilled professionals driving projects with excellence and integrity.</p>
                                     </div>
                                     <div class="stat-card">
-                                        <i class="fa-solid fa-location-dot"></i>
+                                        <i class="fa fa-map-marker"></i>
                                         <h3>Saudi Arabia<br/>&amp; GCC</h3>
                                         <p>Delivering projects across Saudi Arabia and the GCC region.</p>
                                     </div>
                                     <div class="stat-card">
-                                        <i class="fa-solid fa-shield-halved"></i>
+                                        <i class="fa fa-shield"></i>
                                         <h3>ISO<br/>Certified</h3>
                                         <p>Committed to international standards in quality, safety and environment.</p>
                                     </div>
@@ -498,14 +498,14 @@
                         <div class="pr-container">
                             <div class="mv-grid">
                                 <div class="mv-card">
-                                    <div class="mv-icon"><i class="fa-solid fa-bullseye"></i></div>
+                                    <div class="mv-icon"><i class="fa fa-bullseye"></i></div>
                                     <div class="mv-text">
                                         <h3>Our Mission</h3>
                                         <p>To deliver world-class engineering and construction solutions built on innovation, quality, and client satisfaction while fostering long-term partnerships grounded in trust and excellence.</p>
                                     </div>
                                 </div>
                                 <div class="mv-card">
-                                    <div class="mv-icon"><i class="fa-regular fa-eye"></i></div>
+                                    <div class="mv-icon"><i class="fa fa-eye"></i></div>
                                     <div class="mv-text">
                                         <h3>Our Vision</h3>
                                         <p>To be a global leader in engineering and construction, recognized for our quality, innovation, and commitment to sustainable development.</p>
@@ -521,32 +521,32 @@
                             <h2 class="section-title">Our Core Values</h2>
                             <div class="values-grid">
                                 <div class="value-card">
-                                    <i class="fa-solid fa-shield-halved"></i>
+                                    <i class="fa fa-shield"></i>
                                     <h4>Integrity</h4>
                                     <p>We act with honesty, transparency and ethical responsibility.</p>
                                 </div>
                                 <div class="value-card">
-                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa fa-star"></i>
                                     <h4>Excellence</h4>
                                     <p>We strive for the highest standards in everything we do.</p>
                                 </div>
                                 <div class="value-card">
-                                    <i class="fa-solid fa-lightbulb"></i>
+                                    <i class="fa fa-lightbulb"></i>
                                     <h4>Innovation</h4>
                                     <p>We embrace new ideas and technologies to create better solutions.</p>
                                 </div>
                                 <div class="value-card">
-                                    <i class="fa-solid fa-people-group"></i>
+                                    <i class="fa fa-users"></i>
                                     <h4>Collaboration</h4>
                                     <p>We believe in teamwork and strong partnerships to achieve success.</p>
                                 </div>
                                 <div class="value-card">
-                                    <i class="fa-solid fa-leaf"></i>
+                                    <i class="fa fa-leaf"></i>
                                     <h4>Sustainability</h4>
                                     <p>We are committed to building a better future for generations to come.</p>
                                 </div>
                                 <div class="value-card">
-                                    <i class="fa-solid fa-helmet-safety"></i>
+                                    <i class="fa fa-wrench"></i>
                                     <h4>Safety</h4>
                                     <p>We prioritize the health and safety of our people and communities.</p>
                                 </div>
@@ -560,41 +560,41 @@
                             <h2 class="section-title">Our Expertise</h2>
                             <div class="expertise-grid">
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-compass-drafting"></i>
+                                    <i class="fa fa-pencil-square-o"></i>
                                     <p>Engineering &amp; Design</p>
                                 </div>
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-cart-shopping"></i>
+                                    <i class="fa fa-shopping-cart"></i>
                                     <p>Procurement</p>
                                 </div>
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-helmet-safety"></i>
+                                    <i class="fa fa-wrench"></i>
                                     <p>Construction</p>
                                 </div>
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-clipboard-list"></i>
+                                    <i class="fa fa-list-alt"></i>
                                     <p>Project Management</p>
                                 </div>
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-bridge"></i>
+                                    <i class="fa fa-road"></i>
                                     <p>Infrastructure &amp; Civil Projects</p>
                                 </div>
                             </div>
                             <div class="expertise-grid-4">
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-bolt"></i>
+                                    <i class="fa fa-bolt"></i>
                                     <p>MEP Contracting</p>
                                 </div>
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-gears"></i>
+                                    <i class="fa fa-cogs"></i>
                                     <p>Industrial Equipment Procurement &amp; Installation</p>
                                 </div>
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-chart-line"></i>
+                                    <i class="fa fa-chart-line"></i>
                                     <p>Value Engineering</p>
                                 </div>
                                 <div class="expertise-card">
-                                    <i class="fa-solid fa-building"></i>
+                                    <i class="fa fa-building"></i>
                                     <p>Design &amp; Build Contracting</p>
                                 </div>
                             </div>
@@ -607,12 +607,12 @@
                             <h2 class="section-title">Quality, HSE &amp; Certifications</h2>
                             <div class="certs-grid">
                                 <div class="cert-card">
-                                    <div class="cert-icon"><i class="fa-solid fa-award"></i></div>
+                                    <div class="cert-icon"><i class="fa fa-trophy"></i></div>
                                     <h4>QA/QC</h4>
                                     <p>Robust quality assurance and control processes ensuring consistent project excellence.</p>
                                 </div>
                                 <div class="cert-card">
-                                    <div class="cert-icon"><i class="fa-solid fa-shield-heart"></i></div>
+                                    <div class="cert-icon"><i class="fa fa-shield"></i></div>
                                     <h4>HSE</h4>
                                     <p>Comprehensive Health, Safety &amp; Environment programs for a safe and responsible workplace.</p>
                                 </div>
@@ -641,7 +641,7 @@
                             <div class="cta-banner">
                                 <div class="cta-left">
                                     <div class="hex-icon">
-                                        <i class="fa-solid fa-building"></i>
+                                        <i class="fa fa-building"></i>
                                     </div>
                                     <div class="cta-text">
                                         <h3>Building the Future, Together.</h3>
@@ -650,10 +650,10 @@
                                 </div>
                                 <div class="cta-buttons">
                                     <a href="/contact-us" class="btn-cta-primary">
-                                        Contact Us <i class="fa-solid fa-arrow-right"></i>
+                                        Contact Us <i class="fa fa-arrow-right"></i>
                                     </a>
                                     <a href="/projects" class="btn-cta-outline">
-                                        Explore Our Projects <i class="fa-solid fa-arrow-right"></i>
+                                        Explore Our Projects <i class="fa fa-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>

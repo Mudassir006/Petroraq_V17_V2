@@ -551,11 +551,11 @@
                             <div class="hero-buttons">
                                 <a href="#openings" class="btn-primary">
                                     View Open Positions
-                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <i class="fa fa-arrow-right"></i>
                                 </a>
                                 <a href="#life" class="btn-outline">
                                     Life at PETRORAQ
-                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <i class="fa fa-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
@@ -575,22 +575,22 @@
                             </div>
                             <div class="stats-grid">
                                 <div class="stat-card">
-                                    <i class="fa-solid fa-user-group"></i>
+                                    <i class="fa fa-users"></i>
                                     <h3>250+</h3>
                                     <p>Employees</p>
                                 </div>
                                 <div class="stat-card">
-                                    <i class="fa-solid fa-globe"></i>
+                                    <i class="fa fa-globe"></i>
                                     <h3>12+</h3>
                                     <p>Years Experience</p>
                                 </div>
                                 <div class="stat-card">
-                                    <i class="fa-solid fa-building"></i>
+                                    <i class="fa fa-building"></i>
                                     <h3>150+</h3>
                                     <p>Projects</p>
                                 </div>
                                 <div class="stat-card">
-                                    <i class="fa-solid fa-location-dot"></i>
+                                    <i class="fa fa-map-marker"></i>
                                     <h3>5</h3>
                                     <p>Countries</p>
                                 </div>
@@ -599,32 +599,32 @@
 
                         <div class="benefits-grid">
                             <div class="benefit-card">
-                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                                <i class="fa fa-money"></i>
                                 <h4>Competitive Compensation</h4>
                                 <p>Attractive salary packages and performance-based incentives.</p>
                             </div>
                             <div class="benefit-card">
-                                <i class="fa-solid fa-graduation-cap"></i>
+                                <i class="fa fa-graduation-cap"></i>
                                 <h4>Professional Development</h4>
                                 <p>Continuous learning opportunities and career growth pathways.</p>
                             </div>
                             <div class="benefit-card">
-                                <i class="fa-solid fa-shield-halved"></i>
+                                <i class="fa fa-shield"></i>
                                 <h4>Safety-First Culture</h4>
                                 <p>A strong commitment to health, safety, and environment.</p>
                             </div>
                             <div class="benefit-card">
-                                <i class="fa-solid fa-industry"></i>
+                                <i class="fa fa-industry"></i>
                                 <h4>Diverse Projects</h4>
                                 <p>Work on challenging industrial and infrastructure projects.</p>
                             </div>
                             <div class="benefit-card">
-                                <i class="fa-solid fa-people-group"></i>
+                                <i class="fa fa-users"></i>
                                 <h4>Team Collaboration</h4>
                                 <p>Collaborative teams that value respect, trust, and teamwork.</p>
                             </div>
                             <div class="benefit-card">
-                                <i class="fa-solid fa-award"></i>
+                                <i class="fa fa-trophy"></i>
                                 <h4>Performance Recognition</h4>
                                 <p>We recognize achievements and celebrate our people.</p>
                             </div>
@@ -638,7 +638,7 @@
                         <div class="openings-header">
                             <h2>Current Openings</h2>
                             <div class="search-box">
-                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <i class="fa fa-search"></i>
                                 <input type="text" class="prq-job-search"
                                        placeholder="Search jobs by title, department, or location..."/>
                                 <button class="prq-search-btn" type="button">Search</button>
@@ -652,18 +652,18 @@
                                         <h3 class="prq-job-title" t-esc="job.name"/>
                                         <div class="job-meta">
                                             <span class="prq-job-company">
-                                                <i class="fa-solid fa-briefcase"></i>
+                                                <i class="fa fa-briefcase"></i>
                                                 <t t-if="job.department_id" t-esc="job.department_id.name"/>
                                                 <t t-else="">General</t>
                                             </span>
                                             <span>
-                                                <i class="fa-solid fa-location-dot"></i>
+                                                <i class="fa fa-map-marker"></i>
                                                 <t t-if="job.address_id and job.address_id.city"
                                                    t-esc="job.address_id.city"/>
                                                 <t t-else="">Remote</t>
                                             </span>
                                             <span>
-                                                <i class="fa-regular fa-clock"></i>
+                                                <i class="fa fa-clock-o"></i>
                                                 <t t-if="job._fields.get('contract_type_id') and job.contract_type_id"
                                                    t-esc="job.contract_type_id.name"/>
                                                 <t t-else="">Full-time</t>
@@ -676,7 +676,7 @@
                             </t>
                             <t t-else="">
                                 <div class="no-jobs">
-                                    <i class="fa-regular fa-folder-open"
+                                    <i class="fa fa-folder-open-o"
                                        style="font-size: 32px; color: #d89a2b; margin-bottom: 12px; display: block;"></i>
                                     No open positions at the moment. Please check back soon!
                                 </div>
@@ -692,7 +692,7 @@
                         <div class="process-steps">
                             <div class="step">
                                 <div class="step-icon">
-                                    <i class="fa-solid fa-file-lines"></i>
+                                    <i class="fa fa-file-text-o"></i>
                                     <div class="step-number">1</div>
                                 </div>
                                 <h4>Application</h4>
@@ -700,7 +700,7 @@
                             </div>
                             <div class="step">
                                 <div class="step-icon">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <i class="fa fa-search"></i>
                                     <div class="step-number">2</div>
                                 </div>
                                 <h4>Review</h4>
@@ -708,7 +708,7 @@
                             </div>
                             <div class="step">
                                 <div class="step-icon">
-                                    <i class="fa-solid fa-users"></i>
+                                    <i class="fa fa-users"></i>
                                     <div class="step-number">3</div>
                                 </div>
                                 <h4>Interview</h4>
@@ -716,7 +716,7 @@
                             </div>
                             <div class="step">
                                 <div class="step-icon">
-                                    <i class="fa-regular fa-envelope"></i>
+                                    <i class="fa fa-envelope-o"></i>
                                     <div class="step-number">4</div>
                                 </div>
                                 <h4>Offer</h4>
@@ -724,7 +724,7 @@
                             </div>
                             <div class="step">
                                 <div class="step-icon">
-                                    <i class="fa-solid fa-people-group"></i>
+                                    <i class="fa fa-users"></i>
                                     <div class="step-number">5</div>
                                 </div>
                                 <h4>Onboarding</h4>
@@ -776,7 +776,7 @@
                         <div class="cta-banner">
                             <div class="cta-left">
                                 <div class="cta-icon">
-                                    <i class="fa-solid fa-users-gear"></i>
+                                    <i class="fa fa-cogs"></i>
                                 </div>
                                 <div class="cta-text">
                                     <h3>Ready to Build the Future With Us?</h3>
@@ -785,7 +785,7 @@
                             </div>
                             <a href="#openings" class="btn-cta">
                                 Submit Your CV
-                                <i class="fa-solid fa-arrow-right"></i>
+                                <i class="fa fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -1201,7 +1201,7 @@
                 <div class="particles" id="prqParticles"></div>
                 <div class="prq-success-container">
                     <div class="checkmark">
-                        <i class="fa-solid fa-check"></i>
+                        <i class="fa fa-check"></i>
                     </div>
                     <h1 class="success-title">SUCCESS!</h1>
                     <p class="success-message">Application Submitted</p>
@@ -1212,11 +1212,11 @@
                     </div>
                     <div class="buttons">
                         <a href="/" class="primary-btn">
-                            <i class="fa-solid fa-house"></i>
+                            <i class="fa fa-home"></i>
                             Back to Home
                         </a>
                         <a href="mailto:careers@petroraq.com" class="secondary-btn">
-                            <i class="fa-regular fa-envelope"></i>
+                            <i class="fa fa-envelope-o"></i>
                             Contact HR
                         </a>
                     </div>

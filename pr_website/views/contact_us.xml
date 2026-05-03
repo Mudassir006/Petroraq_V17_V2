@@ -450,14 +450,14 @@
                                                 <input type="text" name="name" placeholder="Full Name *" required="required"/>
                                             </div>
                                             <div class="input-group">
-                                                <i class="fa-regular fa-envelope"></i>
+                                                <i class="fa fa-envelope-o"></i>
                                                 <input type="email" name="email" placeholder="Email Address *" required="required"/>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="input-group">
-                                                <i class="fa-solid fa-phone"></i>
+                                                <i class="fa fa-phone"></i>
                                                 <input type="tel" name="phone" placeholder="Phone Number *" required="required"/>
                                             </div>
                                             <div class="input-group">
@@ -467,7 +467,7 @@
                                         </div>
 
                                         <div class="input-group full">
-                                            <i class="fa-regular fa-file-lines"></i>
+                                            <i class="fa-regular fa-file-text-o"></i>
                                             <input type="text" name="subject" placeholder="Subject *" required="required"/>
                                         </div>
 
@@ -478,10 +478,10 @@
 
                                         <div class="form-footer">
                                             <button type="submit" class="btn-send">
-                                                Send Message <i class="fa-solid fa-arrow-right"></i>
+                                                Send Message <i class="fa fa-arrow-right"></i>
                                             </button>
                                             <div class="secure-note">
-                                                <i class="fa-solid fa-lock"></i>
+                                                <i class="fa fa-lock"></i>
                                                 <span>Your information is secure and<br/>will never be shared.</span>
                                             </div>
                                         </div>
@@ -498,7 +498,7 @@
 
                                     <div class="info-list">
                                         <div class="info-item">
-                                            <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                                            <div class="info-icon"><i class="fa fa-map-marker"></i></div>
                                             <div class="info-text">
                                                 <h4>Head Office</h4>
                                                 <p>Majd Square, King Faisal (West) Rd,<br/>AlJubail, KSA.</p>
@@ -506,7 +506,7 @@
                                         </div>
 
                                         <div class="info-item">
-                                            <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                                            <div class="info-icon"><i class="fa fa-phone"></i></div>
                                             <div class="info-text">
                                                 <h4>Phone</h4>
                                                 <p>+966 13 361 4446</p>
@@ -514,7 +514,7 @@
                                         </div>
 
                                         <div class="info-item">
-                                            <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
+                                            <div class="info-icon"><i class="fa fa-envelope"></i></div>
                                             <div class="info-text">
                                                 <h4>Email</h4>
                                                 <p>info@petroraq.com</p>
@@ -522,7 +522,7 @@
                                         </div>
 
                                         <div class="info-item">
-                                            <div class="info-icon"><i class="fa-regular fa-clock"></i></div>
+                                            <div class="info-icon"><i class="fa fa-clock-o"></i></div>
                                             <div class="info-text">
                                                 <h4>Working Hours</h4>
                                                 <p>Sunday – Thursday: 8:00 AM – 5:00 PM<br/>Friday – Saturday: Closed</p>
@@ -530,7 +530,7 @@
                                         </div>
 
                                         <div class="info-item">
-                                            <div class="info-icon"><i class="fa-solid fa-headset"></i></div>
+                                            <div class="info-icon"><i class="fa fa-headphones"></i></div>
                                             <div class="info-text">
                                                 <h4>We're Here to Help</h4>
                                                 <p>Whether it's a new project, partnership,<br/>or general inquiry, our team is ready to assist<br/>you with expert solutions.</p>
@@ -542,16 +542,19 @@
                             </div>
 
                             <!-- Map Section -->
+                            <t t-set="company" t-value="request.website.company_id"/>
+                            <t t-set="map_query"
+                               t-value="(company.partner_id.contact_address_complete or company.partner_id.contact_address or company.name or 'Al Jubail Saudi Arabia').replace('\n', ' ').replace(' ', '+')"/>
                             <div class="map-section">
                                 <div class="map-card">
-                                    <h3>PETRORAQ Engineering &amp; Construction</h3>
-                                    <p>Majd Square, King Faisal (West) Rd,<br/>AlJubail, KSA.</p>
-                                    <a href="https://www.google.com/maps/place/Al+Jubail+Saudi+Arabia" target="_blank" class="map-link">
-                                        View larger map <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    <h3><t t-esc="company.name or 'PETRORAQ Engineering &amp; Construction'"/></h3>
+                                    <p><t t-esc="company.partner_id.contact_address_complete or company.partner_id.contact_address or 'Majd Square, King Faisal (West) Rd, AlJubail, KSA.'"/></p>
+                                    <a href="https://maps.app.goo.gl/WEeertLQtkuy27dr6" target="_blank" class="map-link">
+                                        View larger map <i class="fa fa-external-link"></i>
                                     </a>
                                 </div>
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115989.2!2d49.55!3d27.01!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e34f8a0b4b4b4b4%3A0x0!2sAl%20Jubail!5e0!3m2!1sen!2ssa!4v1700000000000"
+                                    src="https://www.google.com/maps?q=https://maps.app.goo.gl/WEeertLQtkuy27dr6&amp;output=embed"
                                     allowfullscreen="allowfullscreen"
                                     loading="lazy"
                                     referrerpolicy="no-referrer-when-downgrade">
@@ -562,7 +565,7 @@
                             <div class="assistance-banner">
                                 <div class="assistance-left">
                                     <div class="hex-icon">
-                                        <i class="fa-solid fa-headset"></i>
+                                        <i class="fa fa-headphones"></i>
                                     </div>
                                     <div class="assistance-text">
                                         <h3>Need immediate assistance?</h3>
@@ -571,10 +574,10 @@
                                 </div>
                                 <div class="assistance-buttons">
                                     <a href="tel:+966133614446" class="btn-call">
-                                        <i class="fa-solid fa-phone"></i> Call Now
+                                        <i class="fa fa-phone"></i> Call Now
                                     </a>
                                     <a href="mailto:info@petroraq.com" class="btn-email">
-                                        <i class="fa-regular fa-envelope"></i> Email Us
+                                        <i class="fa fa-envelope-o"></i> Email Us
                                     </a>
                                 </div>
                             </div>
