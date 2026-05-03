@@ -85,7 +85,14 @@ class SaleOrderLine(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
-        lines._sync_price_unit_from_product_cost()
+        lines_to_sync = self.browse()
+        for line, vals in zip(lines, vals_list):
+            if "price_unit" in vals:
+                continue
+            lines_to_sync |= line
+
+        if lines_to_sync:
+            lines_to_sync._sync_price_unit_from_product_cost()
         return lines
 
     def write(self, vals):
