@@ -448,6 +448,9 @@ class PurchaseOrder(models.Model):
                 self.write({"md_approved": True})
                 self.message_post(body="Approved by Managing Director.")
 
+        if self.state == "pending" and self.can_confirm_order:
+            self.button_confirm()
+
         return self._reload_action()
 
     # confirm order button visibility
