@@ -38,7 +38,7 @@
                     <div class="footer-col">
                         <h4>Quick Links</h4>
                         <ul>
-                            <li>Home</li><li>About Us</li><li>Services</li><li>Projects</li><li>Certifications</li><li>Contact</li>
+                            <li>Home</li><li>About Us</li><li>Services</li><li>Projects</li><li>Certifications</li><li><a href="/contact-us">Contact</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">
@@ -51,7 +51,7 @@
                     <div class="footer-col footer-quote">
                         <h4>Request a Quote</h4>
                         <p>Tell us about your project and our team will get back to you.</p>
-                        <button class="quote-btn" type="button">Request a Quote <i class="fas fa-arrow-right"></i></button>
+                        <a href="/contact-us" class="quote-btn">Request a Quote <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="footer-bottom">

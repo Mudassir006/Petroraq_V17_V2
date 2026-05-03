@@ -42,8 +42,8 @@
                         <a href="#">Services</a>
                         <a href="#">Projects</a>
                         <a href="#">Certifications</a>
-                        <a href="#">Contact</a>
-                        <button class="quote-btn" type="button">Request a Quote <i class="fas fa-arrow-right"></i></button>
+                        <a href="/contact-us">Contact</a>
+                        <a href="/contact-us" class="quote-btn">Request a Quote <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </nav>
             </header>

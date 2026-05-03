@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="petroraq_contact_us" name="Petroraq Contact Us">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+                <style>
+                  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+                  :root { --navy: #0a2540; --navy-dark: #071a2f; --gold: #d89a2b; --gold-light: #e5a838; --text-dark: #0a2540; --text-muted: #6b7a8f; --bg-light: #f5f6f8; --border: #e5e8ec; }
+                  body { background: var(--bg-light); color: var(--text-dark); }
+                  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+                  .contact-hero { position: relative; height: 340px; background: url('https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=1600&amp;q=80') center/cover no-repeat; display: flex; align-items: center; overflow: hidden; }
+                  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,37,64,0.92) 0%, rgba(10,37,64,0.6) 70%, rgba(10,37,64,0.3) 100%); }
+                  .hero-content { position: relative; z-index: 2; padding: 0 80px; color: #fff; }
+                  .hero-content h1 { font-size: 64px; font-weight: 700; margin-bottom: 20px; }
+                  .hero-content h1 .dot { color: var(--gold); }
+                  .hero-content p { font-size: 18px; line-height: 1.6; color: #e0e6ef; max-width: 400px; }
+                  .hero-line { width: 80px; height: 3px; background: var(--gold); margin-top: 25px; }
+                  .contact-main { padding: 60px 0; }
+                </style>
+                <section class="contact-hero"><div class="hero-overlay"></div><div class="hero-content"><h1>Contact Us<span class="dot">.</span></h1><p>Let's discuss your next engineering<br/>and construction project.</p><div class="hero-line"></div></div></section>
+                <section class="contact-main"><div class="container"><div class="contact-grid"><div class="contact-card form-card"><h2>Send Us a Message</h2><p class="card-subtitle">Have a question or want to work together?<br/>Fill out the form below and our team will get back to you shortly.</p><form class="contact-form"><div class="form-row"><div class="input-group"><i class="fa-regular fa-user"></i><input type="text" placeholder="Full Name *" required="required"/></div><div class="input-group"><i class="fa-regular fa-envelope"></i><input type="email" placeholder="Email Address *" required="required"/></div></div></form></div></div></div></section>
+            </div>
+        </t>
+    </template>
+</odoo>
