@@ -545,17 +545,16 @@
                             <t t-set="company" t-value="request.website.company_id"/>
                             <t t-set="map_query"
                                t-value="(company.partner_id.contact_address_complete or company.partner_id.contact_address or company.name or 'Al Jubail Saudi Arabia').replace('\n', ' ').replace(' ', '+')"/>
-                            <t t-set="exact_map_url" t-value="'https://maps.app.goo.gl/WEeertLQtkuy27dr6'"/>
                             <div class="map-section">
                                 <div class="map-card">
                                     <h3><t t-esc="company.name or 'PETRORAQ Engineering &amp; Construction'"/></h3>
                                     <p><t t-esc="company.partner_id.contact_address_complete or company.partner_id.contact_address or 'Majd Square, King Faisal (West) Rd, AlJubail, KSA.'"/></p>
-                                    <a t-att-href="exact_map_url" target="_blank" class="map-link">
+                                    <a href="https://maps.app.goo.gl/WEeertLQtkuy27dr6" target="_blank" class="map-link">
                                         View larger map <i class="fa fa-external-link"></i>
                                     </a>
                                 </div>
                                 <iframe
-                                    t-att-src="'https://www.google.com/maps?q=%s&amp;output=embed' % exact_map_url"
+                                    src="https://www.google.com/maps?q=https://maps.app.goo.gl/WEeertLQtkuy27dr6&amp;output=embed"
                                     allowfullscreen="allowfullscreen"
                                     loading="lazy"
                                     referrerpolicy="no-referrer-when-downgrade">
