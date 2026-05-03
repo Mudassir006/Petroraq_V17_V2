@@ -542,16 +542,19 @@
                             </div>
 
                             <!-- Map Section -->
+                            <t t-set="company" t-value="request.website.company_id"/>
+                            <t t-set="map_query"
+                               t-value="(company.partner_id.contact_address_complete or company.partner_id.contact_address or company.name or 'Al Jubail Saudi Arabia').replace('\n', ' ').replace(' ', '+')"/>
                             <div class="map-section">
                                 <div class="map-card">
-                                    <h3>PETRORAQ Engineering &amp; Construction</h3>
-                                    <p>Majd Square, King Faisal (West) Rd,<br/>AlJubail, KSA.</p>
-                                    <a href="https://www.google.com/maps/place/Al+Jubail+Saudi+Arabia" target="_blank" class="map-link">
+                                    <h3><t t-esc="company.name or 'PETRORAQ Engineering &amp; Construction'"/></h3>
+                                    <p><t t-esc="company.partner_id.contact_address_complete or company.partner_id.contact_address or 'Majd Square, King Faisal (West) Rd, AlJubail, KSA.'"/></p>
+                                    <a t-att-href="'https://www.google.com/maps/search/?api=1&amp;query=%s' % map_query" target="_blank" class="map-link">
                                         View larger map <i class="fa fa-external-link"></i>
                                     </a>
                                 </div>
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115989.2!2d49.55!3d27.01!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e34f8a0b4b4b4b4%3A0x0!2sAl%20Jubail!5e0!3m2!1sen!2ssa!4v1700000000000"
+                                    t-att-src="'https://www.google.com/maps?q=%s&amp;output=embed' % map_query"
                                     allowfullscreen="allowfullscreen"
                                     loading="lazy"
                                     referrerpolicy="no-referrer-when-downgrade">
