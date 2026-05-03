@@ -1,97 +1,64 @@
 <odoo>
     <template id="petroraq_footer" inherit_id="website.layout">
-
+        <xpath expr="//head" position="inside">
+            <style>
+                footer { background-color: #06264B; color: #fff; padding: 50px 40px 20px; }
+                .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr 1.2fr 1.3fr; gap: 40px; }
+                .footer-logo img { height: 55px; margin-bottom: 15px; }
+                .footer-col p { font-size: 13px; line-height: 1.6; color: #d1d5db; }
+                .footer-social { display: flex; gap: 10px; margin-top: 20px; }
+                .footer-social a { width: 35px; height: 35px; border: 1px solid #3b4f73; border-radius: 4px; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; }
+                .footer-social a:hover { background: #e9a23e; border-color: #e9a23e; }
+                .footer-col h4 { font-size: 16px; margin-bottom: 18px; }
+                .footer-col ul li { font-size: 13px; color: #d1d5db; padding: 5px 0; cursor: pointer; }
+                .footer-col ul li:hover { color: #e9a23e; }
+                .contact-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db; margin-bottom: 12px; }
+                .contact-item i { color: #e9a23e; width: 18px; }
+                .footer-quote p { font-size: 13px; margin-bottom: 15px; }
+                .footer-bottom { max-width: 1200px; margin: 30px auto 0; border-top: 1px solid #1b3961; padding-top: 18px; display: flex; justify-content: space-between; font-size: 12px; color: #9ca3af; }
+                .footer-bottom a { color: #9ca3af; margin-left: 15px; }
+                .footer-bottom a:hover { color: #e9a23e; }
+                @media (max-width: 1024px) { .footer-container { grid-template-columns: repeat(2, 1fr); } }
+                @media (max-width: 768px) { .footer-container { grid-template-columns: 1fr; gap: 30px; } .footer-bottom { flex-direction: column; gap: 8px; text-align: center; } .footer-bottom a { margin: 0 6px; } }
+            </style>
+        </xpath>
         <xpath expr="//footer" position="replace">
-
-            <footer style="background-color:#06294B; color:#fff; font-family: 'Arial', sans-serif; padding: 40px 20px;" id="petroraq-footer" class="o_not_editable">
-                <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap;">
-
-                    <!-- Logo and Description -->
-                    <div style="flex: 1; min-width: 220px; margin-right: 40px;">
-                        <div style="margin-bottom: 20px;">
-                            <div style="width: 150px; height: 80px; background-color: transparent; margin-bottom: 15px;">
-                                <img src="/pr_website/static/images/logo-white.png" alt="Pertoraq Logo" style="width: 150px; height: 80px; object-fit: contain;"/>
-                            </div>
-
-                            <p style="font-size: 14px; line-height: 1.5; color: #fff;">
-                                We deliver world-class engineering, procurement, and construction solutions that build a stronger tomorrow.
-                            </p>
-                        </div>
-
-                        <!-- Social Media Icons -->
-                        <div style="display: flex; gap: 15px; font-size: 20px;">
-                            <a href="#" aria-label="Linkedin" style="color: white;">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
-                            <a href="#" aria-label="Facebook" style="color: white;">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="#" aria-label="Twitter" style="color: white;">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a href="#" aria-label="YouTube" style="color: white;">
-                                <i class="fab fa-youtube"></i>
-                            </a>
+            <footer>
+                <div class="footer-container">
+                    <div class="footer-col footer-logo">
+                        <img src="/pr_website/static/images/logo.png" alt="PETRORAQ Logo"/>
+                        <p>We deliver world-class engineering, procurement, and construction solutions that build a stronger tomorrow.</p>
+                        <div class="footer-social">
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
                         </div>
                     </div>
-
-                    <!-- Divider -->
-                    <div style="width: 1px; background-color: #243b70; margin: 0 40px; min-height: 200px;"></div>
-
-                    <!-- Quick Links -->
-                    <div style="flex: 1; min-width: 140px; color: #fff; font-size: 14px;">
-                        <h4 style="font-weight: 600; margin-bottom: 15px;">Quick Links</h4>
-                        <ul style="list-style: none; padding: 0; margin: 0; line-height: 2;">
-                            <li><a href="#" style="color: #fff; text-decoration: none;">Home</a></li>
-                            <li><a href="#" style="color: #fff; text-decoration: none;">About Us</a></li>
-                            <li><a href="#" style="color: #fff; text-decoration: none;">Services</a></li>
-                            <li><a href="#" style="color: #fff; text-decoration: none;">Projects</a></li>
-                            <li><a href="#" style="color: #fff; text-decoration: none;">Certifications</a></li>
-                            <li><a href="#" style="color: #fff; text-decoration: none;">Contact</a></li>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li>Home</li><li>About Us</li><li>Services</li><li>Projects</li><li>Certifications</li><li>Contact</li>
                         </ul>
                     </div>
-
-                    <!-- Contact Us -->
-                    <div style="flex: 1; min-width: 180px; color: #fff; font-size: 14px;">
-                        <h4 style="font-weight: 600; margin-bottom: 15px;">Contact Us</h4>
-                        <p style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-map-marker-alt" style="color:#e9a23e;"></i> Al Mansour, Baghdad, Iraq
-                        </p>
-                        <p style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-phone-alt" style="color:#e9a23e;"></i> +964 770 123 4567
-                        </p>
-                        <p style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-envelope" style="color:#e9a23e;"></i> info@pertoraq.com
-                        </p>
-                        <p style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-globe" style="color:#e9a23e;"></i> www.pertoraq.com
-                        </p>
+                    <div class="footer-col">
+                        <h4>Contact Us</h4>
+                        <div class="contact-item"><i class="fas fa-map-marker-alt"></i> Al Mansour, Baghdad, Iraq</div>
+                        <div class="contact-item"><i class="fas fa-phone-alt"></i> +964 770 123 4567</div>
+                        <div class="contact-item"><i class="fas fa-envelope"></i> info@petroraq.com</div>
+                        <div class="contact-item"><i class="fas fa-globe"></i> www.petroraq.com</div>
                     </div>
-
-                    <!-- Request a Quote -->
-                    <div style="flex: 1; min-width: 220px; color: #fff; font-size: 14px;">
-                        <h4 style="font-weight: 600; margin-bottom: 15px;">Request a Quote</h4>
-                        <p style="margin-bottom: 20px;">
-                            Tell us about your project and our team will get back to you.
-                        </p>
-                        <button style="background-color: #e9a23e; border: none; color: #fff; padding: 10px 22px; border-radius: 4px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            Request a Quote <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-
-                </div>
-
-                <!-- Footer Bottom -->
-                <div style="border-top: 1px solid #1b3961; margin-top: 35px; padding-top: 20px; font-size: 12px; color: #7a8fbf; max-width: 1200px; margin-left: auto; margin-right: auto; display: flex; justify-content: space-between; flex-wrap: wrap;">
-                    <div>© 2024 PERTORAQ Engineering &amp; Construction. All Rights Reserved.</div>
-                    <div>
-                        <a href="#" style="color: #7a8fbf; text-decoration: none;">Privacy Policy</a> <span style="margin: 0 7px;">|</span> <a href="#" style="color: #7a8fbf; text-decoration: none;">Terms of Use</a>
+                    <div class="footer-col footer-quote">
+                        <h4>Request a Quote</h4>
+                        <p>Tell us about your project and our team will get back to you.</p>
+                        <button class="quote-btn" type="button">Request a Quote <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
-
+                <div class="footer-bottom">
+                    <div>© 2024 PETRORAQ Engineering &amp; Construction. All Rights Reserved.</div>
+                    <div><a href="#">Privacy Policy</a><a href="#">Terms of Use</a></div>
+                </div>
             </footer>
-
         </xpath>
-
     </template>
 </odoo>
