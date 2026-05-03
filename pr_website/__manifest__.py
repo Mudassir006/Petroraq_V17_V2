@@ -19,6 +19,10 @@
         "views/layout.xml",  # custom header/footer
         "views/footer.xml",
         "views/hero.xml",
+        "views/contact_us.xml",
+        "views/about_us.xml",
+        "views/clients.xml",
+
         # "views/assets.xml",
         # "views/home.xml",
         # "views/about.xml",

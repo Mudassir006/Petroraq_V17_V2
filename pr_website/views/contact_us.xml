@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <template id="petroraq_contact_us" name="PETRORAQ Contact Us">
+            <t t-call="website.layout">
+                <t t-set="additional_title">Contact Us - PETRORAQ</t>
+
+                <!-- Font Awesome & Google Fonts -->
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+
+                <!-- Inline Styles -->
+                <style>
+                    .petroraq-contact * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                        font-family: 'Poppins', sans-serif;
+                    }
+
+                    .petroraq-contact {
+                        --navy: #0a2540;
+                        --navy-dark: #071a2f;
+                        --gold: #d89a2b;
+                        --gold-light: #e5a838;
+                        --text-dark: #0a2540;
+                        --text-muted: #6b7a8f;
+                        --bg-light: #f5f6f8;
+                        --border: #e5e8ec;
+                        background: #f5f6f8;
+                        color: #0a2540;
+                    }
+
+                    .petroraq-contact .pr-container {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                        padding: 0 20px;
+                    }
+
+                    /* ===== Hero Section ===== */
+                    .petroraq-contact .contact-hero {
+                        position: relative;
+                        height: 340px;
+                        background: url('https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=1600&amp;q=80') center/cover no-repeat;
+                        display: flex;
+                        align-items: center;
+                        overflow: hidden;
+                    }
+
+                    .petroraq-contact .hero-overlay {
+                        position: absolute;
+                        inset: 0;
+                        background: linear-gradient(90deg, rgba(10,37,64,0.92) 0%, rgba(10,37,64,0.6) 70%, rgba(10,37,64,0.3) 100%);
+                    }
+
+                    .petroraq-contact .hero-content {
+                        position: relative;
+                        z-index: 2;
+                        padding: 0 80px;
+                        color: #fff;
+                    }
+
+                    .petroraq-contact .hero-content h1 {
+                        font-size: 64px;
+                        font-weight: 700;
+                        margin-bottom: 20px;
+                        color: #fff;
+                    }
+
+                    .petroraq-contact .hero-content h1 .dot {
+                        color: #d89a2b;
+                    }
+
+                    .petroraq-contact .hero-content p {
+                        font-size: 18px;
+                        line-height: 1.6;
+                        color: #e0e6ef;
+                        max-width: 400px;
+                    }
+
+                    .petroraq-contact .hero-line {
+                        width: 80px;
+                        height: 3px;
+                        background: #d89a2b;
+                        margin-top: 25px;
+                    }
+
+                    /* ===== Main Section ===== */
+                    .petroraq-contact .contact-main {
+                        padding: 60px 0;
+                    }
+
+                    .petroraq-contact .contact-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 25px;
+                        margin-bottom: 40px;
+                    }
+
+                    .petroraq-contact .contact-card {
+                        background: #fff;
+                        border-radius: 12px;
+                        padding: 35px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+                    }
+
+                    .petroraq-contact .contact-card h2 {
+                        color: #0a2540;
+                        font-size: 24px;
+                        font-weight: 700;
+                        margin-bottom: 15px;
+                    }
+
+                    .petroraq-contact .card-subtitle {
+                        color: #6b7a8f;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        margin-bottom: 25px;
+                    }
+
+                    /* ===== Form ===== */
+                    .petroraq-contact .form-row {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 15px;
+                        margin-bottom: 15px;
+                    }
+
+                    .petroraq-contact .input-group {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .petroraq-contact .input-group.full {
+                        margin-bottom: 15px;
+                    }
+
+                    .petroraq-contact .input-group i {
+                        position: absolute;
+                        left: 15px;
+                        top: 16px;
+                        color: #6b7a8f;
+                        font-size: 14px;
+                        z-index: 1;
+                    }
+
+                    .petroraq-contact .input-group input,
+                    .petroraq-contact .input-group textarea {
+                        width: 100%;
+                        padding: 14px 14px 14px 42px;
+                        border: 1px solid #e5e8ec;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        background: #fafbfc;
+                        transition: all 0.3s;
+                        font-family: inherit;
+                    }
+
+                    .petroraq-contact .input-group textarea {
+                        resize: vertical;
+                        min-height: 120px;
+                    }
+
+                    .petroraq-contact .input-group input:focus,
+                    .petroraq-contact .input-group textarea:focus {
+                        outline: none;
+                        border-color: #d89a2b;
+                        background: #fff;
+                    }
+
+                    .petroraq-contact .form-footer {
+                        display: flex;
+                        align-items: center;
+                        gap: 20px;
+                        margin-top: 10px;
+                    }
+
+                    .petroraq-contact .btn-send {
+                        background: #d89a2b;
+                        color: #fff;
+                        padding: 14px 28px;
+                        border: none;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 10px;
+                        transition: all 0.3s;
+                    }
+
+                    .petroraq-contact .btn-send:hover {
+                        background: #e5a838;
+                        transform: translateY(-2px);
+                        color: #fff;
+                    }
+
+                    .petroraq-contact .secure-note {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        color: #6b7a8f;
+                        font-size: 12px;
+                        line-height: 1.5;
+                    }
+
+                    .petroraq-contact .secure-note i {
+                        color: #6b7a8f;
+                        font-size: 14px;
+                    }
+
+                    /* ===== Info Card ===== */
+                    .petroraq-contact .info-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 20px;
+                    }
+
+                    .petroraq-contact .info-item {
+                        display: flex;
+                        gap: 15px;
+                        align-items: flex-start;
+                    }
+
+                    .petroraq-contact .info-icon {
+                        width: 48px;
+                        height: 48px;
+                        background: #0a2540;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                    }
+
+                    .petroraq-contact .info-icon i {
+                        color: #d89a2b;
+                        font-size: 18px;
+                    }
+
+                    .petroraq-contact .info-text h4 {
+                        color: #0a2540;
+                        font-size: 15px;
+                        font-weight: 700;
+                        margin-bottom: 4px;
+                    }
+
+                    .petroraq-contact .info-text p {
+                        color: #6b7a8f;
+                        font-size: 13px;
+                        line-height: 1.6;
+                    }
+
+                    /* ===== Map Section ===== */
+                    .petroraq-contact .map-section {
+                        position: relative;
+                        border-radius: 12px;
+                        overflow: hidden;
+                        height: 380px;
+                        margin-bottom: 40px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+                    }
+
+                    .petroraq-contact .map-section iframe {
+                        width: 100%;
+                        height: 100%;
+                        border: 0;
+                    }
+
+                    .petroraq-contact .map-card {
+                        position: absolute;
+                        top: 20px;
+                        left: 20px;
+                        background: #fff;
+                        padding: 20px 25px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                        z-index: 2;
+                        max-width: 280px;
+                    }
+
+                    .petroraq-contact .map-card h3 {
+                        color: #0a2540;
+                        font-size: 15px;
+                        font-weight: 700;
+                        margin-bottom: 8px;
+                    }
+
+                    .petroraq-contact .map-card p {
+                        color: #0a2540;
+                        font-size: 13px;
+                        line-height: 1.5;
+                        margin-bottom: 10px;
+                    }
+
+                    .petroraq-contact .map-link {
+                        color: #1a73e8;
+                        font-size: 13px;
+                        text-decoration: none;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                    }
+
+                    .petroraq-contact .map-link:hover {
+                        text-decoration: underline;
+                    }
+
+                    /* ===== Assistance Banner ===== */
+                    .petroraq-contact .assistance-banner {
+                        background: #0a2540;
+                        background-image:
+                            radial-gradient(circle at 10% 50%, rgba(216,154,43,0.05) 0%, transparent 50%),
+                            linear-gradient(135deg, #0a2540 0%, #071a2f 100%);
+                        border-radius: 12px;
+                        padding: 30px 40px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        gap: 20px;
+                    }
+
+                    .petroraq-contact .assistance-left {
+                        display: flex;
+                        align-items: center;
+                        gap: 20px;
+                    }
+
+                    .petroraq-contact .hex-icon {
+                        width: 60px;
+                        height: 60px;
+                        background: #d89a2b;
+                        clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    .petroraq-contact .hex-icon i {
+                        color: #fff;
+                        font-size: 22px;
+                    }
+
+                    .petroraq-contact .assistance-text h3 {
+                        color: #fff;
+                        font-size: 20px;
+                        font-weight: 700;
+                        margin-bottom: 4px;
+                    }
+
+                    .petroraq-contact .assistance-text p {
+                        color: #b8c5d6;
+                        font-size: 14px;
+                    }
+
+                    .petroraq-contact .assistance-buttons {
+                        display: flex;
+                        gap: 12px;
+                    }
+
+                    .petroraq-contact .btn-call,
+                    .petroraq-contact .btn-email {
+                        padding: 13px 28px;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        text-decoration: none;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 10px;
+                        transition: all 0.3s;
+                    }
+
+                    .petroraq-contact .btn-call {
+                        background: #d89a2b;
+                        color: #fff;
+                    }
+
+                    .petroraq-contact .btn-call:hover {
+                        background: #e5a838;
+                        color: #fff;
+                    }
+
+                    .petroraq-contact .btn-email {
+                        background: transparent;
+                        color: #fff;
+                        border: 1px solid rgba(255,255,255,0.3);
+                    }
+
+                    .petroraq-contact .btn-email:hover {
+                        background: rgba(255,255,255,0.08);
+                        color: #fff;
+                    }
+
+                    /* ===== Responsive ===== */
+                    @media (max-width: 900px) {
+                        .petroraq-contact .contact-grid {
+                            grid-template-columns: 1fr;
+                        }
+                        .petroraq-contact .hero-content { padding: 0 30px; }
+                        .petroraq-contact .hero-content h1 { font-size: 42px; }
+                        .petroraq-contact .form-row { grid-template-columns: 1fr; }
+                        .petroraq-contact .assistance-banner { flex-direction: column; text-align: center; }
+                        .petroraq-contact .map-card { position: static; margin: 15px; max-width: 100%; }
+                    }
+
+                    @media (max-width: 600px) {
+                        .petroraq-contact .hero-content h1 { font-size: 36px; }
+                        .petroraq-contact .contact-card { padding: 25px; }
+                        .petroraq-contact .form-footer { flex-direction: column; align-items: flex-start; }
+                        .petroraq-contact .assistance-buttons { flex-direction: column; width: 100%; }
+                        .petroraq-contact .btn-call,
+                        .petroraq-contact .btn-email { justify-content: center; width: 100%; }
+                    }
+                </style>
+
+                <div class="petroraq-contact">
+
+                    <!-- ===== Hero Section ===== -->
+                    <section class="contact-hero">
+                        <div class="hero-overlay"></div>
+                        <div class="hero-content">
+                            <h1>Contact Us<span class="dot">.</span></h1>
+                            <p>Let's discuss your next engineering<br/>and construction project.</p>
+                            <div class="hero-line"></div>
+                        </div>
+                    </section>
+
+                    <!-- ===== Main Contact Section ===== -->
+                    <section class="contact-main">
+                        <div class="pr-container">
+                            <div class="contact-grid">
+
+                                <!-- Send Message Form -->
+                                <div class="contact-card form-card">
+                                    <h2>Send Us a Message</h2>
+                                    <p class="card-subtitle">
+                                        Have a question or want to work together?<br/>
+                                        Fill out the form below and our team will get back to you shortly.
+                                    </p>
+
+                                    <form class="contact-form" action="/website/mail/contact" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                        <div class="form-row">
+                                            <div class="input-group">
+                                                <i class="fa-regular fa-user"></i>
+                                                <input type="text" name="name" placeholder="Full Name *" required="required"/>
+                                            </div>
+                                            <div class="input-group">
+                                                <i class="fa-regular fa-envelope"></i>
+                                                <input type="email" name="email" placeholder="Email Address *" required="required"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="input-group">
+                                                <i class="fa-solid fa-phone"></i>
+                                                <input type="tel" name="phone" placeholder="Phone Number *" required="required"/>
+                                            </div>
+                                            <div class="input-group">
+                                                <i class="fa-regular fa-building"></i>
+                                                <input type="text" name="company" placeholder="Company Name"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="input-group full">
+                                            <i class="fa-regular fa-file-lines"></i>
+                                            <input type="text" name="subject" placeholder="Subject *" required="required"/>
+                                        </div>
+
+                                        <div class="input-group full textarea-group">
+                                            <i class="fa-regular fa-message"></i>
+                                            <textarea name="message" placeholder="Message *" rows="5" required="required"></textarea>
+                                        </div>
+
+                                        <div class="form-footer">
+                                            <button type="submit" class="btn-send">
+                                                Send Message <i class="fa-solid fa-arrow-right"></i>
+                                            </button>
+                                            <div class="secure-note">
+                                                <i class="fa-solid fa-lock"></i>
+                                                <span>Your information is secure and<br/>will never be shared.</span>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Contact Information -->
+                                <div class="contact-card info-card">
+                                    <h2>Contact Information</h2>
+                                    <p class="card-subtitle">
+                                        We're here to support your project inquiries<br/>
+                                        and business needs.
+                                    </p>
+
+                                    <div class="info-list">
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                                            <div class="info-text">
+                                                <h4>Head Office</h4>
+                                                <p>Majd Square, King Faisal (West) Rd,<br/>AlJubail, KSA.</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                                            <div class="info-text">
+                                                <h4>Phone</h4>
+                                                <p>+966 13 361 4446</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
+                                            <div class="info-text">
+                                                <h4>Email</h4>
+                                                <p>info@petroraq.com</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="fa-regular fa-clock"></i></div>
+                                            <div class="info-text">
+                                                <h4>Working Hours</h4>
+                                                <p>Sunday – Thursday: 8:00 AM – 5:00 PM<br/>Friday – Saturday: Closed</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="fa-solid fa-headset"></i></div>
+                                            <div class="info-text">
+                                                <h4>We're Here to Help</h4>
+                                                <p>Whether it's a new project, partnership,<br/>or general inquiry, our team is ready to assist<br/>you with expert solutions.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Map Section -->
+                            <div class="map-section">
+                                <div class="map-card">
+                                    <h3>PETRORAQ Engineering &amp; Construction</h3>
+                                    <p>Majd Square, King Faisal (West) Rd,<br/>AlJubail, KSA.</p>
+                                    <a href="https://www.google.com/maps/place/Al+Jubail+Saudi+Arabia" target="_blank" class="map-link">
+                                        View larger map <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115989.2!2d49.55!3d27.01!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e34f8a0b4b4b4b4%3A0x0!2sAl%20Jubail!5e0!3m2!1sen!2ssa!4v1700000000000"
+                                    allowfullscreen="allowfullscreen"
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade">
+                                </iframe>
+                            </div>
+
+                            <!-- Immediate Assistance Banner -->
+                            <div class="assistance-banner">
+                                <div class="assistance-left">
+                                    <div class="hex-icon">
+                                        <i class="fa-solid fa-headset"></i>
+                                    </div>
+                                    <div class="assistance-text">
+                                        <h3>Need immediate assistance?</h3>
+                                        <p>Speak with our team today.</p>
+                                    </div>
+                                </div>
+                                <div class="assistance-buttons">
+                                    <a href="tel:+966133614446" class="btn-call">
+                                        <i class="fa-solid fa-phone"></i> Call Now
+                                    </a>
+                                    <a href="mailto:info@petroraq.com" class="btn-email">
+                                        <i class="fa-regular fa-envelope"></i> Email Us
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+            </t>
+        </template>
+</odoo>

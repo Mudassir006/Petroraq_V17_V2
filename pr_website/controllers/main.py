@@ -8,7 +8,6 @@ from urllib.request import Request, urlopen
 from odoo import http
 from odoo.http import request
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -16,6 +15,18 @@ class CareersController(http.Controller):
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
         return request.render('pr_website.petroraq_homepage_custom')
+
+    @http.route('/contact-us', type='http', auth='public', website=True, sitemap=True)
+    def contact_us(self, **kwargs):
+        return request.render('pr_website.petroraq_contact_us')
+
+    @http.route('/about-us', type='http', auth='public', website=True, sitemap=True)
+    def about_us(self, **kwargs):
+        return request.render('pr_website.petroraq_about_us')
+
+    @http.route('/clients', type='http', auth='public', website=True, sitemap=True)
+    def clients(self, **kwargs):
+        return request.render('pr_website.petroraq_our_clients')
 
     @http.route('/jobs', type='http', auth='public', website=True, sitemap=True)
     def jobs(self, **kwargs):
@@ -29,7 +40,8 @@ class CareersController(http.Controller):
             return request.not_found()
         degrees = request.env['hr.recruitment.degree'].sudo().search([], order='name')
         error_message = kwargs.get('error')
-        return request.render('pr_website.careers_job_detail', {'job': job, 'degrees': degrees, 'error_message': error_message})
+        return request.render('pr_website.careers_job_detail',
+                              {'job': job, 'degrees': degrees, 'error_message': error_message})
 
     def _validate_application_payload(self, post):
         validators = [
@@ -37,7 +49,9 @@ class CareersController(http.Controller):
             ('email_from', r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$', 'Please enter a valid email address.'),
             ('partner_phone', r'^\+?[0-9][0-9\s().-]{7,19}$', 'Please enter a valid phone number.'),
             ('partner_location', r"^[A-Za-z0-9][A-Za-z0-9,\s'\.-]{1,99}$", 'Please enter a valid location.'),
-            ('linkedin_profile', r'^(https?://)?([a-z]{2,3}\.)?linkedin\.com/.*$', 'Please enter a valid LinkedIn URL.'),
+            (
+                'linkedin_profile', r'^(https?://)?([a-z]{2,3}\.)?linkedin\.com/.*$',
+                'Please enter a valid LinkedIn URL.'),
         ]
 
         for field_name, pattern, message in validators:
@@ -77,7 +91,8 @@ class CareersController(http.Controller):
             ('partner_phone', '=', (post.get('partner_phone') or '').strip()),
         ])
         if existing:
-            return request.redirect(f'/job/{job_id}?error={quote_plus("Duplicate application detected: you have already applied to this job with the same email and phone number.")}')
+            return request.redirect(
+                f'/job/{job_id}?error={quote_plus("Duplicate application detected: you have already applied to this job with the same email and phone number.")}')
 
         applicant_vals = {
             'name': post.get('name') or post.get('partner_name') or 'Website Candidate',

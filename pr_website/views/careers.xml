@@ -2,118 +2,823 @@
 <odoo>
     <template id="careers_jobs" name="Careers Jobs">
         <t t-call="website.layout">
-            <section class="prq-jobs-page">
-                <div class="prq-bg-animation"></div>
-                <i class="fa fa-star prq-floating prq-float1"></i>
-                <i class="fa fa-briefcase prq-floating prq-float2"></i>
-                <i class="fa fa-gem prq-floating prq-float3"></i>
+            <t t-set="additional_title">Careers - PETRORAQ</t>
 
-                <header class="prq-header">
-                    <h1>Open Positions</h1>
-                    <p>Join our amazing team and help us build the future. We're always looking for talented people like you!</p>
-                </header>
-
-                <div class="prq-search-container">
-                    <div class="prq-search-box">
-                        <i class="fa fa-search prq-search-icon"></i>
-                        <input type="text" class="prq-job-search" placeholder="Search jobs by title, department, or location..."/>
-                        <button class="prq-search-btn" type="button">
-                            <i class="fa fa-search"></i> Search
-                        </button>
-                    </div>
-                </div>
-
-                <div class="prq-jobs-grid">
-                    <t t-foreach="jobs" t-as="job">
-                        <div class="prq-job-card">
-                            <div class="prq-job-header">
-                                <div class="prq-job-icon"><i class="fa fa-briefcase"></i></div>
-                                <div>
-                                    <div class="prq-job-title" t-esc="job.name"/>
-                                    <div class="prq-job-company">
-                                        <t t-esc="request.website.name"/>
-                                        <t t-if="job.address_id and job.address_id.city"> • <t t-esc="job.address_id.city"/></t>
-                                        <t t-else=""> • Remote</t>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="prq-job-desc" t-esc="(job.description or '').replace('&lt;br&gt;', ' ')"/>
-                            <div class="prq-job-meta">
-                                <span class="prq-job-type" t-esc="job.contract_type_id.name if job._fields.get('contract_type_id') and job.contract_type_id else 'Full-time'"/>
-                                <span>
-                                    <t t-if="job.no_of_recruitment">Openings: <t t-esc="job.no_of_recruitment"/></t>
-                                    <t t-else="">Apply now</t>
-                                </span>
-                            </div>
-                            <a t-att-href="'/job/%s' % job.id" class="prq-view-details">
-                                <i class="fa fa-eye"></i> View Details
-                            </a>
-                        </div>
-                    </t>
-                </div>
-            </section>
+            <!-- Font Awesome &amp; Google Fonts -->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap"
+                  rel="stylesheet"/>
 
             <style>
-                .prq-jobs-page {position: relative; min-height: 100vh; overflow-x: hidden; color: #fff; background: linear-gradient(135deg, #17326F 0%, #0F224F 50%, #17326F 100%); padding-bottom: 2rem;}
-                .prq-bg-animation {position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 20% 80%, rgba(255, 192, 61, 0.22) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,.05) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(255, 216, 114, 0.14) 0%, transparent 52%); animation: prqBgShift 20s ease-in-out infinite;}
-                .prq-header,.prq-search-container,.prq-jobs-grid{position: relative; z-index: 2;}
-                .prq-header{text-align:center;padding:4rem 2rem 2rem;}
-                .prq-header h1{font-family:'Orbitron',monospace;font-size:clamp(3rem,8vw,5rem);font-weight:900;background:linear-gradient(45deg,#FFC03D,#FFD872,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px rgba(255,192,61,.6));animation:prqGradientShift 3s ease-in-out infinite;}
-                .prq-header p{font-size:clamp(1.2rem,3vw,1.5rem);opacity:.9;max-width:600px;margin:1rem auto 0;}
-                .prq-search-container{max-width:600px;margin:2rem auto;padding:0 2rem;}
-                .prq-search-box{display:flex;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:50px;padding:1rem 1.5rem;backdrop-filter:blur(10px);transition:.3s;}
-                .prq-search-box:hover{border-color:#FFC03D;box-shadow:0 10px 30px rgba(255,192,61,.6);} .prq-search-icon{color:rgba(255,255,255,.6);margin-right:1rem;align-self:center;}
-                .prq-job-search{flex:1;background:transparent;border:none;color:#fff;font-size:1.1rem;outline:none;padding:.5rem;}
-                .prq-job-search::placeholder{color:rgba(255,255,255,.6);} .prq-search-btn{background:#FFC03D;color:#17326F;border:none;padding:.8rem 1.5rem;border-radius:50px;font-weight:600;cursor:pointer;transition:.3s;}
-                .prq-search-btn:hover{transform:scale(1.05);box-shadow:0 5px 15px rgba(255,192,61,.6);} .prq-jobs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:2rem;max-width:1400px;margin:0 auto;padding:2rem;}
-                .prq-job-card{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:2rem;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;animation:prqSlideInUp .8s ease-out forwards;opacity:0;transform:translateY(50px);}
-                .prq-job-card:nth-child(1){animation-delay:.1s}.prq-job-card:nth-child(2){animation-delay:.2s}.prq-job-card:nth-child(3){animation-delay:.3s}.prq-job-card:nth-child(4){animation-delay:.4s}.prq-job-card:nth-child(5){animation-delay:.5s}.prq-job-card:nth-child(6){animation-delay:.6s}
-                .prq-job-card:hover{transform:translateY(-15px) scale(1.02);box-shadow:0 20px 60px rgba(23,50,111,.3);border-color:#FFC03D;}
-                .prq-job-card:before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#FFC03D,#FFD872);transform:scaleX(0);transition:transform .4s ease}.prq-job-card:hover:before{transform:scaleX(1)}
-                .prq-job-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem}.prq-job-icon{width:60px;height:60px;background:linear-gradient(135deg,#FFC03D,#FFD872);border-radius:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#17326F;font-size:1.5rem}
-                .prq-job-title{font-size:1.4rem;font-weight:700;line-height:1.3}.prq-job-company{font-size:.95rem;color:#FFD872;font-weight:500}
-                .prq-job-desc{color:rgba(255,255,255,.9);line-height:1.6;margin-bottom:1.5rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.95rem}
-                .prq-job-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;font-size:.9rem;opacity:.8}.prq-job-type{background:rgba(255,192,61,.2);color:#FFC03D;padding:.3rem .8rem;border-radius:20px;font-weight:500;font-size:.85rem}
-                .prq-view-details{display:block;width:100%;text-align:center;text-decoration:none;background:linear-gradient(45deg,#FFC03D,#FFD872);color:#17326F;border:none;padding:1rem 2rem;border-radius:50px;font-size:1rem;font-weight:600;transition:.3s;position:relative;overflow:hidden}
-                .prq-view-details:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(255,192,61,.6);color:#17326F}.prq-view-details:before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .5s}.prq-view-details:hover:before{left:100%}
-                .prq-floating{position:fixed;color:#FFC03D;filter:drop-shadow(0 0 10px rgba(255,192,61,.6));animation:prqFloatAround 20s linear infinite;z-index:1;pointer-events:none}.prq-float1{top:10%;left:5%;font-size:1.5rem}.prq-float2{top:70%;right:10%;font-size:1.2rem;animation-delay:7s}.prq-float3{bottom:20%;left:15%;font-size:2rem;animation-delay:14s}
-                @keyframes prqBgShift{0%,100%{transform:scale(1) rotate(0);opacity:.8}50%{transform:scale(1.1) rotate(180deg);opacity:1}}
-                @keyframes prqGradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-                @keyframes prqSlideInUp{to{opacity:1;transform:translateY(0)}}
-                @keyframes prqFloatAround{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-100vh) rotate(360deg)}}
-                @media (max-width:768px){.prq-jobs-grid{grid-template-columns:1fr;gap:1.5rem;padding:1rem}.prq-header{padding:2rem 1rem 1rem}}
+                .petroraq-careers * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+                }
+                .petroraq-careers {
+                background: #ffffff;
+                color: #0a2540;
+                }
+                .petroraq-careers .pr-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                }
+
+                /* ===== Hero Section ===== */
+                .petroraq-careers .careers-hero {
+                position: relative;
+                min-height: 420px;
+                background: url('https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=1600&amp;q=80')
+                center/cover no-repeat;
+                display: flex;
+                align-items: center;
+                overflow: hidden;
+                }
+                .petroraq-careers .hero-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, rgba(10,37,64,0.95) 0%, rgba(10,37,64,0.75) 50%, rgba(10,37,64,0.3)
+                100%);
+                }
+                .petroraq-careers .hero-content {
+                position: relative;
+                z-index: 2;
+                padding: 80px 60px;
+                color: #fff;
+                max-width: 650px;
+                }
+                .petroraq-careers .hero-content h1 {
+                font-size: 52px;
+                font-weight: 700;
+                line-height: 1.15;
+                margin-bottom: 20px;
+                color: #fff;
+                }
+                .petroraq-careers .hero-content h1 .dot {
+                color: #d89a2b;
+                }
+                .petroraq-careers .hero-content p {
+                font-size: 16px;
+                line-height: 1.7;
+                color: #d8dfe8;
+                margin-bottom: 30px;
+                max-width: 480px;
+                }
+                .petroraq-careers .hero-buttons {
+                display: flex;
+                gap: 15px;
+                flex-wrap: wrap;
+                }
+                .petroraq-careers .btn-primary,
+                .petroraq-careers .btn-outline {
+                padding: 14px 28px;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.3s;
+                cursor: pointer;
+                border: none;
+                }
+                .petroraq-careers .btn-primary {
+                background: #d89a2b;
+                color: #fff;
+                }
+                .petroraq-careers .btn-primary:hover {
+                background: #e5a838;
+                transform: translateY(-2px);
+                color: #fff;
+                }
+                .petroraq-careers .btn-outline {
+                background: transparent;
+                color: #fff;
+                border: 1px solid rgba(255,255,255,0.4);
+                }
+                .petroraq-careers .btn-outline:hover {
+                background: rgba(255,255,255,0.08);
+                color: #fff;
+                }
+
+                /* ===== Why Work With Us ===== */
+                .petroraq-careers .why-section {
+                background: #f5f6f8;
+                padding: 70px 0;
+                }
+                .petroraq-careers .why-top {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 40px;
+                margin-bottom: 30px;
+                align-items: start;
+                }
+                .petroraq-careers .why-text h2 {
+                font-size: 26px;
+                font-weight: 700;
+                color: #0a2540;
+                margin-bottom: 18px;
+                }
+                .petroraq-careers .why-text p {
+                color: #6b7a8f;
+                font-size: 13.5px;
+                line-height: 1.8;
+                }
+                .petroraq-careers .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                }
+                .petroraq-careers .stat-card {
+                background: #fff;
+                border-radius: 10px;
+                padding: 25px 15px;
+                text-align: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                }
+                .petroraq-careers .stat-card i {
+                font-size: 32px;
+                color: #0a2540;
+                margin-bottom: 12px;
+                }
+                .petroraq-careers .stat-card h3 {
+                font-size: 26px;
+                font-weight: 700;
+                color: #0a2540;
+                margin-bottom: 4px;
+                }
+                .petroraq-careers .stat-card p {
+                font-size: 12px;
+                color: #6b7a8f;
+                }
+                .petroraq-careers .benefits-grid {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 15px;
+                margin-top: 25px;
+                }
+                .petroraq-careers .benefit-card {
+                background: #fff;
+                border-radius: 10px;
+                padding: 25px 15px;
+                text-align: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                transition: transform 0.3s;
+                }
+                .petroraq-careers .benefit-card:hover {
+                transform: translateY(-4px);
+                }
+                .petroraq-careers .benefit-card i {
+                font-size: 30px;
+                color: #d89a2b;
+                margin-bottom: 12px;
+                }
+                .petroraq-careers .benefit-card h4 {
+                font-size: 13px;
+                font-weight: 700;
+                color: #0a2540;
+                margin-bottom: 8px;
+                line-height: 1.3;
+                }
+                .petroraq-careers .benefit-card p {
+                font-size: 11px;
+                color: #6b7a8f;
+                line-height: 1.5;
+                }
+
+                /* ===== Current Openings ===== */
+                .petroraq-careers .openings-section {
+                padding: 70px 0;
+                background: #f5f6f8;
+                }
+                .petroraq-careers .openings-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+                gap: 20px;
+                flex-wrap: wrap;
+                }
+                .petroraq-careers .openings-header h2 {
+                font-size: 26px;
+                font-weight: 700;
+                color: #0a2540;
+                }
+                .petroraq-careers .search-box {
+                display: flex;
+                align-items: center;
+                background: #fff;
+                border: 1px solid #e5e8ec;
+                border-radius: 8px;
+                padding: 4px 4px 4px 14px;
+                min-width: 320px;
+                flex: 1;
+                max-width: 420px;
+                }
+                .petroraq-careers .search-box i {
+                color: #6b7a8f;
+                font-size: 13px;
+                }
+                .petroraq-careers .search-box input {
+                flex: 1;
+                border: none;
+                outline: none;
+                padding: 10px 12px;
+                font-size: 13px;
+                background: transparent;
+                color: #0a2540;
+                font-family: inherit;
+                }
+                .petroraq-careers .search-box input::placeholder {
+                color: #6b7a8f;
+                }
+                .petroraq-careers .search-box button {
+                background: #d89a2b;
+                color: #fff;
+                border: none;
+                padding: 9px 18px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.3s;
+                }
+                .petroraq-careers .search-box button:hover {
+                background: #e5a838;
+                }
+                .petroraq-careers .jobs-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                }
+                .petroraq-careers .job-card {
+                background: #fff;
+                border-radius: 10px;
+                padding: 22px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                transition: all 0.3s;
+                }
+                .petroraq-careers .job-card:hover {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+                transform: translateY(-3px);
+                }
+                .petroraq-careers .job-card h3 {
+                font-size: 16px;
+                font-weight: 700;
+                color: #0a2540;
+                margin-bottom: 14px;
+                }
+                .petroraq-careers .job-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                margin-bottom: 15px;
+                }
+                .petroraq-careers .job-meta span {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                color: #6b7a8f;
+                }
+                .petroraq-careers .job-meta i {
+                color: #d89a2b;
+                font-size: 13px;
+                }
+                .petroraq-careers .btn-apply {
+                background: #d89a2b;
+                color: #fff;
+                padding: 8px 22px;
+                border: none;
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.3s;
+                float: right;
+                text-decoration: none;
+                display: inline-block;
+                }
+                .petroraq-careers .btn-apply:hover {
+                background: #e5a838;
+                color: #fff;
+                }
+                .petroraq-careers .clear { clear: both; }
+                .petroraq-careers .no-jobs {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 40px;
+                color: #6b7a8f;
+                font-size: 14px;
+                background: #fff;
+                border-radius: 10px;
+                }
+
+                /* ===== Hiring Process ===== */
+                .petroraq-careers .process-section {
+                padding: 70px 0;
+                background: #f5f6f8;
+                }
+                .petroraq-careers .process-section h2 {
+                text-align: center;
+                font-size: 26px;
+                font-weight: 700;
+                color: #0a2540;
+                margin-bottom: 50px;
+                }
+                .petroraq-careers .process-steps {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 10px;
+                position: relative;
+                max-width: 1000px;
+                margin: 0 auto;
+                }
+                .petroraq-careers .process-steps::before {
+                content: '';
+                position: absolute;
+                top: 35px;
+                left: 10%;
+                right: 10%;
+                height: 2px;
+                background-image: linear-gradient(to right, #cbd3dd 50%, transparent 50%);
+                background-size: 10px 2px;
+                z-index: 0;
+                }
+                .petroraq-careers .step {
+                text-align: center;
+                position: relative;
+                z-index: 1;
+                }
+                .petroraq-careers .step-icon {
+                width: 70px;
+                height: 70px;
+                background: #0a2540;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 15px;
+                position: relative;
+                }
+                .petroraq-careers .step-icon i {
+                color: #d89a2b;
+                font-size: 26px;
+                }
+                .petroraq-careers .step-number {
+                position: absolute;
+                bottom: -6px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 22px;
+                height: 22px;
+                background: #d89a2b;
+                color: #fff;
+                border-radius: 50%;
+                font-size: 11px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid #f5f6f8;
+                }
+                .petroraq-careers .step h4 {
+                font-size: 15px;
+                font-weight: 700;
+                color: #0a2540;
+                margin-bottom: 8px;
+                }
+                .petroraq-careers .step p {
+                font-size: 12px;
+                color: #6b7a8f;
+                line-height: 1.5;
+                padding: 0 8px;
+                }
+
+                /* ===== Life at PETRORAQ ===== */
+                .petroraq-careers .life-section {
+                padding: 60px 0 70px;
+                background: #f5f6f8;
+                }
+                .petroraq-careers .life-section h2 {
+                font-size: 24px;
+                font-weight: 700;
+                color: #0a2540;
+                margin-bottom: 25px;
+                }
+                .petroraq-careers .life-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                }
+                .petroraq-careers .life-card {
+                background: #fff;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                transition: transform 0.3s;
+                }
+                .petroraq-careers .life-card:hover {
+                transform: translateY(-4px);
+                }
+                .petroraq-careers .life-card img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                display: block;
+                }
+                .petroraq-careers .life-content {
+                padding: 18px 20px 22px;
+                }
+                .petroraq-careers .life-content h4 {
+                font-size: 15px;
+                font-weight: 700;
+                color: #0a2540;
+                margin-bottom: 8px;
+                }
+                .petroraq-careers .life-content p {
+                font-size: 12.5px;
+                color: #6b7a8f;
+                line-height: 1.6;
+                }
+
+                /* ===== CTA Banner ===== */
+                .petroraq-careers .cta-section {
+                padding: 40px 0 70px;
+                background: #f5f6f8;
+                }
+                .petroraq-careers .cta-banner {
+                background: #0a2540;
+                background-image:
+                radial-gradient(circle at 90% 50%, rgba(216,154,43,0.08) 0%, transparent 50%),
+                linear-gradient(135deg, #0a2540 0%, #071a2f 100%);
+                border: 1px solid rgba(216,154,43,0.3);
+                border-radius: 12px;
+                padding: 30px 40px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 25px;
+                }
+                .petroraq-careers .cta-left {
+                display: flex;
+                align-items: center;
+                gap: 22px;
+                }
+                .petroraq-careers .cta-icon {
+                width: 62px;
+                height: 62px;
+                background: rgba(255,255,255,0.08);
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                }
+                .petroraq-careers .cta-icon i {
+                color: #fff;
+                font-size: 26px;
+                }
+                .petroraq-careers .cta-text h3 {
+                color: #fff;
+                font-size: 22px;
+                font-weight: 700;
+                margin-bottom: 5px;
+                }
+                .petroraq-careers .cta-text p {
+                color: #b8c5d6;
+                font-size: 13px;
+                }
+                .petroraq-careers .btn-cta {
+                background: #d89a2b;
+                color: #fff;
+                padding: 13px 30px;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                transition: all 0.3s;
+                }
+                .petroraq-careers .btn-cta:hover {
+                background: #e5a838;
+                transform: translateY(-2px);
+                color: #fff;
+                }
+
+                /* ===== Responsive ===== */
+                @media (max-width: 992px) {
+                .petroraq-careers .benefits-grid { grid-template-columns: repeat(3, 1fr); }
+                .petroraq-careers .jobs-grid { grid-template-columns: repeat(2, 1fr); }
+                .petroraq-careers .life-grid { grid-template-columns: repeat(2, 1fr); }
+                .petroraq-careers .why-top { grid-template-columns: 1fr; }
+                }
+                @media (max-width: 768px) {
+                .petroraq-careers .hero-content { padding: 50px 25px; }
+                .petroraq-careers .hero-content h1 { font-size: 36px; }
+                .petroraq-careers .stats-grid { grid-template-columns: repeat(2, 1fr); }
+                .petroraq-careers .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+                .petroraq-careers .jobs-grid { grid-template-columns: 1fr; }
+                .petroraq-careers .life-grid { grid-template-columns: 1fr; }
+                .petroraq-careers .process-steps { grid-template-columns: 1fr; gap: 30px; }
+                .petroraq-careers .process-steps::before { display: none; }
+                .petroraq-careers .cta-banner { flex-direction: column; text-align: center; }
+                .petroraq-careers .cta-left { flex-direction: column; text-align: center; }
+                .petroraq-careers .openings-header { flex-direction: column; align-items: stretch; }
+                .petroraq-careers .search-box { min-width: auto; max-width: 100%; }
+                }
             </style>
 
+            <div class="petroraq-careers">
+
+                <!-- ===== Hero Section ===== -->
+                <section class="careers-hero">
+                    <div class="hero-overlay"></div>
+                    <div class="pr-container">
+                        <div class="hero-content">
+                            <h1>Build Your Career<br/>With PETRORAQ
+                                <span class="dot">.</span>
+                            </h1>
+                            <p>Join a team delivering industrial and infrastructure excellence with safety, innovation,
+                                and growth.
+                            </p>
+                            <div class="hero-buttons">
+                                <a href="#openings" class="btn-primary">
+                                    View Open Positions
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                                <a href="#life" class="btn-outline">
+                                    Life at PETRORAQ
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Why Work With Us ===== -->
+                <section class="why-section">
+                    <div class="pr-container">
+                        <div class="why-top">
+                            <div class="why-text">
+                                <h2>Why Work With Us</h2>
+                                <p>At PETRORAQ, we empower our people to grow, innovate, and make an impact. We foster a
+                                    culture of safety, collaboration, and excellence while delivering meaningful
+                                    projects that shape communities and industries.
+                                </p>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <i class="fa-solid fa-user-group"></i>
+                                    <h3>250+</h3>
+                                    <p>Employees</p>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fa-solid fa-globe"></i>
+                                    <h3>12+</h3>
+                                    <p>Years Experience</p>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fa-solid fa-building"></i>
+                                    <h3>150+</h3>
+                                    <p>Projects</p>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <h3>5</h3>
+                                    <p>Countries</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="benefits-grid">
+                            <div class="benefit-card">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                                <h4>Competitive Compensation</h4>
+                                <p>Attractive salary packages and performance-based incentives.</p>
+                            </div>
+                            <div class="benefit-card">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <h4>Professional Development</h4>
+                                <p>Continuous learning opportunities and career growth pathways.</p>
+                            </div>
+                            <div class="benefit-card">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <h4>Safety-First Culture</h4>
+                                <p>A strong commitment to health, safety, and environment.</p>
+                            </div>
+                            <div class="benefit-card">
+                                <i class="fa-solid fa-industry"></i>
+                                <h4>Diverse Projects</h4>
+                                <p>Work on challenging industrial and infrastructure projects.</p>
+                            </div>
+                            <div class="benefit-card">
+                                <i class="fa-solid fa-people-group"></i>
+                                <h4>Team Collaboration</h4>
+                                <p>Collaborative teams that value respect, trust, and teamwork.</p>
+                            </div>
+                            <div class="benefit-card">
+                                <i class="fa-solid fa-award"></i>
+                                <h4>Performance Recognition</h4>
+                                <p>We recognize achievements and celebrate our people.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Current Openings (Dynamic Jobs from Controller) ===== -->
+                <section class="openings-section" id="openings">
+                    <div class="pr-container">
+                        <div class="openings-header">
+                            <h2>Current Openings</h2>
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" class="prq-job-search"
+                                       placeholder="Search jobs by title, department, or location..."/>
+                                <button class="prq-search-btn" type="button">Search</button>
+                            </div>
+                        </div>
+
+                        <div class="jobs-grid">
+                            <t t-if="jobs">
+                                <t t-foreach="jobs" t-as="job">
+                                    <div class="job-card prq-job-card">
+                                        <h3 class="prq-job-title" t-esc="job.name"/>
+                                        <div class="job-meta">
+                                            <span class="prq-job-company">
+                                                <i class="fa-solid fa-briefcase"></i>
+                                                <t t-if="job.department_id" t-esc="job.department_id.name"/>
+                                                <t t-else="">General</t>
+                                            </span>
+                                            <span>
+                                                <i class="fa-solid fa-location-dot"></i>
+                                                <t t-if="job.address_id and job.address_id.city"
+                                                   t-esc="job.address_id.city"/>
+                                                <t t-else="">Remote</t>
+                                            </span>
+                                            <span>
+                                                <i class="fa-regular fa-clock"></i>
+                                                <t t-if="job._fields.get('contract_type_id') and job.contract_type_id"
+                                                   t-esc="job.contract_type_id.name"/>
+                                                <t t-else="">Full-time</t>
+                                            </span>
+                                        </div>
+                                        <a t-att-href="'/job/%s' % job.id" class="btn-apply">Apply</a>
+                                        <div class="clear"></div>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="no-jobs">
+                                    <i class="fa-regular fa-folder-open"
+                                       style="font-size: 32px; color: #d89a2b; margin-bottom: 12px; display: block;"></i>
+                                    No open positions at the moment. Please check back soon!
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Hiring Process ===== -->
+                <section class="process-section">
+                    <div class="pr-container">
+                        <h2>Our Hiring Process</h2>
+                        <div class="process-steps">
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                    <div class="step-number">1</div>
+                                </div>
+                                <h4>Application</h4>
+                                <p>Submit your application and CV online.</p>
+                            </div>
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <div class="step-number">2</div>
+                                </div>
+                                <h4>Review</h4>
+                                <p>Our team reviews your qualifications and experience.</p>
+                            </div>
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fa-solid fa-users"></i>
+                                    <div class="step-number">3</div>
+                                </div>
+                                <h4>Interview</h4>
+                                <p>Shortlisted candidates will be invited for interviews.</p>
+                            </div>
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fa-regular fa-envelope"></i>
+                                    <div class="step-number">4</div>
+                                </div>
+                                <h4>Offer</h4>
+                                <p>Successful candidates receive an offer.</p>
+                            </div>
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fa-solid fa-people-group"></i>
+                                    <div class="step-number">5</div>
+                                </div>
+                                <h4>Onboarding</h4>
+                                <p>Welcome to the team! Let's build the future together.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Life at PETRORAQ ===== -->
+                <section class="life-section" id="life">
+                    <div class="pr-container">
+                        <h2>Life at PETRORAQ</h2>
+                        <div class="life-grid">
+                            <div class="life-card">
+                                <img src="https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=800&amp;q=80"
+                                     alt="Empowered People"/>
+                                <div class="life-content">
+                                    <h4>Empowered People</h4>
+                                    <p>We invest in our people, provide learning opportunities, and support career
+                                        growth.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="life-card">
+                                <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=800&amp;q=80"
+                                     alt="Meaningful Work"/>
+                                <div class="life-content">
+                                    <h4>Meaningful Work</h4>
+                                    <p>Be part of impactful projects that drive progress and improve communities.</p>
+                                </div>
+                            </div>
+                            <div class="life-card">
+                                <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&amp;q=80"
+                                     alt="Strong Culture"/>
+                                <div class="life-content">
+                                    <h4>Strong Culture</h4>
+                                    <p>A collaborative, inclusive, and respectful environment where everyone belongs.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== CTA Banner ===== -->
+                <section class="cta-section">
+                    <div class="pr-container">
+                        <div class="cta-banner">
+                            <div class="cta-left">
+                                <div class="cta-icon">
+                                    <i class="fa-solid fa-users-gear"></i>
+                                </div>
+                                <div class="cta-text">
+                                    <h3>Ready to Build the Future With Us?</h3>
+                                    <p>Join PETRORAQ and be part of a team delivering excellence every day.</p>
+                                </div>
+                            </div>
+                            <a href="#openings" class="btn-cta">
+                                Submit Your CV
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Job Search Script -->
             <script type="text/javascript">
-                document.addEventListener('DOMContentLoaded', () =&gt; {
-                    const searchInput = document.querySelector('.prq-job-search');
-                    const searchBtn = document.querySelector('.prq-search-btn');
-                    const jobCards = document.querySelectorAll('.prq-job-card');
+                document.addEventListener('DOMContentLoaded', function () {
+                var searchInput = document.querySelector('.prq-job-search');
+                var searchBtn = document.querySelector('.prq-search-btn');
+                var jobCards = document.querySelectorAll('.prq-job-card');
 
-                    document.getElementById('prqErrorClose')?.addEventListener('click', () => { document.getElementById('prqErrorPopup')?.remove(); });
-                const observer = new IntersectionObserver((entries) =&gt; {
-                        entries.forEach((entry) =&gt; {
-                            if (entry.isIntersecting) entry.target.style.animationPlayState = 'running';
-                        });
-                    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+                function filterJobs(query) {
+                query = (query || '').toLowerCase();
+                jobCards.forEach(function (card) {
+                var title = (card.querySelector('.prq-job-title') || {}).textContent || '';
+                var company = (card.querySelector('.prq-job-company') || {}).textContent || '';
+                var meta = (card.querySelector('.job-meta') || {}).textContent || '';
+                var combined = (title + ' ' + company + ' ' + meta).toLowerCase();
+                card.style.display = combined.indexOf(query) !== -1 ? 'block' : 'none';
+                });
+                }
 
-                    jobCards.forEach((card) =&gt; observer.observe(card));
-
-                    const filterJobs = (query) =&gt; {
-                        jobCards.forEach((card) =&gt; {
-                            const title = (card.querySelector('.prq-job-title')?.textContent || '').toLowerCase();
-                            const company = (card.querySelector('.prq-job-company')?.textContent || '').toLowerCase();
-                            const desc = (card.querySelector('.prq-job-desc')?.textContent || '').toLowerCase();
-                            if (title.includes(query) || company.includes(query) || desc.includes(query)) {
-                                card.style.display = 'block';
-                                card.style.animation = 'none';
-                                setTimeout(() =&gt; { card.style.animation = 'prqSlideInUp 0.8s ease-out forwards'; }, 100);
-                            } else card.style.display = 'none';
-                        });
-                    };
-
-                    searchInput?.addEventListener('input', (e) =&gt; filterJobs(e.target.value.toLowerCase()));
-                    searchBtn?.addEventListener('click', () =&gt; filterJobs((searchInput?.value || '').toLowerCase()));
+                if (searchInput) {
+                searchInput.addEventListener('input', function (e) { filterJobs(e.target.value); });
+                }
+                if (searchBtn) {
+                searchBtn.addEventListener('click', function () {
+                filterJobs(searchInput ? searchInput.value : '');
+                });
+                }
                 });
             </script>
         </t>
@@ -141,41 +846,56 @@
 
                     <section class="prq-job-details-card">
                         <div class="prq-job-detail-header">
-                            <div class="prq-job-icon-large"><i class="fa fa-briefcase"></i></div>
+                            <div class="prq-job-icon-large">
+                                <i class="fa fa-briefcase"></i>
+                            </div>
                             <div class="prq-job-meta">
                                 <h2 t-esc="job.name"/>
                                 <div class="prq-job-company">
                                     <t t-esc="request.website.name"/>
-                                    <t t-if="job.address_id and job.address_id.city"> • <t t-esc="job.address_id.city"/></t>
-                                    <t t-else=""> • Remote</t>
+                                    <t t-if="job.address_id and job.address_id.city">•
+                                        <t t-esc="job.address_id.city"/>
+                                    </t>
+                                    <t t-else="">• Remote</t>
                                 </div>
                             </div>
                         </div>
 
                         <div class="prq-job-info-grid">
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fa fa-briefcase"></i></div>
+                                <div class="prq-info-icon">
+                                    <i class="fa fa-briefcase"></i>
+                                </div>
                                 <div>
                                     <strong t-esc="job.contract_type_id.name if job._fields.get('contract_type_id') and job.contract_type_id else 'Full-time'"/>
                                     <div>Employment Type</div>
                                 </div>
                             </div>
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fa fa-users"></i></div>
+                                <div class="prq-info-icon">
+                                    <i class="fa fa-users"></i>
+                                </div>
                                 <div>
-                                    <strong><t t-if="job.no_of_recruitment" t-esc="job.no_of_recruitment"/><t t-else="">Open</t></strong>
+                                    <strong>
+                                        <t t-if="job.no_of_recruitment" t-esc="job.no_of_recruitment"/>
+                                        <t t-else="">Open</t>
+                                    </strong>
                                     <div>Openings</div>
                                 </div>
                             </div>
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fa fa-map-marker"></i></div>
+                                <div class="prq-info-icon">
+                                    <i class="fa fa-map-marker"></i>
+                                </div>
                                 <div>
                                     <strong t-esc="job.address_id.city if job.address_id and job.address_id.city else 'Remote'"/>
                                     <div>Work Location</div>
                                 </div>
                             </div>
                             <div class="prq-info-item">
-                                <div class="prq-info-icon"><i class="fa fa-building"></i></div>
+                                <div class="prq-info-icon">
+                                    <i class="fa fa-building"></i>
+                                </div>
                                 <div>
                                     <strong t-esc="request.website.name"/>
                                     <div>Hiring Company</div>
@@ -189,30 +909,41 @@
                     </section>
 
                     <section id="apply-form" class="prq-application-section">
-                        <h2 class="prq-section-title"><i class="fa fa-paper-plane"></i> Apply Now</h2>
-                        <form t-att-action="'/job/%s/apply' % job.id" method="post" enctype="multipart/form-data" class="prq-form-grid">
+                        <h2 class="prq-section-title">
+                            <i class="fa fa-paper-plane"></i>
+                            Apply Now
+                        </h2>
+                        <form t-att-action="'/job/%s/apply' % job.id" method="post" enctype="multipart/form-data"
+                              class="prq-form-grid">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Full Name</label>
-                                <input class="prq-form-control" name="partner_name" placeholder="Enter your full name" pattern="[A-Za-z][A-Za-z\s'\.-]{1,79}" required="required"/>
+                                <input class="prq-form-control" name="partner_name" placeholder="Enter your full name"
+                                       pattern="[A-Za-z][A-Za-z\s'\.-]{1,79}" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Email</label>
-                                <input class="prq-form-control" type="email" name="email_from" placeholder="your@email.com" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" required="required"/>
+                                <input class="prq-form-control" type="email" name="email_from"
+                                       placeholder="your@email.com"
+                                       pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Phone</label>
-                                <input class="prq-form-control" name="partner_phone" placeholder="+966 5X XXX XXXX" pattern="\+?[0-9][0-9\s().-]{7,19}" required="required"/>
+                                <input class="prq-form-control" name="partner_phone" placeholder="+966 5X XXX XXXX"
+                                       pattern="\+?[0-9][0-9\s().-]{7,19}" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Location</label>
-                                <input class="prq-form-control" name="partner_location" placeholder="Current city, country" pattern="[A-Za-z0-9][A-Za-z0-9,\s'\.-]{1,99}" required="required" autocomplete="off"/>
+                                <input class="prq-form-control" name="partner_location"
+                                       placeholder="Current city, country" pattern="[A-Za-z0-9][A-Za-z0-9,\s'\.-]{1,99}"
+                                       required="required" autocomplete="off"/>
                                 <div id="job-location-suggestions" class="prq-location-suggestions"></div>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Total Years of Experience</label>
-                                <input type="number" min="0" class="prq-form-control" name="experience" placeholder="5" required="required"/>
+                                <input type="number" min="0" class="prq-form-control" name="experience" placeholder="5"
+                                       required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Highest Qualification</label>
@@ -225,15 +956,19 @@
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Expected Salary</label>
-                                <input type="number" class="prq-form-control" name="salary_expected" placeholder="12000" required="required"/>
+                                <input type="number" class="prq-form-control" name="salary_expected" placeholder="12000"
+                                       required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Notice Period (Days)</label>
-                                <input type="number" min="0" class="prq-form-control" name="notice_period" placeholder="30" required="required"/>
+                                <input type="number" min="0" class="prq-form-control" name="notice_period"
+                                       placeholder="30" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">LinkedIn Profile</label>
-                                <input class="prq-form-control" name="linkedin_profile" placeholder="https://linkedin.com/in/yourprofile" pattern="https?://([a-z]{2,3}\.)?linkedin\.com/.*" required="required"/>
+                                <input class="prq-form-control" name="linkedin_profile"
+                                       placeholder="https://linkedin.com/in/yourprofile"
+                                       pattern="https?://([a-z]{2,3}\.)?linkedin\.com/.*" required="required"/>
                             </div>
                             <div class="prq-form-group">
                                 <label class="prq-form-label required">Will you relocate?</label>
@@ -254,146 +989,264 @@
                             <div class="prq-form-group prq-full-width">
                                 <label class="prq-form-label required">Resume Upload</label>
                                 <div class="prq-file-upload">
-                                    <div class="prq-file-icon"><i class="fa fa-upload"></i></div>
-                                    <input class="prq-form-control prq-file-input" type="file" name="resume" accept=".pdf,.doc,.docx" required="required"/>
+                                    <div class="prq-file-icon">
+                                        <i class="fa fa-upload"></i>
+                                    </div>
+                                    <input class="prq-form-control prq-file-input" type="file" name="resume"
+                                           accept=".pdf,.doc,.docx" required="required"/>
                                 </div>
                                 <small class="prq-file-help">PDF, DOC, DOCX (Max 5MB)</small>
                             </div>
-                            <button class="prq-submit-btn" type="submit"><i class="fa fa-rocket"></i> Submit Application</button>
+                            <button class="prq-submit-btn" type="submit">
+                                <i class="fa fa-rocket"></i>
+                                Submit Application
+                            </button>
                         </form>
                     </section>
                 </div>
             </section>
 
             <style>
-            .prq-job-detail-page{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#17326F 0%,#0F224F 50%,#17326F 100%);min-height:100vh;color:#fff;position:relative;overflow-x:hidden}
-            .prq-detail-bg-animation{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle at 20% 80%,rgba(255,192,61,.18) 0%,transparent 52%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.05) 0%,transparent 50%);animation:prqBgShift2 20s ease-in-out infinite}
-            .prq-detail-container{max-width:1200px;margin:0 auto;padding:2rem;position:relative;z-index:2}.prq-detail-header{text-align:center;margin-bottom:4rem;animation:prqFadeInUp 1s ease-out}
-            .prq-detail-header h1{font-family:'Orbitron',monospace;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;background:linear-gradient(45deg,#FFC03D,#FFD872,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;filter:drop-shadow(0 0 30px rgba(255,192,61,.6));animation:prqGradientShift2 3s ease-in-out infinite}
-            .prq-error-popup{display:flex;align-items:center;gap:.75rem;background:rgba(200,36,36,.2);border:1px solid rgba(255,120,120,.6);color:#fff;padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem;backdrop-filter:blur(10px)}.prq-error-popup i{color:#FFD872}.prq-error-close{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.4rem;cursor:pointer}
-            .prq-back-btn{display:inline-flex;align-items:center;gap:.5rem;color:#fff;text-decoration:none;font-weight:500;margin-bottom:1rem;transition:.3s}.prq-back-btn:hover{color:#FFC03D;transform:translateX(-5px)}
-            .prq-job-details-card,.prq-application-section{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);border-radius:25px;padding:3rem}
-            .prq-job-details-card{margin-bottom:4rem;animation:prqSlideInUp2 .8s ease-out .2s both}.prq-application-section{animation:prqSlideInUp2 .8s ease-out .4s both}
-            .prq-job-detail-header{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem}.prq-job-icon-large{width:80px;height:80px;background:linear-gradient(135deg,#FFC03D,#FFD872);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#17326F;flex-shrink:0}
-            .prq-job-meta h2{font-size:2.2rem;font-weight:700;margin-bottom:.5rem}.prq-job-company{font-size:1.2rem;color:#FFD872;font-weight:500}
-            .prq-job-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-bottom:2rem}.prq-info-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:rgba(255,255,255,.05);border-radius:15px;border:1px solid rgba(255,255,255,.1)}
-            .prq-info-icon{width:45px;height:45px;background:#FFC03D;color:#17326F;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-            .prq-job-description{line-height:1.7;color:rgba(255,255,255,.95);font-size:1.05rem}
-            .prq-section-title{font-size:2rem;font-weight:700;text-align:center;margin-bottom:2.5rem;background:linear-gradient(45deg,#FFC03D,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-            .prq-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-bottom:2rem}.prq-form-group{position:relative}.prq-form-label{display:block;font-weight:600;margin-bottom:.75rem;color:#fff;font-size:.95rem}.prq-form-label.required:after{content:'*';color:#FFC03D;margin-left:.25rem}
-            .prq-form-control,.prq-form-select{width:100%;padding:1.2rem 1.5rem;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:15px;color:#fff;font-size:1rem;transition:.3s;backdrop-filter:blur(10px)}
-            .prq-form-control::placeholder{color:rgba(255,255,255,.6)} .prq-form-control:focus,.prq-form-select:focus{outline:none;border-color:#FFC03D;box-shadow:0 0 0 4px rgba(255,192,61,.6);background:rgba(255,255,255,.15)}
-            .prq-form-select{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 20 20'%3e%3cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3e%3c/svg%3e");background-position:right 1rem center;background-repeat:no-repeat;background-size:16px;padding-right:3rem;appearance:none;cursor:pointer}.prq-form-select option{background:#17326F;color:#FFFFFF}.prq-form-select option:checked{background:#0F224F;color:#FFC03D}
-            .prq-full-width{grid-column:1/-1}.prq-file-upload{display:flex;align-items:center;gap:1rem}.prq-file-input{flex:1}.prq-file-icon{width:50px;height:50px;background:#FFC03D;color:#17326F;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}.prq-file-help{color:#FFD872;display:block;margin-top:.5rem}
-            .prq-submit-btn{grid-column:1/-1;background:linear-gradient(45deg,#FFC03D,#FFD872);color:#17326F;border:none;padding:1.5rem 4rem;border-radius:50px;font-size:1.3rem;font-weight:700;cursor:pointer;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;box-shadow:0 15px 40px rgba(255,192,61,.6);text-transform:uppercase;letter-spacing:1px}
-            .prq-submit-btn:hover{transform:translateY(-5px) scale(1.05);box-shadow:0 25px 60px rgba(255,192,61,.6)}.prq-submit-btn:before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .6s}.prq-submit-btn:hover:before{left:100%}
-            @keyframes prqBgShift2{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.1) rotate(180deg)}}@keyframes prqGradientShift2{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}@keyframes prqFadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}@keyframes prqSlideInUp2{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
-            @media (max-width:768px){.prq-detail-container{padding:1rem}.prq-job-detail-header{flex-direction:column;text-align:center}.prq-form-grid{grid-template-columns:1fr;gap:1.5rem}.prq-job-details-card,.prq-application-section{padding:2rem 1.5rem}}
+                .prq-job-detail-page{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#0a2540
+                0%,#071a2f 50%,#0a2540 100%);min-height:100vh;color:#fff;position:relative;overflow-x:hidden}
+                .prq-detail-bg-animation{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle
+                at 20% 80%,rgba(216,154,43,.18) 0%,transparent 52%),radial-gradient(circle at 80%
+                20%,rgba(255,255,255,.05) 0%,transparent 50%);animation:prqBgShift2 20s ease-in-out infinite}
+                .prq-detail-container{max-width:1200px;margin:0 auto;padding:2rem;position:relative;z-index:2}
+                .prq-detail-header{text-align:center;margin-bottom:4rem;animation:prqFadeInUp 1s ease-out}
+                .prq-detail-header
+                h1{font-family:'Poppins',sans-serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;background:linear-gradient(45deg,#d89a2b,#e5a838,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;filter:drop-shadow(0
+                0 30px rgba(216,154,43,.6));animation:prqGradientShift2 3s ease-in-out infinite}
+                .prq-error-popup{display:flex;align-items:center;gap:.75rem;background:rgba(200,36,36,.2);border:1px
+                solid rgba(255,120,120,.6);color:#fff;padding:.9rem
+                1rem;border-radius:12px;margin-bottom:1rem;backdrop-filter:blur(10px)}
+                .prq-error-popup i{color:#e5a838}
+                .prq-error-close{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.4rem;cursor:pointer}
+                .prq-back-btn{display:inline-flex;align-items:center;gap:.5rem;color:#fff;text-decoration:none;font-weight:500;margin-bottom:1rem;transition:.3s}
+                .prq-back-btn:hover{color:#d89a2b;transform:translateX(-5px)}
+                .prq-job-details-card,.prq-application-section{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px
+                solid rgba(255,255,255,.2);border-radius:25px;padding:3rem}
+                .prq-job-details-card{margin-bottom:4rem;animation:prqSlideInUp2 .8s ease-out .2s both}
+                .prq-application-section{animation:prqSlideInUp2 .8s ease-out .4s both}
+                .prq-job-detail-header{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem}
+                .prq-job-icon-large{width:80px;height:80px;background:linear-gradient(135deg,#d89a2b,#e5a838);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#0a2540;flex-shrink:0}
+                .prq-job-meta h2{font-size:2.2rem;font-weight:700;margin-bottom:.5rem}
+                .prq-job-company{font-size:1.2rem;color:#e5a838;font-weight:500}
+                .prq-job-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-bottom:2rem}
+                .prq-info-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:rgba(255,255,255,.05);border-radius:15px;border:1px
+                solid rgba(255,255,255,.1)}
+                .prq-info-icon{width:45px;height:45px;background:#d89a2b;color:#0a2540;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+                .prq-job-description{line-height:1.7;color:rgba(255,255,255,.95);font-size:1.05rem}
+                .prq-section-title{font-size:2rem;font-weight:700;text-align:center;margin-bottom:2.5rem;background:linear-gradient(45deg,#d89a2b,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+                .prq-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-bottom:2rem}
+                .prq-form-group{position:relative}
+                .prq-form-label{display:block;font-weight:600;margin-bottom:.75rem;color:#fff;font-size:.95rem}
+                .prq-form-label.required:after{content:'*';color:#d89a2b;margin-left:.25rem}
+                .prq-form-control,.prq-form-select{width:100%;padding:1.2rem
+                1.5rem;background:rgba(255,255,255,.1);border:2px solid
+                rgba(255,255,255,.2);border-radius:15px;color:#fff;font-size:1rem;transition:.3s;backdrop-filter:blur(10px);font-family:inherit}
+                .prq-form-control::placeholder{color:rgba(255,255,255,.6)}
+                .prq-form-control:focus,.prq-form-select:focus{outline:none;border-color:#d89a2b;box-shadow:0 0 0 4px
+                rgba(216,154,43,.3);background:rgba(255,255,255,.15)}
+                .prq-form-select{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg'
+                fill='white' viewBox='0 0 20 20'%3e%3cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0
+                111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3e%3c/svg%3e");background-position:right
+                1rem
+                center;background-repeat:no-repeat;background-size:16px;padding-right:3rem;appearance:none;cursor:pointer}
+                .prq-form-select option{background:#0a2540;color:#FFFFFF}
+                .prq-form-select option:checked{background:#071a2f;color:#d89a2b}
+                .prq-full-width{grid-column:1/-1}
+                .prq-file-upload{display:flex;align-items:center;gap:1rem}
+                .prq-file-input{flex:1}
+                .prq-file-icon{width:50px;height:50px;background:#d89a2b;color:#0a2540;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+                .prq-file-help{color:#e5a838;display:block;margin-top:.5rem}
+                .prq-submit-btn{grid-column:1/-1;background:linear-gradient(45deg,#d89a2b,#e5a838);color:#0a2540;border:none;padding:1.5rem
+                4rem;border-radius:50px;font-size:1.3rem;font-weight:700;cursor:pointer;transition:all .4s
+                cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;box-shadow:0 15px 40px
+                rgba(216,154,43,.4);text-transform:uppercase;letter-spacing:1px}
+                .prq-submit-btn:hover{transform:translateY(-5px) scale(1.05);box-shadow:0 25px 60px rgba(216,154,43,.6)}
+                .prq-submit-btn:before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left
+                .6s}
+                .prq-submit-btn:hover:before{left:100%}
+                .prq-location-suggestions{position:absolute;top:100%;left:0;right:0;background:#0a2540;border:1px solid
+                rgba(255,255,255,.2);border-radius:10px;margin-top:4px;max-height:200px;overflow-y:auto;z-index:10}
+                .prq-suggestion-item{display:block;width:100%;text-align:left;padding:.75rem
+                1rem;background:transparent;border:none;color:#fff;cursor:pointer;font-size:.9rem;transition:background
+                .2s}
+                .prq-suggestion-item:hover{background:rgba(216,154,43,.2)}
+                @keyframes prqBgShift2{0%,100%{transform:scale(1) rotate(0);opacity:.8}50%{transform:scale(1.1)
+                rotate(180deg);opacity:1}}
+                @keyframes prqGradientShift2{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+                @keyframes prqFadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+                @keyframes
+                prqSlideInUp2{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
+                @media
+                (max-width:768px){.prq-detail-container{padding:1rem}.prq-job-detail-header{flex-direction:column;text-align:center}.prq-form-grid{grid-template-columns:1fr;gap:1.5rem}.prq-job-details-card,.prq-application-section{padding:2rem
+                1.5rem}}
             </style>
 
             <script type="text/javascript">
-            document.addEventListener('DOMContentLoaded', () =&gt; {
-                const observer = new IntersectionObserver((entries) =&gt; {
-                    entries.forEach((entry) =&gt; {
-                        if (entry.isIntersecting) entry.target.style.animationPlayState = 'running';
-                    });
+                document.addEventListener('DOMContentLoaded', function () {
+                var errorClose = document.getElementById('prqErrorClose');
+                if (errorClose) {
+                errorClose.addEventListener('click', function () {
+                var popup = document.getElementById('prqErrorPopup');
+                if (popup) popup.remove();
                 });
-                document.querySelectorAll('.prq-job-details-card, .prq-application-section').forEach((el) =&gt; observer.observe(el));
+                }
 
-                document.querySelectorAll('.prq-form-control, .prq-form-select').forEach((input) =&gt; {
-                    input.addEventListener('focus', function () { this.parentElement.classList.add('focused'); });
-                    input.addEventListener('blur', function () { this.parentElement.classList.remove('focused'); });
+                var form = document.querySelector('.prq-form-grid');
+                if (form) {
+                form.addEventListener('submit', function () {
+                var btn = this.querySelector('.prq-submit-btn');
+                if (btn) {
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Submitting...';
+                btn.style.transform = 'scale(1.05)';
+                }
                 });
+                }
 
-                const fileInput = document.querySelector('input[type="file"]');
-                fileInput?.addEventListener('change', () =&gt; {});
-
-                const form = document.querySelector('.prq-form-grid');
-                form?.addEventListener('submit', function () {
-                    const btn = this.querySelector('.prq-submit-btn');
-                    if (btn) {
-                        btn.innerHTML = '&lt;i class="fa fa-spinner fa-spin"&gt;&lt;/i&gt; Submitting...';
-                        btn.style.transform = 'scale(1.05)';
-                    }
-                });
-
-                const input = document.querySelector('input[name="partner_location"]');
-                const list = document.getElementById('job-location-suggestions');
+                var input = document.querySelector('input[name="partner_location"]');
+                var list = document.getElementById('job-location-suggestions');
                 if (!input || !list) return;
-                let timer = null;
-                list.addEventListener('click', (ev) =&gt; {
-                    const target = ev.target.closest('.prq-suggestion-item');
-                    if (!target) return;
-                    input.value = target.dataset.value || target.textContent || '';
-                    list.innerHTML = '';
+
+                var timer = null;
+
+                list.addEventListener('click', function (ev) {
+                var target = ev.target.closest('.prq-suggestion-item');
+                if (!target) return;
+                input.value = target.dataset.value || target.textContent || '';
+                list.innerHTML = '';
                 });
-                input.addEventListener('blur', () =&gt; { window.setTimeout(() =&gt; { list.innerHTML = ''; }, 150); });
-                input.addEventListener('input', () =&gt; {
-                    const term = input.value.trim();
-                    window.clearTimeout(timer);
-                    if (term.length &lt; 2) { list.innerHTML = ''; return; }
-                    timer = window.setTimeout(async () =&gt; {
-                        try {
-                            const res = await fetch('/jobs/location_suggest', {
-                                method: 'POST', headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {term}, id: Date.now()})
-                            });
-                            const data = await res.json();
-                            const suggestions = data.result || [];
-                            list.innerHTML = suggestions.map((item) =&gt; `&lt;button type="button" class="prq-suggestion-item" data-value="${item.replace(/"/g, '&quot;')}"&gt;${item}&lt;/button&gt;`).join('');
-                        } catch (error) { list.innerHTML = ''; }
-                    }, 250);
+
+                input.addEventListener('blur', function () {
+                window.setTimeout(function () { list.innerHTML = ''; }, 150);
                 });
-            });
+
+                input.addEventListener('input', function () {
+                var term = input.value.trim();
+                window.clearTimeout(timer);
+                if (term.length &lt; 2) { list.innerHTML = ''; return; }
+                timer = window.setTimeout(function () {
+                fetch('/jobs/location_suggest', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {term: term}, id: Date.now()})
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                var suggestions = data.result || [];
+                list.innerHTML = suggestions.map(function (item) {
+                var safe = String(item).replace(/"/g, '&amp;quot;');
+                return '<button type="button" class="prq-suggestion-item" data-value="' + safe + '">' + item +
+                '</button>';
+                }).join('');
+                })
+                .catch(function () { list.innerHTML = ''; });
+                }, 250);
+                });
+                });
             </script>
         </t>
     </template>
 
-
-
-
-
     <template id="careers_thank_you" name="Careers Thank You">
         <t t-call="website.layout">
+            <t t-set="additional_title">Application Submitted - PETRORAQ</t>
+
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap"
+                  rel="stylesheet"/>
+
+            <style>
+                .prq-success-page{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#0a2540 0%,#071a2f
+                50%,#0a2540
+                100%);min-height:100vh;color:#fff;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:2rem}
+                .prq-success-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(circle at 20%
+                80%,rgba(216,154,43,.22) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.05)
+                0%,transparent 50%);animation:prqBgShift3 20s ease-in-out infinite}
+                .particles{position:absolute;inset:0;z-index:1;pointer-events:none}
+                .prq-particle{position:absolute;width:8px;height:8px;border-radius:50%;pointer-events:none;animation:prqParticleBurst
+                2.2s ease-out forwards}
+                @keyframes prqParticleBurst{0%{transform:translate(0,0)
+                scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+                .prq-success-container{position:relative;z-index:2;text-align:center;max-width:600px;padding:3rem;background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px
+                solid rgba(255,255,255,.2);border-radius:25px;animation:prqFadeInUp3 1s ease-out}
+                .checkmark{width:100px;height:100px;background:linear-gradient(135deg,#d89a2b,#e5a838);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#0a2540;margin:0
+                auto 2rem;font-weight:700;box-shadow:0 15px 40px rgba(216,154,43,.5);animation:prqCheckPop .6s
+                cubic-bezier(.68,-0.55,.27,1.55)}
+                .success-title{font-family:'Poppins',sans-serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;background:linear-gradient(45deg,#d89a2b,#e5a838,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem;letter-spacing:2px}
+                .success-message{font-size:1.4rem;color:#e5a838;font-weight:600;margin-bottom:1.5rem}
+                .details{color:rgba(255,255,255,.9);line-height:1.7;font-size:1rem;margin-bottom:2.5rem;padding:1.5rem;background:rgba(255,255,255,.05);border-radius:15px;border:1px
+                solid rgba(255,255,255,.1)}
+                .buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+                .primary-btn,.secondary-btn{padding:1rem
+                2rem;border-radius:50px;font-size:1rem;font-weight:600;text-decoration:none;transition:all
+                .3s;display:inline-flex;align-items:center;gap:.5rem}
+                .primary-btn{background:linear-gradient(45deg,#d89a2b,#e5a838);color:#0a2540;box-shadow:0 10px 30px
+                rgba(216,154,43,.4)}
+                .primary-btn:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 15px 40px
+                rgba(216,154,43,.6);color:#0a2540}
+                .secondary-btn{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4)}
+                .secondary-btn:hover{background:rgba(255,255,255,.1);border-color:#d89a2b;color:#fff}
+                @keyframes prqBgShift3{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.1) rotate(180deg)}}
+                @keyframes prqFadeInUp3{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+                @keyframes prqCheckPop{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
+                @media (max-width:600px){.prq-success-container{padding:2rem
+                1.5rem}.buttons{flex-direction:column}.primary-btn,.secondary-btn{width:100%;justify-content:center}}
+            </style>
+
             <section class="prq-success-page">
                 <div class="prq-success-bg"></div>
                 <div class="particles" id="prqParticles"></div>
-                <div class="container prq-success-container">
-                    <div class="checkmark">✔</div>
+                <div class="prq-success-container">
+                    <div class="checkmark">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
                     <h1 class="success-title">SUCCESS!</h1>
                     <p class="success-message">Application Submitted</p>
                     <div class="details">
-                        Thank you for applying! Your application has been successfully received and our team will review it within 3–5 business days.
+                        Thank you for applying to PETRORAQ! Your application has been successfully received and our team
+                        will review it within 3–5 business days.
                         You will receive next-step communication if your profile matches the role.
                     </div>
                     <div class="buttons">
-                        <a href="/" class="primary-btn">Back to Home</a>
-                        <a href="mailto:hr@petroraq.com" class="secondary-btn">Contact HR</a>
+                        <a href="/" class="primary-btn">
+                            <i class="fa-solid fa-house"></i>
+                            Back to Home
+                        </a>
+                        <a href="mailto:careers@petroraq.com" class="secondary-btn">
+                            <i class="fa-regular fa-envelope"></i>
+                            Contact HR
+                        </a>
                     </div>
                 </div>
+
                 <script type="text/javascript">
-                    document.addEventListener('DOMContentLoaded', () =&gt; {
-                        const particlesContainer = document.getElementById('prqParticles');
-                        if (!particlesContainer) return;
+                    document.addEventListener('DOMContentLoaded', function () {
+                    var particlesContainer = document.getElementById('prqParticles');
+                    if (!particlesContainer) return;
 
-                        const createParticles = () =&gt; {
-                            const colors = ['#FFC03D', '#FFD872', '#FFFFFF'];
-                            for (let i = 0; i &lt; 60; i++) {
-                                const p = document.createElement('div');
-                                const color = colors[Math.floor(Math.random() * colors.length)];
-                                p.className = 'prq-particle';
-                                p.style.background = color;
-                                p.style.left = `${40 + Math.random() * 20}%`;
-                                p.style.top = `${25 + Math.random() * 20}%`;
-                                p.style.setProperty('--dx', `${-120 + Math.random() * 240}px`);
-                                p.style.setProperty('--dy', `${-120 + Math.random() * 240}px`);
-                                particlesContainer.appendChild(p);
-                                setTimeout(() =&gt; p.remove(), 2200);
-                            }
-                        };
+                    function createParticles() {
+                    var colors = ['#d89a2b', '#e5a838', '#FFFFFF'];
+                    for (var i = 0; i &lt; 60; i++) {
+                    var p = document.createElement('div');
+                    var color = colors[Math.floor(Math.random() * colors.length)];
+                    p.className = 'prq-particle';
+                    p.style.background = color;
+                    p.style.left = (40 + Math.random() * 20) + '%';
+                    p.style.top = (25 + Math.random() * 20) + '%';
+                    p.style.setProperty('--dx', (-120 + Math.random() * 240) + 'px');
+                    p.style.setProperty('--dy', (-120 + Math.random() * 240) + 'px');
+                    particlesContainer.appendChild(p);
+                    (function (particle) {
+                    setTimeout(function () { particle.remove(); }, 2200);
+                    })(p);
+                    }
+                    }
 
-                        createParticles();
-                        setInterval(createParticles, 3000);
+                    createParticles();
+                    setInterval(createParticles, 3000);
                     });
                 </script>
             </section>

@@ -1,76 +1,64 @@
 <odoo>
     <template id="petroraq_footer" inherit_id="website.layout">
-
+        <xpath expr="//head" position="inside">
+            <style>
+                footer { background-color: #06264B; color: #fff; padding: 50px 40px 20px; }
+                .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr 1.2fr 1.3fr; gap: 40px; }
+                .footer-logo img { height: 55px; margin-bottom: 15px; }
+                .footer-col p { font-size: 13px; line-height: 1.6; color: #d1d5db; }
+                .footer-social { display: flex; gap: 10px; margin-top: 20px; }
+                .footer-social a { width: 35px; height: 35px; border: 1px solid #3b4f73; border-radius: 4px; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; }
+                .footer-social a:hover { background: #e9a23e; border-color: #e9a23e; }
+                .footer-col h4 { font-size: 16px; margin-bottom: 18px; }
+                .footer-col ul li { font-size: 13px; color: #d1d5db; padding: 5px 0; cursor: pointer; }
+                .footer-col ul li:hover { color: #e9a23e; }
+                .contact-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db; margin-bottom: 12px; }
+                .contact-item i { color: #e9a23e; width: 18px; }
+                .footer-quote p { font-size: 13px; margin-bottom: 15px; }
+                .footer-bottom { max-width: 1200px; margin: 30px auto 0; border-top: 1px solid #1b3961; padding-top: 18px; display: flex; justify-content: space-between; font-size: 12px; color: #9ca3af; }
+                .footer-bottom a { color: #9ca3af; margin-left: 15px; }
+                .footer-bottom a:hover { color: #e9a23e; }
+                @media (max-width: 1024px) { .footer-container { grid-template-columns: repeat(2, 1fr); } }
+                @media (max-width: 768px) { .footer-container { grid-template-columns: 1fr; gap: 30px; } .footer-bottom { flex-direction: column; gap: 8px; text-align: center; } .footer-bottom a { margin: 0 6px; } }
+            </style>
+        </xpath>
         <xpath expr="//footer" position="replace">
-
-            <footer id="petroraq-footer" class="petroraq-footer o_not_editable">
-                <div class="footer-main container">
-
-                    <!-- COLUMN 1: LOGO -->
+            <footer>
+                <div class="footer-container">
                     <div class="footer-col footer-logo">
-                        <img src="/pr_website/static/images/logo-white.png"
-                             alt="Petroraq Logo"
-                             class="footer-logo-img"/>
+                        <img src="/pr_website/static/images/logo.png" alt="PETRORAQ Logo"/>
+                        <p>We deliver world-class engineering, procurement, and construction solutions that build a stronger tomorrow.</p>
+                        <div class="footer-social">
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
                     </div>
-
-                    <!-- COLUMN 2: OUR SERVICES -->
                     <div class="footer-col">
-                        <h3 class="footer-title">Our Services</h3>
-                        <ul class="footer-list">
-                            <li>Design &amp; Engineering</li>
-                            <li>Architecture &amp; Planning</li>
-                            <li>Civil &amp; Structural</li>
-                            <li>Electrical &amp; Telecommunication</li>
-                            <li>Mechanical &amp; Piping</li>
-                            <li>Civil &amp; Structural</li>
-                            <li>CAD Services</li>
-                            <li>Other Services</li>
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li>Home</li><li>About Us</li><li>Services</li><li>Projects</li><li>Certifications</li><li>Contact</li>
                         </ul>
                     </div>
-
-                    <!-- COLUMN 3: OUR OFFICE -->
                     <div class="footer-col">
-                        <h3 class="footer-title">Our Office</h3>
-
-                        <p class="footer-text">
-                            Majd Square Building, King Faisal (West) Rd, AlJubail, KSA.
-                        </p>
-
-                        <p class="footer-subtitle">CONTACT US</p>
-                        <p class="footer-text">PHONE: (+966) 13-361-4446</p>
-
-                        <p class="footer-subtitle">FOR COMPANIES:</p>
-                        <p class="footer-text">
-                            (Partnership, Sales, Investments, etc.)<br/>
-                            info@petroraq.com<br/>
-                            procurement@petroraq.com
-                        </p>
-
-                        <hr class="footer-line"/>
-
-                        <p class="footer-subtitle">FOR INDIVIDUALS:</p>
-                        <p class="footer-text">
-                            (Job Application, Complaint, etc.)<br/>
-                            hr@petroraq.com
-                        </p>
+                        <h4>Contact Us</h4>
+                        <div class="contact-item"><i class="fas fa-map-marker-alt"></i> Al Mansour, Baghdad, Iraq</div>
+                        <div class="contact-item"><i class="fas fa-phone-alt"></i> +964 770 123 4567</div>
+                        <div class="contact-item"><i class="fas fa-envelope"></i> info@petroraq.com</div>
+                        <div class="contact-item"><i class="fas fa-globe"></i> www.petroraq.com</div>
                     </div>
-
-                    <!-- COLUMN 4: ABOUT US -->
-                    <div class="footer-col">
-                        <h3 class="footer-title">About Us</h3>
-                        <a href="/about-us" class="footer-about-btn">ABOUT</a>
+                    <div class="footer-col footer-quote">
+                        <h4>Request a Quote</h4>
+                        <p>Tell us about your project and our team will get back to you.</p>
+                        <button class="quote-btn" type="button">Request a Quote <i class="fas fa-arrow-right"></i></button>
                     </div>
-
                 </div>
-
-                <!-- COPYRIGHT BAR -->
                 <div class="footer-bottom">
-                    <p>Copyright © 2025 Petroraq Engineering Company. Ltd</p>
+                    <div>© 2024 PETRORAQ Engineering &amp; Construction. All Rights Reserved.</div>
+                    <div><a href="#">Privacy Policy</a><a href="#">Terms of Use</a></div>
                 </div>
-
             </footer>
-
         </xpath>
-
     </template>
 </odoo>
