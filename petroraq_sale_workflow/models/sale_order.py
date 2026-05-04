@@ -706,22 +706,35 @@ class SaleOrder(models.Model):
                 line.price_unit = b["final_u"]
 
     def write(self, vals):
+        tracked_fields = ("overhead_percent", "risk_percent", "profit_percent")
+        should_reprice = False
+
+        if any(field in vals for field in tracked_fields):
+            for order in self:
+                if any(vals.get(field) != order[field] for field in tracked_fields if field in vals):
+                    should_reprice = True
+                    break
+
         res = super().write(vals)
 
-        if any(k in vals for k in ("overhead_percent", "risk_percent", "profit_percent")):
+        if should_reprice:
             for order in self:
                 currency = order.currency_id or order.company_id.currency_id
                 lines = order.order_line.filtered(
                     lambda l: not l.display_type and not l.is_downpayment and l.product_id
                 )
                 for line in lines:
+                    base_unit = line.cost_price_unit or line.product_id.standard_price or 0.0
+                    if not base_unit:
+                        continue
                     b = order._costing_line_breakdown(
-                        base_unit=line.cost_price_unit or line.product_id.standard_price or 0.0,
+                        base_unit=base_unit,
                         qty=line.product_uom_qty or 0.0,
                         currency=currency,
                     )
                     line.price_unit = b["final_u"]
         return res
+
 
     @api.depends_context("uid")
     @api.depends("approval_state")
