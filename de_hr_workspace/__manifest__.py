@@ -27,6 +27,14 @@
     'demo': [
         'demo/demo.xml',
     ],
+
+    'assets': {
+        'web.assets_backend': [
+            'de_hr_workspace/static/src/js/workspace_dashboard.js',
+            'de_hr_workspace/static/src/xml/workspace_dashboard.xml',
+            'de_hr_workspace/static/src/scss/workspace_dashboard.scss',
+        ],
+    },
     'license': 'LGPL-3',
     'images': ['static/description/banner.jpg'],
     'installable': True,
