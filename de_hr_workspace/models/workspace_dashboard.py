@@ -7,8 +7,9 @@ class HrWorkspaceDashboardService(models.AbstractModel):
 
     @api.model
     def _get_visible_workspace_menus(self):
-        parent = self.env.ref("de_hr_workspace.menu_my_ws_employee", raise_if_not_found=False)
+        parent = self.env.ref("de_hr_workspace.menu_my_workspace", raise_if_not_found=False)
         dashboard_menu = self.env.ref("de_hr_workspace.menu_hr_workspace_dashboard", raise_if_not_found=False)
+        employee_menu = self.env.ref("de_hr_workspace.menu_my_ws_employee", raise_if_not_found=False)
         if not parent:
             return self.env["ir.ui.menu"]
 
@@ -27,6 +28,7 @@ class HrWorkspaceDashboardService(models.AbstractModel):
         return menus.filtered(
             lambda m: bool(m.action)
             and (not dashboard_menu or m.id != dashboard_menu.id)
+            and (not employee_menu or m.id != employee_menu.id)
             and not (
                 m.action
                 and getattr(m.action, "_name", "") == "ir.actions.client"
