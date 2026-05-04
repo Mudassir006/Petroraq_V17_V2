@@ -1,576 +1,1281 @@
+// ============================================================
+// PETRORAQ THEME - Leave Management Dashboard
+// Complete Stylesheet | Navy Primary + Amber Accent
+// ============================================================
+
+// -------------------- BRAND PALETTE --------------------
+$de-navy:           #0a2540;
+$de-navy-deep:      #061a30;
+$de-navy-mid:       #13315c;
+$de-navy-soft:      #1e4074;
+$de-navy-tint:      #eaf0f9;
+$de-navy-bg:        #f0f4fb;
+
+$de-amber:          #f5a524;
+$de-amber-dark:     #d98e0b;
+$de-amber-light:    #fbbf4a;
+$de-amber-soft:     #fff6e3;
+
+$de-card-bg:        #ffffff;
+$de-border:         #d4dde9;
+$de-border-soft:    #e3e9f2;
+$de-text:           #0a2540;
+$de-text-muted:     #5b6b85;
+
+
+// ============================================================
+// 1. WRAPPER
+// ============================================================
 .de_leave_mgmt_dashboard {
     display: block;
     height: auto;
-    box-shadow: inset 0 -1px 0 $border-color;
     position: sticky;
     top: 0;
     z-index: 100;
-    background-color: $o-webclient-background-color;
+    background:
+        radial-gradient(1000px 400px at 0% 0%, rgba(10, 37, 64, 0.06) 0%, transparent 60%),
+        radial-gradient(800px 400px at 100% 0%, rgba(245, 165, 36, 0.05) 0%, transparent 60%),
+        linear-gradient(180deg, #eef2f8 0%, #e4ebf5 100%);
+    box-shadow: inset 0 -1px 0 $de-border;
+
+    .o_timeoff_card {
+        &::-webkit-scrollbar { width: 8px; }
+        &::-webkit-scrollbar-track {
+            background: $de-navy-tint;
+            border-radius: 10px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, $de-navy 0%, $de-navy-soft 100%);
+            border-radius: 10px;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, $de-amber, $de-amber-dark);
+        }
+    }
 }
 
 .de_leave_mgmt_dashboard > .o_timeoff_card {
     display: none;
 }
 
+
+// ============================================================
+// 2. BASE CARD
+// ============================================================
 .de_leave_mgmt_dashboard .o_timeoff_card {
-    border: 1px solid #d8dee9;
-    border-radius: 12px;
-    background: #fff;
+    position: relative;
+    border: 1px solid $de-border;
+    border-radius: 14px;
+    background: $de-card-bg;
     min-width: 300px;
-    padding: 14px !important;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
+    padding: 16px !important;
+    box-shadow: 0 4px 14px rgba(10, 37, 64, 0.08);
+    transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden;
 
-.de_leave_mgmt_dashboard .o_timeoff_card:hover {
-    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
-    transform: translateY(-1px);
-}
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: $de-navy;
+        transition: all 0.3s ease;
+    }
 
-.de_leave_mgmt_dashboard .o_timeoff_card strong {
-    color: #1e293b;
-    font-size: 0.95rem;
-    letter-spacing: 0.2px;
-}
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background: $de-amber;
+        transition: width 0.45s ease;
+        z-index: 2;
+    }
 
-.de_leave_mgmt_dashboard .o_timeoff_card .duration {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 2px 8px;
-    min-height: 30px;
-    background: #f8fafc;
-}
+    &:hover {
+        box-shadow: 0 18px 38px rgba(10, 37, 64, 0.18);
+        transform: translateY(-3px);
+        border-color: $de-navy-soft;
+        &::after { width: 100%; }
+    }
 
-.de_leave_mgmt_dashboard .o_timeoff_card .btn {
-    border-radius: 8px;
-    font-weight: 500;
+    strong {
+        color: $de-navy;
+        font-size: 0.98rem;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+    }
+
+    .duration {
+        border: 1.5px solid $de-border;
+        border-radius: 8px;
+        padding: 4px 10px;
+        min-height: 32px;
+        background: #fff;
+        color: $de-navy;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.25s ease;
+
+        &:hover { border-color: $de-navy-soft; }
+        &:focus {
+            outline: none;
+            border-color: $de-navy;
+            box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.12);
+        }
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 7px 16px;
+        transition: all 0.3s ease;
+        letter-spacing: 0.3px;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        &:hover::before { left: 150%; }
+
+        &.btn-outline-primary {
+            border: 1.5px solid $de-navy;
+            color: $de-navy;
+            background: transparent;
+            &:hover {
+                background: $de-navy;
+                color: #fff;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 18px rgba(10, 37, 64, 0.3);
+                border-color: $de-navy;
+            }
+        }
+
+        &.btn-outline-secondary {
+            border: 1.5px solid $de-amber;
+            color: $de-amber-dark;
+            background: transparent;
+            &:hover {
+                background: $de-amber;
+                color: $de-navy;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 18px rgba(245, 165, 36, 0.35);
+                border-color: $de-amber;
+            }
+        }
+    }
 }
 
 @media (max-width: 1400px) {
-    .de_leave_mgmt_dashboard .o_timeoff_card {
-        min-width: 260px;
+    .de_leave_mgmt_dashboard .o_timeoff_card { min-width: 260px; }
+}
+
+
+// ============================================================
+// 3. TABLES
+// ============================================================
+.de_leave_mgmt_dashboard {
+    .table {
+        margin-bottom: 0;
+
+        th {
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, $de-navy 0%, $de-navy-mid 100%);
+            border-bottom: 3px solid $de-amber;
+            text-align: left;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 11px 12px;
+        }
+
+        td {
+            border-bottom: 1px solid $de-border-soft;
+            vertical-align: middle;
+            color: #1f2937;
+            padding: 11px 12px;
+            font-size: 0.88rem;
+        }
+    }
+
+    .table-hover tbody tr {
+        transition: all 0.25s ease;
+        &:hover {
+            background: linear-gradient(90deg, $de-navy-tint 0%, rgba(234, 240, 249, 0.4) 100%);
+            box-shadow: inset 3px 0 0 $de-amber;
+            transform: translateX(2px);
+        }
+    }
+
+    .border-bottom { border-color: $de-border-soft !important; }
+    .fw-bold { color: $de-navy; font-weight: 700; }
+}
+
+
+// ============================================================
+// 4. SUMMARY CARD (Filter Header)
+// ============================================================
+.de_leave_mgmt_dashboard {
+    .de-simple-summary-card {
+        border: 1px solid $de-border;
+        background: linear-gradient(180deg, #ffffff 0%, $de-navy-tint 100%);
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(10, 37, 64, 0.08);
+
+        &::before { background: $de-navy; }
+        &:hover::before { height: 4px; }
+    }
+
+    .de-simple-summary-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: $de-navy;
+        position: relative;
+        padding-bottom: 8px;
+        letter-spacing: -0.3px;
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 44px;
+            height: 3px;
+            background: $de-amber;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        &:hover::after { width: 70px; }
+    }
+
+    .de-simple-summary-subtitle {
+        font-size: 0.95rem;
+        color: $de-text-muted !important;
+        font-style: italic;
+    }
+
+    .de-summary-select {
+        min-width: 180px;
+        max-width: 220px;
+        background: #fff;
+        border: 1.5px solid $de-border;
+        color: $de-navy;
+        min-height: 38px !important;
+        height: 38px;
+        padding: 4px 12px;
+        font-size: 0.88rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(10, 37, 64, 0.04);
+        transition: all 0.25s ease;
+        font-weight: 500;
+
+        &::placeholder { color: #8a98b0; }
+        &:hover {
+            border-color: $de-navy-soft;
+            box-shadow: 0 3px 8px rgba(10, 37, 64, 0.08);
+        }
+        &:focus {
+            outline: none;
+            border-color: $de-navy;
+            box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.14);
+        }
+    }
+
+    .de-simple-summary-controls {
+        align-items: center;
+        gap: 10px !important;
+    }
+
+    .de-simple-summary-filter-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(200px, 1fr));
+        gap: 10px;
+        align-items: center;
+
+        .de-summary-select {
+            min-width: 0;
+            max-width: 100%;
+            width: 100%;
+
+            &:first-child { min-width: 0; max-width: 100%; }
+        }
+    }
+
+    .de-simple-summary-controls:not(.de-simple-summary-filter-grid) {
+        .de-summary-select:first-child {
+            min-width: 240px;
+            max-width: 280px;
+        }
+        input[type="date"].de-summary-select {
+            min-width: 140px;
+            max-width: 160px;
+        }
     }
 }
 
-.de_leave_mgmt_dashboard .table th {
-    font-weight: 600;
-    color: #334155;
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-    text-align: left;
-}
 
-.de_leave_mgmt_dashboard .table td {
-    border-bottom: 1px solid #eef2f7;
-    vertical-align: middle;
-    color: #1f2937;
-}
-
-.de_leave_mgmt_dashboard .table-hover tbody tr:hover {
-    background: #f8fbff;
-}
-
-.de_leave_mgmt_dashboard .border-bottom {
-    border-color: #e2e8f0 !important;
-}
-
-.de_leave_mgmt_dashboard .fw-bold {
-    color: #0f172a;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-card {
-    border: 1px solid #d6deea;
-    background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-title {
-    font-size: 1.2rem;
-    color: #0f172a;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-subtitle {
-    font-size: 1rem;
-    color: #64748b !important;
-}
-
-.de_leave_mgmt_dashboard .de-summary-select {
-    min-width: 180px;
-    max-width: 220px;
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    color: #0f172a;
-    min-height: 34px !important;
-    height: 34px;
-    padding: 4px 10px;
-    font-size: 0.88rem;
-    border-radius: 8px;
-    box-shadow: none;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-controls {
-    align-items: center;
-    gap: 8px !important;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-filter-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(200px, 1fr));
-    gap: 8px;
-    align-items: center;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-filter-grid .de-summary-select {
-    min-width: 0;
-    max-width: 100%;
-    width: 100%;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-filter-grid .de-summary-select:first-child {
-    min-width: 0;
-    max-width: 100%;
-}
-
-.de_leave_mgmt_dashboard .de-adv-search-field {
-    position: relative;
-}
-
-.de_leave_mgmt_dashboard .de-adv-search-field .de-summary-select {
-    padding-right: 58px;
-}
-
-.de_leave_mgmt_dashboard .de-clear-field-btn {
-    position: absolute;
-    top: 50%;
-    right: 30px;
-    transform: translateY(-50%);
-    border: 0;
-    background: transparent;
-    color: #94a3b8;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 3;
-    font-size: 0.78rem;
-}
-
-.de_leave_mgmt_dashboard .de-clear-field-btn:hover {
-    background: #f1f5f9;
-    color: #334155;
-}
-
-.de_leave_mgmt_dashboard .de-sort-toggle-btn {
-    position: absolute;
-    top: 50%;
-    right: 8px;
-    transform: translateY(-50%);
-    border: 0;
-    background: transparent;
-    color: #64748b;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 3;
-}
-
-.de_leave_mgmt_dashboard .de-sort-toggle-btn:hover {
-    background: #eef4ff;
-    color: #1f3f76;
-}
-
-.de_leave_mgmt_dashboard .de-adv-search-dropdown {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    max-height: 240px;
-    overflow: auto;
-    background: #ffffff;
-    border: 1px solid #d6deea;
-    border-radius: 10px;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15);
-    z-index: 50;
-    padding: 4px;
-}
-
-.de_leave_mgmt_dashboard .de-adv-search-option {
-    width: 100%;
-    border: 0;
-    border-radius: 8px;
-    background: transparent;
-    text-align: left;
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    cursor: pointer;
-}
-
-.de_leave_mgmt_dashboard .de-adv-search-option:hover {
-    background: #f1f6ff;
-}
-
-.de_leave_mgmt_dashboard .de-adv-search-option.is-active {
-    background: #e8f0ff;
-    outline: 1px solid #c6d8ff;
-}
-
-.de_leave_mgmt_dashboard .de-option-main {
-    color: #0f172a;
-    font-size: 0.88rem;
-    font-weight: 600;
-}
-
-.de_leave_mgmt_dashboard .de-option-sub {
-    color: #64748b;
-    font-size: 0.78rem;
-}
-
-.de_leave_mgmt_dashboard .de-adv-search-empty {
-    color: #64748b;
-    padding: 10px;
-    font-size: 0.85rem;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-controls:not(.de-simple-summary-filter-grid) .de-summary-select:first-child {
-    min-width: 240px;
-    max-width: 280px;
-}
-
-.de_leave_mgmt_dashboard .de-simple-summary-controls:not(.de-simple-summary-filter-grid) input[type="date"].de-summary-select {
-    min-width: 140px;
-    max-width: 160px;
-}
-
-.de_leave_mgmt_dashboard .de-summary-select:focus {
-    border-color: #94a3b8;
-    box-shadow: 0 0 0 0.08rem rgba(100, 116, 139, 0.15);
-}
-
-.de_leave_mgmt_dashboard .de-leave-tiles-grid {
-    margin-top: 2px;
-}
-
-.de_leave_mgmt_dashboard .de-leave-summary-strip {
-    border: 1px solid #d6deea;
-    border-radius: 0;
-    background: #fff;
-}
-
-.de_leave_mgmt_dashboard .de-summary-strip-col {
-    border-right: 1px solid #d6deea;
-}
-
-.de_leave_mgmt_dashboard .de-summary-strip-col:nth-child(4n) {
-    border-right: 0;
-}
-
-.de_leave_mgmt_dashboard .de-summary-strip-tile {
-    background: #fff;
-}
-
-.de_leave_mgmt_dashboard .de-clickable-tile {
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-}
-
-.de_leave_mgmt_dashboard .de-clickable-tile:hover {
-    background: #f8fbff;
-    transform: translateY(-1px);
-    box-shadow: inset 0 0 0 1px #dbe7fb;
-}
-
-.de_leave_mgmt_dashboard .de-leave-summary-tile .de-leave-type,
-.de_leave_mgmt_dashboard .de-summary-strip-tile .de-leave-type {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #334155;
-}
-
-.de_leave_mgmt_dashboard .de-summary-strip-tile .de-leave-type {
-    font-size: 1.1rem;
-}
-
-.de_leave_mgmt_dashboard .de-leave-summary-tile .de-leave-ratio,
-.de_leave_mgmt_dashboard .de-summary-strip-tile .de-leave-ratio {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #6f4c69;
-    line-height: 1.2;
-}
-
-.de_leave_mgmt_dashboard .de-summary-strip-tile .de-leave-ratio i {
-    font-size: 1.45rem;
-    vertical-align: middle;
-}
-
-.de_leave_mgmt_dashboard .de-summary-strip-tile .de-leave-caption {
-    margin-top: 6px;
-    font-size: 0.95rem;
-    color: #6f4c69;
-    letter-spacing: 0.2px;
-}
-
-.de_leave_mgmt_dashboard .de-tile-chart {
-    height: 8px;
-    width: 72%;
-    margin: 8px auto 0 auto;
-    border-radius: 999px;
-    background: #e8edf8;
-    overflow: hidden;
-}
-
-.de_leave_mgmt_dashboard .de-tile-chart-fill {
-    height: 100%;
-    width: 0;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #829dd6 0%, #5c77c2 100%);
-}
-
-.de_leave_mgmt_dashboard .de-employee-profile-card {
-    border: 1px solid #d6deea;
-    border-radius: 14px;
-    background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
-    min-width: 420px;
-}
-
-.de_leave_mgmt_dashboard .de-profile-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 14px;
-}
-
-.de_leave_mgmt_dashboard .de-avatar {
-    width: 64px;
-    height: 64px;
-    border: 2px solid #d6deea;
-    border-radius: 50%;
-    background: #eef4ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.de_leave_mgmt_dashboard .de-avatar i {
-    font-size: 1.5rem;
-    color: #5772a8;
-}
-
-.de_leave_mgmt_dashboard .de-employee-name {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #1e293b;
-    line-height: 1.2;
-}
-
-.de_leave_mgmt_dashboard .de-employee-subtitle {
-    color: #64748b;
-    font-size: 0.95rem;
-}
-
-.de_leave_mgmt_dashboard .de-profile-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.de_leave_mgmt_dashboard .de-info-tile {
-    border: 1px solid #d9e3f4;
-    border-radius: 10px;
-    background: #ffffff;
-    padding: 10px 12px;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-}
-
-.de_leave_mgmt_dashboard .de-info-tile i {
-    color: #5772a8;
-    margin-top: 2px;
-}
-
-.de_leave_mgmt_dashboard .de-info-tile span {
-    display: block;
-    font-size: 0.78rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.de_leave_mgmt_dashboard .de-info-tile strong {
-    display: block;
-    color: #1e293b;
-    font-size: 0.9rem;
-    font-weight: 600;
-    word-break: break-word;
-}
-
-.de_leave_mgmt_dashboard .de-info-wide {
-    grid-column: span 2;
-}
-
-.de_leave_mgmt_dashboard .de-status-panel {
-    border: 1px solid #d6deea;
-    border-radius: 14px;
-    background: #ffffff;
-    min-width: 340px;
-}
-
-.de_leave_mgmt_dashboard .de-status-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-}
-
-.de_leave_mgmt_dashboard .de-status-tile {
-    border: 1px solid #d9e3f4;
-    border-radius: 10px;
-    padding: 12px;
-    background: #fbfdff;
-}
-
-.de_leave_mgmt_dashboard .de-status-title {
-    font-weight: 700;
-    color: #334155;
-    margin-bottom: 6px;
-}
-
-.de_leave_mgmt_dashboard .de-status-line {
-    color: #334155;
-    font-size: 0.9rem;
-}
-
-.de_leave_mgmt_dashboard .de-status-date {
-    color: #64748b;
-    font-size: 0.85rem;
-    margin-bottom: 6px;
-}
-
-.de_leave_mgmt_dashboard .de-selected-employee-card {
-    border: 1px solid #d6deea;
-    border-radius: 12px;
-    padding: 12px;
-    background: #fbfdff;
-}
-
-.de_leave_mgmt_dashboard .de-selected-employee-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-}
-
-.de_leave_mgmt_dashboard .de-selected-employee-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #eef4ff;
-    border: 1px solid #d6deea;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.de_leave_mgmt_dashboard .de-selected-employee-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.de_leave_mgmt_dashboard .de-selected-employee-name {
-    font-weight: 700;
-    color: #1e293b;
-}
-
-.de_leave_mgmt_dashboard .de-selected-employee-meta {
-    color: #64748b;
-    font-size: 0.9rem;
-}
-
-.de_leave_mgmt_dashboard .de-selected-employee-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px 12px;
-    color: #334155;
-    font-size: 0.9rem;
-}
-
-.de_leave_mgmt_dashboard .de-requests-analytics-card {
-    border: 1px solid #d6deea;
-    border-radius: 12px;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-}
-
-.de_leave_mgmt_dashboard .de-analytics-select {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    min-height: 38px;
-}
-
-.de_leave_mgmt_dashboard .de-analytics-metric {
-    border: 1px solid #d8e2f1;
-    border-radius: 10px;
-    background: #ffffff;
-    padding: 14px 12px;
-    min-height: 90px;
-}
-
-.de_leave_mgmt_dashboard .de-analytics-metric-label {
-    color: #64748b;
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.de_leave_mgmt_dashboard .de-analytics-metric-value {
-    color: #1f3f76;
-    font-size: 1.9rem;
-    font-weight: 700;
-    line-height: 1.1;
-}
-
-@media (max-width: 1199px) {
-    .de_leave_mgmt_dashboard .de-summary-strip-col:nth-child(2n) {
-        border-right: 0;
+// ============================================================
+// 5. ADVANCED SEARCH FIELD
+// ============================================================
+.de_leave_mgmt_dashboard {
+    .de-adv-search-field {
+        position: relative;
+        .de-summary-select { padding-right: 62px; }
     }
 
-    .de_leave_mgmt_dashboard .de-profile-grid,
-    .de_leave_mgmt_dashboard .de-selected-employee-grid {
+    .de-clear-field-btn {
+        position: absolute;
+        top: 50%;
+        right: 34px;
+        transform: translateY(-50%);
+        border: 0;
+        background: transparent;
+        color: #94a3b8;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 3;
+        font-size: 0.78rem;
+        transition: all 0.25s ease;
+
+        &:hover {
+            background: #fce4e4;
+            color: #b91c1c;
+            transform: translateY(-50%) rotate(90deg) scale(1.1);
+        }
+    }
+
+    .de-sort-toggle-btn {
+        position: absolute;
+        top: 50%;
+        right: 8px;
+        transform: translateY(-50%);
+        border: 0;
+        background: $de-navy-tint;
+        color: $de-navy;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 3;
+        transition: all 0.25s ease;
+
+        &:hover {
+            background: $de-navy;
+            color: $de-amber;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 10px rgba(10, 37, 64, 0.25);
+        }
+    }
+
+    .de-adv-search-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        max-height: 260px;
+        overflow: auto;
+        background: #fff;
+        border: 1px solid $de-navy-soft;
+        border-top: 3px solid $de-amber;
+        border-radius: 12px;
+        box-shadow: 0 18px 38px rgba(10, 37, 64, 0.22);
+        z-index: 50;
+        padding: 6px;
+        animation: de-dropdown-in 0.2s ease-out;
+
+        &::-webkit-scrollbar { width: 6px; }
+        &::-webkit-scrollbar-thumb { background: $de-navy; border-radius: 6px; }
+    }
+
+    .de-adv-search-option {
+        width: 100%;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        text-align: left;
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 0;
+            background: $de-amber;
+            border-radius: 0 3px 3px 0;
+            transition: width 0.25s ease;
+        }
+
+        &:hover {
+            background: $de-navy-tint;
+            padding-left: 16px;
+            &::before { width: 3px; }
+        }
+
+        &.is-active {
+            background: $de-navy;
+            color: #fff;
+            &::before { width: 3px; background: $de-amber; }
+            .de-option-main { color: #fff; }
+            .de-option-sub { color: rgba(255,255,255,0.75); }
+        }
+    }
+
+    .de-option-main {
+        color: $de-navy;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .de-option-sub {
+        color: $de-text-muted;
+        font-size: 0.78rem;
+    }
+
+    .de-adv-search-empty {
+        color: $de-text-muted;
+        padding: 14px;
+        font-size: 0.88rem;
+        text-align: center;
+        font-style: italic;
+    }
+}
+
+@keyframes de-dropdown-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+// ============================================================
+// 6. LEAVE TILES STRIP
+// ============================================================
+.de_leave_mgmt_dashboard {
+    .de-leave-tiles-grid { margin-top: 4px; }
+
+    .de-leave-summary-strip {
+        border: 1px solid $de-border;
+        border-radius: 14px;
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 6px 18px rgba(10, 37, 64, 0.08);
+    }
+
+    .de-summary-strip-col {
+        border-right: 1px solid $de-border-soft;
+        &:nth-child(4n) { border-right: 0; }
+    }
+
+    .de-summary-strip-tile { background: #fff; }
+
+    .de-clickable-tile {
+        position: relative;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        overflow: hidden;
+
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, $de-navy 0%, $de-navy-mid 100%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            z-index: 0;
+        }
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 0;
+            height: 3px;
+            background: $de-amber;
+            transition: all 0.4s ease;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        > * { position: relative; z-index: 1; }
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(10, 37, 64, 0.28);
+            &::after { opacity: 1; }
+            &::before { width: 80%; }
+
+            .de-leave-type    { color: $de-amber; }
+            .de-leave-ratio   { color: #fff; transform: scale(1.06); }
+            .de-leave-ratio i { color: $de-amber; }
+            .de-leave-caption { color: rgba(255,255,255,0.85); }
+            .de-tile-chart    { background: rgba(255,255,255,0.18); }
+            .de-tile-chart-fill {
+                background: linear-gradient(90deg, $de-amber 0%, $de-amber-light 100%);
+            }
+        }
+    }
+
+    .de-leave-summary-tile .de-leave-type,
+    .de-summary-strip-tile .de-leave-type {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $de-navy;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: color 0.3s ease;
+    }
+
+    .de-summary-strip-tile .de-leave-type { font-size: 1rem; }
+
+    .de-leave-summary-tile .de-leave-ratio,
+    .de-summary-strip-tile .de-leave-ratio {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: $de-navy;
+        line-height: 1.2;
+        letter-spacing: -0.8px;
+        transition: all 0.3s ease;
+        display: inline-block;
+
+        i {
+            color: $de-amber;
+            font-size: 1.4rem;
+            vertical-align: middle;
+            transition: color 0.3s ease;
+        }
+    }
+
+    .de-summary-strip-tile .de-leave-ratio i {
+        font-size: 1.4rem;
+        vertical-align: middle;
+    }
+
+    .de-summary-strip-tile .de-leave-caption {
+        margin-top: 8px;
+        font-size: 0.76rem;
+        color: $de-text-muted;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+        text-transform: uppercase;
+        transition: color 0.3s ease;
+    }
+
+    .de-tile-chart {
+        height: 8px;
+        width: 72%;
+        margin: 10px auto 0 auto;
+        border-radius: 999px;
+        background: $de-navy-tint;
+        overflow: hidden;
+        position: relative;
+        transition: background 0.3s ease;
+    }
+
+    .de-tile-chart-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 999px;
+        background: linear-gradient(90deg, $de-navy 0%, $de-navy-soft 100%);
+        transition: width 0.6s ease, background 0.3s ease;
+        position: relative;
+
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+            animation: de-shimmer 2.2s infinite;
+        }
+    }
+}
+
+@keyframes de-shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+
+// ============================================================
+// 7. EMPLOYEE PROFILE CARD
+// ============================================================
+.de_leave_mgmt_dashboard {
+    .de-employee-profile-card {
+        border: 1px solid $de-border;
+        border-radius: 16px;
+        background: #fff;
+        min-width: 420px;
+        flex: 1 1 420px;
+        position: relative;
+        overflow: hidden;
+        padding: 0 !important;
+        box-shadow: 0 6px 20px rgba(10, 37, 64, 0.08);
+        transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        &::before,
+        &::after { display: none; }
+
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 42px rgba(10, 37, 64, 0.2);
+            border-color: $de-navy-soft;
+        }
+    }
+
+    .de-profile-header {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin: 0;
+        padding: 22px 24px;
+        background: linear-gradient(135deg, $de-navy 0%, $de-navy-mid 60%, $de-navy-soft 100%);
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        border-bottom: 3px solid $de-amber;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(245, 165, 36, 0.18) 0%, transparent 65%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+        }
+
+        > * { position: relative; z-index: 2; }
+    }
+
+    .de-avatar {
+        width: 68px;
+        height: 68px;
+        min-width: 68px;
+        border: 3px solid $de-amber;
+        border-radius: 50%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin: 0;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255,255,255,0.12);
+        transition: transform 0.35s ease;
+        flex-shrink: 0;
+
+        &:hover { transform: scale(1.06) rotate(-3deg); }
+
+        img { width: 100%; height: 100%; object-fit: cover; }
+
+        i {
+            font-size: 1.8rem;
+            color: $de-navy;
+        }
+    }
+
+    .de-profile-header > div:not(.de-avatar) {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .de-employee-name {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.25;
+        letter-spacing: -0.3px;
+        margin: 0;
+        text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        white-space: nowrap;
+//         overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .de-employee-subtitle {
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin: 0;
+        line-height: 1.3;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        i { color: $de-amber-light; }
+    }
+
+    .de-profile-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding: 18px 20px 20px 20px;
+    }
+
+    .de-info-tile {
+        border: 1px solid $de-border-soft;
+        border-radius: 10px;
+        background: #fbfcfe;
+        padding: 11px 13px;
+        display: flex;
+        gap: 11px;
+        align-items: flex-start;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-width: 0;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: $de-navy;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            transform-origin: top;
+        }
+
+        i {
+            color: $de-navy;
+            margin-top: 3px;
+            font-size: 1rem;
+            width: 18px;
+            text-align: center;
+            flex-shrink: 0;
+            transition: color 0.3s ease;
+        }
+
+        > div,
+        > span:not(:first-child) {
+            flex: 1;
+            min-width: 0;
+        }
+
+        span {
+            display: block;
+            font-size: 0.7rem;
+            color: $de-text-muted;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        strong {
+            display: block;
+            color: $de-navy;
+            font-size: 0.9rem;
+            font-weight: 700;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        &:hover {
+            border-color: $de-navy-soft;
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(10, 37, 64, 0.1);
+
+            &::before { transform: scaleY(1); }
+            i { color: $de-amber-dark; }
+        }
+    }
+
+    .de-info-wide { grid-column: span 2; }
+}
+
+
+// ============================================================
+// 8. STATUS PANEL (Shift / Holidays / Absentees)
+// ============================================================
+.de_leave_mgmt_dashboard {
+    .de-status-panel {
+        border: 1px solid $de-border;
+        border-radius: 16px;
+        background: #fff;
+        min-width: 340px;
+        flex: 1 1 340px;
+        box-shadow: 0 6px 20px rgba(10, 37, 64, 0.08);
+        padding: 18px !important;
+        transition: all 0.35s ease;
+
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(10, 37, 64, 0.16);
+            border-color: $de-navy-soft;
+        }
+
+        > strong,
+        > .de-status-panel-title {
+            display: block;
+            color: $de-navy;
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            position: relative;
+            letter-spacing: -0.2px;
+
+            &::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 36px;
+                height: 3px;
+                background: $de-amber;
+                border-radius: 3px;
+            }
+        }
+    }
+
+    .de-status-grid {
+        display: grid;
         grid-template-columns: 1fr;
+        gap: 12px;
     }
 
-    .de_leave_mgmt_dashboard .de-info-wide {
-        grid-column: span 1;
+    .de-status-tile {
+        position: relative;
+        border: 1px solid $de-border-soft;
+        border-left: 4px solid $de-navy;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background: #fbfcfe;
+        transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            position: absolute;
+            right: -30px;
+            top: -30px;
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, rgba(245, 165, 36, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+
+        > * { position: relative; z-index: 2; }
+
+        &:hover {
+            background: linear-gradient(135deg, #fff 0%, $de-navy-tint 100%);
+            transform: translateX(4px);
+            box-shadow: 0 10px 22px rgba(10, 37, 64, 0.14);
+            border-left-color: $de-amber;
+
+            &::before { transform: scale(2); }
+            &::after { background: $de-amber; }
+
+            .de-status-title { color: $de-navy-mid; }
+        }
+    }
+
+    .de-status-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        color: $de-navy;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        letter-spacing: 0.2px;
+        line-height: 1.3;
+
+        i {
+            color: $de-amber-dark;
+            font-size: 1rem;
+        }
+    }
+
+    .de-status-line {
+        color: #334155;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        margin-bottom: 4px;
+        &:last-child { margin-bottom: 0; }
+
+        strong {
+            color: $de-navy;
+            font-weight: 700;
+        }
+    }
+
+    .de-status-date {
+        display: inline-block;
+        color: $de-amber-dark;
+        background: $de-amber-soft;
+        border: 1px solid rgba(245, 165, 36, 0.3);
+        padding: 2px 10px;
+        border-radius: 30px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        letter-spacing: 0.3px;
+    }
+
+    .de-status-tile-empty {
+        text-align: center;
+        color: $de-text-muted;
+        font-style: italic;
+        font-size: 0.88rem;
+        padding: 20px;
+        background: #fafbfd;
+        border: 1px dashed $de-border;
+        border-radius: 10px;
+    }
+}
+
+
+// ============================================================
+// 9. SELECTED EMPLOYEE CARD
+// ============================================================
+.de_leave_mgmt_dashboard {
+    .de-selected-employee-card {
+        border: 1px solid $de-border;
+        border-radius: 14px;
+        padding: 16px;
+        background: linear-gradient(135deg, #ffffff 0%, $de-navy-tint 100%);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.35s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, $de-navy 0%, $de-amber 100%);
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(10, 37, 64, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(10, 37, 64, 0.15);
+            &::after { transform: scale(1.3); }
+        }
+    }
+
+    .de-selected-employee-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .de-selected-employee-avatar {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid $de-amber;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 14px rgba(10, 37, 64, 0.2);
+        transition: transform 0.3s ease;
+
+        &:hover { transform: scale(1.08); }
+
+        img { width: 100%; height: 100%; object-fit: cover; }
+
+        i {
+            font-size: 1.2rem;
+            color: $de-navy;
+        }
+    }
+
+    .de-selected-employee-name {
+        font-weight: 800;
+        color: $de-navy;
+        font-size: 1.08rem;
+        letter-spacing: -0.2px;
+    }
+
+    .de-selected-employee-meta {
+        color: $de-text-muted;
+        font-size: 0.88rem;
+        font-weight: 500;
+        i { color: $de-amber-dark; }
+    }
+
+    .de-selected-employee-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 16px;
+        color: #334155;
+        font-size: 0.9rem;
+        position: relative;
+        z-index: 2;
+
+        > div {
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 8px;
+            border: 1px solid $de-border-soft;
+            transition: all 0.25s ease;
+            font-weight: 500;
+
+            i { color: $de-navy; transition: color 0.25s ease; }
+
+            &:hover {
+                background: #fff;
+                border-color: $de-navy;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 14px rgba(10, 37, 64, 0.1);
+                i { color: $de-amber-dark; }
+            }
+        }
+    }
+}
+
+
+// ============================================================
+// 10. REQUESTS ANALYTICS CARD
+// ============================================================
+.de_leave_mgmt_dashboard {
+    .de-requests-analytics-card {
+        border: 1px solid $de-border;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ffffff 0%, $de-navy-tint 100%);
+        box-shadow: 0 8px 24px rgba(10, 37, 64, 0.1);
+
+        &::before { background: $de-navy; }
+    }
+
+    .de-analytics-select {
+        border: 1.5px solid $de-border;
+        border-radius: 8px;
+        min-height: 40px;
+        color: $de-navy;
+        font-weight: 500;
+        transition: all 0.25s ease;
+
+        &:hover { border-color: $de-navy-soft; }
+        &:focus {
+            border-color: $de-navy;
+            box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.14);
+        }
+    }
+
+    .de-analytics-metric {
+        position: relative;
+        border: 1px solid $de-border;
+        border-radius: 12px;
+        background: #fff;
+        padding: 20px 18px;
+        min-height: 110px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, $de-navy 0%, $de-navy-soft 100%);
+            transition: width 0.3s ease;
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            right: -40px;
+            bottom: -40px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(10, 37, 64, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.45s ease;
+        }
+
+        &:hover {
+            transform: translateY(-5px);
+            border-color: $de-navy-soft;
+            box-shadow: 0 20px 38px rgba(10, 37, 64, 0.18);
+
+            &::before {
+                width: 6px;
+                background: linear-gradient(180deg, $de-amber 0%, $de-amber-dark 100%);
+            }
+
+            &::after {
+                background: radial-gradient(circle, rgba(245, 165, 36, 0.2) 0%, transparent 70%);
+                transform: scale(1.4);
+            }
+
+            .de-analytics-metric-value { color: $de-navy; }
+            .de-analytics-metric-label i { color: $de-amber-dark; transform: scale(1.15); }
+        }
+    }
+
+    .de-analytics-metric-label {
+        color: $de-text-muted;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.9px;
+
+        i {
+            color: $de-amber;
+            margin-right: 6px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+    }
+
+    .de-analytics-metric-value {
+        color: $de-navy;
+        font-size: 2.1rem;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -1.2px;
+        transition: color 0.3s ease;
+    }
+}
+
+
+// ============================================================
+// 11. RESPONSIVE
+// ============================================================
+@media (max-width: 1199px) {
+    .de_leave_mgmt_dashboard {
+        .de-summary-strip-col:nth-child(2n) { border-right: 0; }
+
+        .de-profile-grid,
+        .de-selected-employee-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .de-info-wide { grid-column: span 1; }
+    }
+}
+
+@media (max-width: 767px) {
+    .de_leave_mgmt_dashboard {
+        .de-profile-header {
+            padding: 18px;
+            gap: 14px;
+        }
+
+        .de-avatar {
+            width: 58px;
+            height: 58px;
+            min-width: 58px;
+
+            i { font-size: 1.5rem; }
+        }
+
+        .de-employee-name { font-size: 1.15rem; }
+        .de-employee-subtitle { font-size: 0.82rem; }
+
+        .de-profile-grid {
+            grid-template-columns: 1fr;
+            padding: 14px;
+        }
+
+        .de-info-wide { grid-column: span 1; }
     }
 }
 
 @media (max-width: 575px) {
-    .de_leave_mgmt_dashboard .de-summary-strip-col {
-        border-right: 0;
-    }
+    .de_leave_mgmt_dashboard {
+        .de-summary-strip-col { border-right: 0; }
 
-    .de_leave_mgmt_dashboard .de-simple-summary-controls {
-        width: 100%;
-    }
+        .de-simple-summary-controls { width: 100%; }
+        .de-simple-summary-filter-grid { grid-template-columns: 1fr; }
 
-    .de_leave_mgmt_dashboard .de-simple-summary-filter-grid {
-        grid-template-columns: 1fr;
-    }
+        .de-simple-summary-controls {
+            .de-summary-select,
+            .de-summary-select:first-child,
+            input[type="date"].de-summary-select {
+                min-width: 100%;
+                max-width: 100%;
+            }
+        }
 
-    .de_leave_mgmt_dashboard .de-simple-summary-controls .de-summary-select,
-    .de_leave_mgmt_dashboard .de-simple-summary-controls .de-summary-select:first-child,
-    .de_leave_mgmt_dashboard .de-simple-summary-controls input[type="date"].de-summary-select {
-        min-width: 100%;
-        max-width: 100%;
+        .de-employee-profile-card,
+        .de-status-panel { min-width: 100%; }
     }
 }
