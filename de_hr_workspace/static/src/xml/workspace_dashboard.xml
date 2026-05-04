@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="de_hr_workspace.WorkspaceDashboard">
+        <div class="o_action_manager de-approval-dashboard">
+            <div class="o_content">
+                <div class="de-dashboard-hero">
+                    <div class="de-dashboard-hero-overlay"/>
+                    <div class="de-dashboard-hero-content">
+                        <div class="de-dashboard-hero-left">
+                            <p class="de-dashboard-greeting mb-2">
+                                <i class="fa fa-briefcase me-2"/>
+                                <span t-esc="greetingText"/>
+                            </p>
+                            <h1 class="de-dashboard-title mb-2">
+                                My <span class="de-accent">Workspace</span><span class="de-accent">.</span>
+                            </h1>
+                            <p class="de-dashboard-subtitle mb-0">
+                                Open your employee tools quickly for leaves, attendance, contracts, payslips, and more.
+                            </p>
+                            <div class="de-hero-divider"/>
+                        </div>
+                        <div class="de-dashboard-hero-right">
+                            <button class="btn de-dashboard-refresh" t-on-click="refresh">
+                                <i class="fa fa-refresh me-2"/> Refresh
+                                <span class="de-btn-arrow">→</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <t t-if="state.loading">
+                    <div class="de-loading-wrap">
+                        <div class="de-spinner"/>
+                        <p class="mt-3 text-muted">Loading your workspace...</p>
+                    </div>
+                </t>
+
+                <t t-else="">
+                    <div class="de-section-header">
+                        <h3 class="de-section-title">Workspace Items</h3>
+                        <div class="de-section-underline"/>
+                    </div>
+
+                    <div class="row g-4 de-dashboard-grid">
+                        <t t-foreach="state.tiles" t-as="tile" t-key="tile.key">
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <button class="de-dashboard-tile de-dashboard-tile-primary"
+                                        t-att-data-action-id="tile.action_id"
+                                        t-on-click="openTile">
+                                    <div class="de-tile-shine"/>
+                                    <div class="de-dashboard-icon">
+                                        <div t-att-class="iconBoxClass(tile)">
+                                            <i t-att-class="`fa ${tile.icon || 'fa-cubes'}`"/>
+                                        </div>
+                                    </div>
+                                    <div class="de-dashboard-info">
+                                        <div class="de-dashboard-label" t-esc="tile.name"/>
+                                        <div class="de-dashboard-hint">
+                                            <span>View / Apply</span>
+                                            <i class="fa fa-arrow-right ms-2 de-hint-arrow"/>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

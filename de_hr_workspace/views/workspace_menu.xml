@@ -8,6 +8,20 @@
                   web_icon="de_hr_workspace,static/img/workspace.png"
         />
 
+        
+
+        <record id="action_hr_workspace_dashboard" model="ir.actions.client">
+            <field name="name">Workspace Dashboard</field>
+            <field name="tag">de_hr_workspace.workspace_dashboard</field>
+        </record>
+
+        <menuitem id="menu_hr_workspace_dashboard"
+                  name="Dashboard"
+                  parent="menu_my_workspace"
+                  action="action_hr_workspace_dashboard"
+                  sequence="5"
+                  groups="de_hr_workspace.group_hr_employee_workspace" />
+
         <menuitem id="menu_my_ws_employee"
                   name="Employee"
                   parent="menu_my_workspace"
