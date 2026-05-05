@@ -827,6 +827,79 @@ class SaleOrder(models.Model):
 
         return res
 
+
+    def action_merge_draft_quotations(self):
+        orders = self
+        if not orders:
+            active_ids = self.env.context.get("active_ids", [])
+            orders = self.browse(active_ids)
+        orders = orders.exists()
+
+        if len(orders) != 2:
+            raise UserError(_("Please select exactly two quotations to merge."))
+
+        if len(orders.mapped("partner_id")) != 1:
+            raise UserError(_("You can only merge quotations for the same customer."))
+
+        blocked = orders.filtered(lambda o: o.state not in ("draft", "sent") or o.approval_state in ("approved",) )
+        if blocked:
+            raise UserError(_("Only non-approved draft quotations can be merged."))
+
+        target = orders.sorted(lambda o: o.id)[0]
+        source = (orders - target)[0]
+
+        # Merge quotation lines
+        next_seq = max(target.order_line.mapped("sequence") or [0]) + 10
+        for line in source.order_line.sorted("sequence"):
+            vals = line.copy_data()[0]
+            vals.update({"order_id": target.id, "sequence": next_seq})
+            self.env["sale.order.line"].create(vals)
+            next_seq += 10
+
+        # Merge estimations into a single estimation
+        target_est = target.estimation_id
+        source_est = source.estimation_id
+        if source_est:
+            if not target_est:
+                target.write({"estimation_id": source_est.id})
+                target_est = source_est
+            elif target_est.id != source_est.id:
+                for est_line in source_est.line_ids.sorted("id"):
+                    line_vals = est_line.copy_data()[0]
+                    line_vals["estimation_id"] = target_est.id
+                    self.env["petroraq.estimation.line"].with_context(allow_estimation_write=True).create(line_vals)
+                target_est.with_context(allow_estimation_write=True)._rebuild_display_lines()
+
+        # Merge inquiries to a single inquiry if present
+        target_inquiry = target.order_inquiry_id
+        source_inquiry = source.order_inquiry_id
+        if target_inquiry and source_inquiry and target_inquiry.id != source_inquiry.id:
+            if target_inquiry.partner_id != source_inquiry.partner_id:
+                raise UserError(_("Cannot merge quotations because inquiries belong to different customers."))
+            # Re-link source inquiry quotations/estimations to target inquiry
+            related_orders = self.search([("order_inquiry_id", "=", source_inquiry.id)])
+            related_orders.write({"order_inquiry_id": target_inquiry.id})
+            source_estimations = self.env["petroraq.estimation"].search([("order_inquiry_id", "=", source_inquiry.id)])
+            source_estimations.with_context(allow_estimation_write=True).write({"order_inquiry_id": target_inquiry.id})
+            target_inquiry.write({"sale_order_ids": [(4, o.id) for o in related_orders.ids]})
+            source_inquiry.write({"state": "cancel", "rejection_reason": _("Merged into inquiry %s") % target_inquiry.name})
+        elif source_inquiry and not target_inquiry:
+            target.write({"order_inquiry_id": source_inquiry.id})
+
+        # finalize source quotation
+        source.write({"state": "cancel", "approval_comment": _("Merged into quotation %s") % target.name})
+
+        # ensure totals are recalculated by ORM after writes/creates
+        target._amount_all()
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Merged Quotation"),
+            "res_model": "sale.order",
+            "view_mode": "form",
+            "res_id": target.id,
+            "target": "current",
+        }
     def action_quotation_send(self):
         self.ensure_one()
 
