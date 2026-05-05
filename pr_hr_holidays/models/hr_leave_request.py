@@ -374,18 +374,21 @@ class HrLeaveRequest(models.Model):
                                       })
 
 
-    def _get_approval_user_ids_by_stage(self):
+    def _get_approval_user_ids_by_stage(self, extra_excluded_user_ids=None):
         self.ensure_one()
         manager_user = self.employee_manager_id.user_id
         manager_ids = [manager_user.id] if manager_user and manager_user.active else []
         supervisor_ids = self.hr_supervisor_ids.filtered(lambda u: u.active).ids
         hr_manager_ids = self.hr_manager_ids.filtered(lambda u: u.active).ids
 
-        creator_id = self.create_uid.id
+        excluded_ids = set([self.create_uid.id])
+        if extra_excluded_user_ids:
+            excluded_ids |= set(extra_excluded_user_ids)
+
         stage_map = {
-            "draft": [uid for uid in manager_ids if uid != creator_id],
-            "manager_approve": [uid for uid in supervisor_ids if uid != creator_id],
-            "hr_supervisor": [uid for uid in hr_manager_ids if uid != creator_id],
+            "draft": [uid for uid in manager_ids if uid not in excluded_ids],
+            "manager_approve": [uid for uid in supervisor_ids if uid not in excluded_ids],
+            "hr_supervisor": [uid for uid in hr_manager_ids if uid not in excluded_ids],
         }
 
         seen = set()
@@ -399,15 +402,15 @@ class HrLeaveRequest(models.Model):
             stage_map[stage] = unique_stage
         return stage_map
 
-    def _auto_progress_approval_route(self):
+    def _auto_progress_approval_route(self, extra_excluded_user_ids=None):
         self.ensure_one()
-        stage_map = self._get_approval_user_ids_by_stage()
+        stage_map = self._get_approval_user_ids_by_stage(extra_excluded_user_ids=extra_excluded_user_ids)
         if self.state == "draft" and not stage_map.get("draft"):
             self.action_manager_approve()
-            stage_map = self._get_approval_user_ids_by_stage()
+            stage_map = self._get_approval_user_ids_by_stage(extra_excluded_user_ids=extra_excluded_user_ids)
         if self.state == "manager_approve" and not stage_map.get("manager_approve"):
             self.action_hr_supervisor_approve()
-            stage_map = self._get_approval_user_ids_by_stage()
+            stage_map = self._get_approval_user_ids_by_stage(extra_excluded_user_ids=extra_excluded_user_ids)
         if self.state == "hr_supervisor" and not stage_map.get("hr_supervisor"):
             self.action_hr_manager_approve()
 
@@ -417,7 +420,7 @@ class HrLeaveRequest(models.Model):
             rec.state = "manager_approve"
             rec.approval_state = "manager_approve"
             rec._send_hr_supervisor_email()
-            rec._auto_progress_approval_route()
+            rec._auto_progress_approval_route(extra_excluded_user_ids=[self.env.user.id])
 
     def action_employee_cancel_request(self):
         for rec in self:
@@ -456,7 +459,7 @@ class HrLeaveRequest(models.Model):
             rec.state = "hr_supervisor"
             rec.approval_state = "hr_supervisor"
             rec._send_hr_manager_email()
-            rec._auto_progress_approval_route()
+            rec._auto_progress_approval_route(extra_excluded_user_ids=[self.env.user.id])
 
     def action_hr_supervisor_reject(self):
         for rec in self:
