@@ -416,6 +416,44 @@ class PRWorkOrder(models.Model):
             self._ensure_project_expense_bucket(sync_budget=True)
         return res
 
+
+    def _get_stage_approver_ids(self, group_xml_id):
+        group = self.env.ref(group_xml_id, raise_if_not_found=False)
+        if not group:
+            return set()
+        return set(group.users.filtered(lambda u: u.active).ids)
+
+    def _apply_deduplicated_approval_route(self):
+        """Auto-skip duplicate approvers across stages and exclude submitter from approvals."""
+        self.ensure_one()
+        submitter_id = self.create_uid.id
+        stages = [
+            ("ops_approval", "pr_work_order.custom_group_work_order_operations"),
+            ("acc_approval", "pr_work_order.custom_group_work_order_accounts"),
+            ("final_approval", "pr_work_order.custom_group_work_order_management"),
+        ]
+
+        stage_approvers = {}
+        for stage, group_xml in stages:
+            approver_ids = self._get_stage_approver_ids(group_xml)
+            if submitter_id in approver_ids:
+                approver_ids.remove(submitter_id)
+            stage_approvers[stage] = approver_ids
+
+        # If the same user appears in multiple stages, keep that user only in the last stage.
+        seen_future = set()
+        for stage, _group_xml in reversed(stages):
+            current = stage_approvers.get(stage, set())
+            stage_approvers[stage] = current - seen_future
+            seen_future |= current
+
+        if self.state == "ops_approval" and not stage_approvers.get("ops_approval"):
+            self.action_ops_approve()
+        if self.state == "acc_approval" and not stage_approvers.get("acc_approval"):
+            self.action_acc_approve()
+        if self.state == "final_approval" and not stage_approvers.get("final_approval"):
+            self.action_final_approve()
+
     def action_submit_ops(self):
         for rec in self:
             if rec.state != "draft":
@@ -431,6 +469,8 @@ class PRWorkOrder(models.Model):
                 _("""<p>Dear Approver,</p><p>Work Order <b>%s</b> requires Operations approval.</p><p><a href=\"%s\">Open Work Order</a></p>""") % (
                 rec.name, record_url),
             )
+            rec._apply_deduplicated_approval_route()
+
             # # ---------------------------------------
             # # AUTO CREATE BUDGET (ONLY IF NOT EXISTS)
             # # ---------------------------------------
@@ -499,6 +539,7 @@ class PRWorkOrder(models.Model):
             )
             rec._ensure_project_expense_bucket(sync_budget=True)
             rec._sync_work_order_budget_state("pm_approved")
+            rec._apply_deduplicated_approval_route()
 
     def _ensure_project_expense_bucket(self, sync_budget=False):
         Budget = self.env["crossovered.budget"].sudo()
@@ -587,6 +628,7 @@ class PRWorkOrder(models.Model):
                 rec.name, record_url),
             )
             rec._sync_work_order_budget_state("accounts_approved")
+            rec._apply_deduplicated_approval_route()
 
     def action_final_approve(self):
         for rec in self:
