@@ -417,22 +417,26 @@ class HrLeaveRequest(models.Model):
         self.ensure_one()
         stage_map = self._get_approval_user_ids_by_stage(extra_excluded_user_ids=extra_excluded_user_ids)
         if self.state == "draft" and not stage_map.get("draft"):
-            self.action_manager_approve()
+            self.with_context(approval_excluded_user_ids=list(extra_excluded_user_ids or [])).action_manager_approve()
             stage_map = self._get_approval_user_ids_by_stage(extra_excluded_user_ids=extra_excluded_user_ids)
         if self.state == "manager_approve" and not stage_map.get("manager_approve"):
-            self.action_hr_supervisor_approve()
+            self.with_context(approval_excluded_user_ids=list(extra_excluded_user_ids or [])).action_hr_supervisor_approve()
             stage_map = self._get_approval_user_ids_by_stage(extra_excluded_user_ids=extra_excluded_user_ids)
         if self.state == "hr_supervisor" and not stage_map.get("hr_supervisor"):
             self.action_hr_manager_approve()
 
     def action_manager_approve(self):
         actor_user_id = self.env.user.id
+        excluded_user_ids = set(self.env.context.get("approval_excluded_user_ids", []))
+        excluded_user_ids.add(actor_user_id)
         for rec in self:
             rec = rec.sudo()
             rec.state = "manager_approve"
             rec.approval_state = "manager_approve"
             rec._send_hr_supervisor_email()
-            rec._auto_progress_approval_route(extra_excluded_user_ids=[actor_user_id])
+            rec.with_context(approval_excluded_user_ids=list(excluded_user_ids))._auto_progress_approval_route(
+                extra_excluded_user_ids=list(excluded_user_ids)
+            )
 
     def action_employee_cancel_request(self):
         for rec in self:
@@ -467,12 +471,16 @@ class HrLeaveRequest(models.Model):
 
     def action_hr_supervisor_approve(self):
         actor_user_id = self.env.user.id
+        excluded_user_ids = set(self.env.context.get("approval_excluded_user_ids", []))
+        excluded_user_ids.add(actor_user_id)
         for rec in self:
             rec = rec.sudo()
             rec.state = "hr_supervisor"
             rec.approval_state = "hr_supervisor"
             rec._send_hr_manager_email()
-            rec._auto_progress_approval_route(extra_excluded_user_ids=[actor_user_id])
+            rec.with_context(approval_excluded_user_ids=list(excluded_user_ids))._auto_progress_approval_route(
+                extra_excluded_user_ids=list(excluded_user_ids)
+            )
 
     def action_hr_supervisor_reject(self):
         for rec in self:
