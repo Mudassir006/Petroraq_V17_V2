@@ -375,6 +375,59 @@ class PurchaseOrder(models.Model):
                     "body_html": f"<p>{note}</p>",
                 }).send()
 
+
+    def _auto_approve_following_stages_for_user(self, approver_user):
+        self.ensure_one()
+        if self.state != "pending":
+            return
+
+        def _next_stage(order):
+            amount = order.subtotal
+            if amount <= 10000:
+                return None if order.pe_approved else "pe"
+            if amount <= 100000:
+                if not order.pe_approved:
+                    return "pe"
+                return None if order.pm_approved else "pm"
+            if amount <= 500000:
+                if not order.pe_approved:
+                    return "pe"
+                if not order.pm_approved:
+                    return "pm"
+                return None if order.od_approved else "od"
+            if not order.pe_approved:
+                return "pe"
+            if not order.pm_approved:
+                return "pm"
+            if not order.od_approved:
+                return "od"
+            return None if order.md_approved else "md"
+
+        stage_group = {
+            "pe": "pr_custom_purchase.project_engineer",
+            "pm": "pr_custom_purchase.project_manager",
+            "od": "pr_custom_purchase.operations_director",
+            "md": "pr_custom_purchase.managing_director",
+        }
+        stage_field = {
+            "pe": "pe_approved",
+            "pm": "pm_approved",
+            "od": "od_approved",
+            "md": "md_approved",
+        }
+
+        while True:
+            stage = _next_stage(self)
+            if not stage:
+                break
+            if not approver_user.has_group(stage_group[stage]):
+                break
+            self.write({stage_field[stage]: True})
+            self.message_post(body=_("Auto-approved %(stage)s stage by same approver %(user)s.") % {
+                "stage": stage.upper(),
+                "user": approver_user.name,
+            })
+
     # main approval logic
     def action_approve(self):
         self.ensure_one()
@@ -447,6 +500,8 @@ class PurchaseOrder(models.Model):
             elif not self.md_approved:
                 self.write({"md_approved": True})
                 self.message_post(body="Approved by Managing Director.")
+
+        self._auto_approve_following_stages_for_user(self.env.user)
 
         if self.state == "pending" and self.can_confirm_order:
             self.button_confirm()
