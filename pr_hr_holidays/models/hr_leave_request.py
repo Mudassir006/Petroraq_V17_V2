@@ -415,12 +415,13 @@ class HrLeaveRequest(models.Model):
             self.action_hr_manager_approve()
 
     def action_manager_approve(self):
+        actor_user_id = self.env.user.id
         for rec in self:
             rec = rec.sudo()
             rec.state = "manager_approve"
             rec.approval_state = "manager_approve"
             rec._send_hr_supervisor_email()
-            rec._auto_progress_approval_route(extra_excluded_user_ids=[self.env.user.id])
+            rec._auto_progress_approval_route(extra_excluded_user_ids=[actor_user_id])
 
     def action_employee_cancel_request(self):
         for rec in self:
@@ -454,12 +455,13 @@ class HrLeaveRequest(models.Model):
             return view
 
     def action_hr_supervisor_approve(self):
+        actor_user_id = self.env.user.id
         for rec in self:
             rec = rec.sudo()
             rec.state = "hr_supervisor"
             rec.approval_state = "hr_supervisor"
             rec._send_hr_manager_email()
-            rec._auto_progress_approval_route(extra_excluded_user_ids=[self.env.user.id])
+            rec._auto_progress_approval_route(extra_excluded_user_ids=[actor_user_id])
 
     def action_hr_supervisor_reject(self):
         for rec in self:
