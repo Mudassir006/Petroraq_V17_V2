@@ -373,12 +373,51 @@ class HrLeaveRequest(models.Model):
                                           "available": max(0.0, available_days),
                                       })
 
+
+    def _get_approval_user_ids_by_stage(self):
+        self.ensure_one()
+        manager_user = self.employee_manager_id.user_id
+        manager_ids = [manager_user.id] if manager_user and manager_user.active else []
+        supervisor_ids = self.hr_supervisor_ids.filtered(lambda u: u.active).ids
+        hr_manager_ids = self.hr_manager_ids.filtered(lambda u: u.active).ids
+
+        creator_id = self.create_uid.id
+        stage_map = {
+            "draft": [uid for uid in manager_ids if uid != creator_id],
+            "manager_approve": [uid for uid in supervisor_ids if uid != creator_id],
+            "hr_supervisor": [uid for uid in hr_manager_ids if uid != creator_id],
+        }
+
+        seen = set()
+        for stage in ("draft", "manager_approve", "hr_supervisor"):
+            unique_stage = []
+            for uid in stage_map[stage]:
+                if uid in seen:
+                    continue
+                unique_stage.append(uid)
+                seen.add(uid)
+            stage_map[stage] = unique_stage
+        return stage_map
+
+    def _auto_progress_approval_route(self):
+        self.ensure_one()
+        stage_map = self._get_approval_user_ids_by_stage()
+        if self.state == "draft" and not stage_map.get("draft"):
+            self.action_manager_approve()
+            stage_map = self._get_approval_user_ids_by_stage()
+        if self.state == "manager_approve" and not stage_map.get("manager_approve"):
+            self.action_hr_supervisor_approve()
+            stage_map = self._get_approval_user_ids_by_stage()
+        if self.state == "hr_supervisor" and not stage_map.get("hr_supervisor"):
+            self.action_hr_manager_approve()
+
     def action_manager_approve(self):
         for rec in self:
             rec = rec.sudo()
             rec.state = "manager_approve"
             rec.approval_state = "manager_approve"
             rec._send_hr_supervisor_email()
+            rec._auto_progress_approval_route()
 
     def action_employee_cancel_request(self):
         for rec in self:
@@ -417,6 +456,7 @@ class HrLeaveRequest(models.Model):
             rec.state = "hr_supervisor"
             rec.approval_state = "hr_supervisor"
             rec._send_hr_manager_email()
+            rec._auto_progress_approval_route()
 
     def action_hr_supervisor_reject(self):
         for rec in self:
@@ -553,7 +593,9 @@ class HrLeaveRequest(models.Model):
             if hr_manager_ids:
                 rec.hr_manager_ids = hr_manager_ids.ids
             rec._check_requested_days_with_allocation()
-            rec.sudo()._send_manager_email()
+            rec.sudo()._auto_progress_approval_route()
+            if rec.state == "draft":
+                rec.sudo()._send_manager_email()
         return records
 
     def write(self, vals):
