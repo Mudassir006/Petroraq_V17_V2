@@ -39,7 +39,10 @@ class SaleOrder(models.Model):
         self.ensure_one()
         manager_users = self._get_group_users("petroraq_sale_workflow.group_sale_approval_manager")
         md_users = self._get_group_users("petroraq_sale_workflow.group_sale_approval_md")
-        return md_users - manager_users
+        submitter_user = self.create_uid
+        manager_effective = manager_users - submitter_user
+        md_effective = md_users - submitter_user
+        return md_effective - manager_effective
 
     def _notify_manager_approval(self):
         self.ensure_one()
@@ -53,8 +56,11 @@ class SaleOrder(models.Model):
             <p>Quotation <b>%s</b> is waiting for your manager approval.</p>
             <p><a href=\"%s\">Open Quotation</a></p>"""
         ) % (self.name, record_url)
+        manager_users = group.users.filtered(lambda u: u.active) - self.create_uid
+        if not manager_users:
+            return
         self._notify_approval_users(
-            group.users,
+            manager_users,
             _("Quotation %s waiting for manager approval") % self.name,
             body_html,
             _("Quotation requires manager approval"),
@@ -776,7 +782,12 @@ class SaleOrder(models.Model):
             "approval_comment": False,
         })
         for order in self:
-            order._notify_manager_approval()
+            manager_group = order.env.ref("petroraq_sale_workflow.group_sale_approval_manager", raise_if_not_found=False)
+            manager_users = manager_group.users.filtered(lambda u: u.active) - order.create_uid if manager_group else order.env["res.users"]
+            if manager_users:
+                order._notify_manager_approval()
+            else:
+                order.action_manager_approve()
         return True
 
     def action_md_approve(self):
