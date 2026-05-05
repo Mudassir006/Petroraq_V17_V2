@@ -43,6 +43,8 @@ class HrLeaveRequest(models.Model):
                                          'leave_request_id', string='HR Supervisors', tracking=True, readonly=True)
     hr_manager_ids = fields.Many2many('res.users', 'leave_request_hr_manager_users', 'hr_manager_id',
                                       'leave_request_id', string='HR Managers', tracking=True, readonly=True)
+    manager_approved_user_id = fields.Many2one('res.users', string='Manager Approved By', readonly=True, copy=False)
+    hr_supervisor_approved_user_id = fields.Many2one('res.users', string='HR Supervisor Approved By', readonly=True, copy=False)
     reject_reason = fields.Text(string="Rejection Reason", readonly=True)
     note = fields.Text(string="Note")
     state = fields.Selection([
@@ -387,6 +389,7 @@ class HrLeaveRequest(models.Model):
         hr_manager_users = self.hr_manager_ids.filtered(lambda u: u.active)
 
         excluded_users = self.env["res.users"].browse([self.create_uid.id])
+        excluded_users |= (self.manager_approved_user_id | self.hr_supervisor_approved_user_id)
         if extra_excluded_user_ids:
             excluded_users |= self.env["res.users"].browse(list(extra_excluded_user_ids))
         excluded_identity_keys = {self._get_user_identity_key(user) for user in excluded_users if user}
@@ -433,6 +436,7 @@ class HrLeaveRequest(models.Model):
             rec = rec.sudo()
             rec.state = "manager_approve"
             rec.approval_state = "manager_approve"
+            rec.manager_approved_user_id = actor_user_id
             rec._send_hr_supervisor_email()
             rec.with_context(approval_excluded_user_ids=list(excluded_user_ids))._auto_progress_approval_route(
                 extra_excluded_user_ids=list(excluded_user_ids)
@@ -477,6 +481,7 @@ class HrLeaveRequest(models.Model):
             rec = rec.sudo()
             rec.state = "hr_supervisor"
             rec.approval_state = "hr_supervisor"
+            rec.hr_supervisor_approved_user_id = actor_user_id
             rec._send_hr_manager_email()
             rec.with_context(approval_excluded_user_ids=list(excluded_user_ids))._auto_progress_approval_route(
                 extra_excluded_user_ids=list(excluded_user_ids)
