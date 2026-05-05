@@ -29,6 +29,18 @@ class SaleOrder(models.Model):
                     "body_html": body_html,
                 }).send()
 
+
+    def _get_group_users(self, group_xml_id):
+        group = self.env.ref(group_xml_id, raise_if_not_found=False)
+        return group.users.filtered(lambda u: u.active) if group else self.env["res.users"]
+
+    def _get_effective_md_users(self):
+        """MD approvers excluding users already included in manager approval stage."""
+        self.ensure_one()
+        manager_users = self._get_group_users("petroraq_sale_workflow.group_sale_approval_manager")
+        md_users = self._get_group_users("petroraq_sale_workflow.group_sale_approval_md")
+        return md_users - manager_users
+
     def _notify_manager_approval(self):
         self.ensure_one()
         group = self.env.ref("petroraq_sale_workflow.group_sale_approval_manager", raise_if_not_found=False)
@@ -50,8 +62,8 @@ class SaleOrder(models.Model):
 
     def _notify_md_approval(self):
         self.ensure_one()
-        group = self.env.ref("petroraq_sale_workflow.group_sale_approval_md", raise_if_not_found=False)
-        if not group:
+        md_users = self._get_effective_md_users()
+        if not md_users:
             return
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         record_url = f"{base_url}/web#id={self.id}&model=sale.order&view_type=form"
@@ -61,7 +73,7 @@ class SaleOrder(models.Model):
             <p><a href=\"%s\">Open Quotation</a></p>"""
         ) % (self.name, record_url)
         self._notify_approval_users(
-            group.users,
+            md_users,
             _("Quotation %s waiting for MD approval") % self.name,
             body_html,
             _("Quotation requires MD approval"),
@@ -740,9 +752,13 @@ class SaleOrder(models.Model):
         for order in self:
             if order.approval_state != "to_manager":
                 raise UserError(_("This quotation is not awaiting manager approval."))
-            order.approval_state = "to_md"
+            md_users = order._get_effective_md_users()
             order.locked = True
-            order._notify_md_approval()
+            if md_users:
+                order.approval_state = "to_md"
+                order._notify_md_approval()
+            else:
+                order.approval_state = "approved"
 
     def action_confirm_quotation(self):
         for order in self:
