@@ -374,32 +374,43 @@ class HrLeaveRequest(models.Model):
                                       })
 
 
+    def _get_user_identity_key(self, user):
+        employee = self.env["hr.employee"].sudo().search([("user_id", "=", user.id)], limit=1)
+        if employee:
+            return ("emp", employee.id)
+        return ("user", user.id)
+
     def _get_approval_user_ids_by_stage(self, extra_excluded_user_ids=None):
         self.ensure_one()
-        manager_user = self.employee_manager_id.user_id
-        manager_ids = [manager_user.id] if manager_user and manager_user.active else []
-        supervisor_ids = self.hr_supervisor_ids.filtered(lambda u: u.active).ids
-        hr_manager_ids = self.hr_manager_ids.filtered(lambda u: u.active).ids
+        manager_users = self.employee_manager_id.user_id.filtered(lambda u: u.active)
+        supervisor_users = self.hr_supervisor_ids.filtered(lambda u: u.active)
+        hr_manager_users = self.hr_manager_ids.filtered(lambda u: u.active)
 
-        excluded_ids = set([self.create_uid.id])
+        excluded_users = self.env["res.users"].browse([self.create_uid.id])
         if extra_excluded_user_ids:
-            excluded_ids |= set(extra_excluded_user_ids)
+            excluded_users |= self.env["res.users"].browse(list(extra_excluded_user_ids))
+        excluded_identity_keys = {self._get_user_identity_key(user) for user in excluded_users if user}
 
-        stage_map = {
-            "draft": [uid for uid in manager_ids if uid not in excluded_ids],
-            "manager_approve": [uid for uid in supervisor_ids if uid not in excluded_ids],
-            "hr_supervisor": [uid for uid in hr_manager_ids if uid not in excluded_ids],
+        def _filter_users(users):
+            return users.filtered(lambda u: self._get_user_identity_key(u) not in excluded_identity_keys)
+
+        stage_users = {
+            "draft": _filter_users(manager_users),
+            "manager_approve": _filter_users(supervisor_users),
+            "hr_supervisor": _filter_users(hr_manager_users),
         }
 
-        seen = set()
+        seen_identity_keys = set()
+        stage_map = {}
         for stage in ("draft", "manager_approve", "hr_supervisor"):
-            unique_stage = []
-            for uid in stage_map[stage]:
-                if uid in seen:
+            unique_ids = []
+            for user in stage_users[stage]:
+                key = self._get_user_identity_key(user)
+                if key in seen_identity_keys:
                     continue
-                unique_stage.append(uid)
-                seen.add(uid)
-            stage_map[stage] = unique_stage
+                seen_identity_keys.add(key)
+                unique_ids.append(user.id)
+            stage_map[stage] = unique_ids
         return stage_map
 
     def _auto_progress_approval_route(self, extra_excluded_user_ids=None):
