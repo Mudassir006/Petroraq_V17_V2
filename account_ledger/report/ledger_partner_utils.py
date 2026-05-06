@@ -6,6 +6,9 @@ from odoo.osv import expression
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT
 
 
+PARTNER_LEDGER_ACCOUNT_TYPES = ("asset_receivable", "liability_payable")
+
+
 def as_date(value):
     """Return a Python date for wizard/report date values."""
     if isinstance(value, date):
@@ -51,7 +54,13 @@ def build_ledger_move_line_domain(
     analytic_ids=None,
     opening=False,
 ):
-    """Build the account ledger domain including partner-mapped move lines."""
+    """Build the account ledger domain including partner-mapped move lines.
+
+    Partner-mapped lines intentionally only include receivable/payable
+    accounts. Invoice tax, revenue, and COGS lines often also carry the
+    partner, but including them would make customer/vendor ledgers show
+    invoice detail accounts instead of the partner balance movement.
+    """
     account_ids = [account_id for account_id in account_ids if account_id]
     partner_ids = [partner_id for partner_id in (partner_ids or []) if partner_id]
     analytic_ids = [analytic_id for analytic_id in (analytic_ids or []) if analytic_id]
@@ -77,6 +86,7 @@ def build_ledger_move_line_domain(
         partner_domain = [
             ("partner_id", "in", partner_ids),
             ("account_id", "not in", account_ids),
+            ("account_id.account_type", "in", PARTNER_LEDGER_ACCOUNT_TYPES),
         ]
         ledger_domain = expression.OR([account_domain, partner_domain])
     else:
