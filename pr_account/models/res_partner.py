@@ -9,7 +9,6 @@ class ResPartner(models.Model):
     pr_ledger_account_id = fields.Many2one(
         "account.account",
         string="Customer/Vendor Ledger Account",
-        check_company=True,
         domain="[('deprecated', '=', False)]",
         help=(
             "Map this customer/vendor to the legacy account used by the custom "
