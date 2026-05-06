@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pr_account_res_partner_view_form_inherit_ledger_account" model="ir.ui.view">
+        <field name="name">pr.account.res.partner.view.form.inherit.ledger.account</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="pr_ledger_account_page" string="Ledger Account">
+                    <group>
+                        <field name="pr_ledger_account_id"
+                               options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

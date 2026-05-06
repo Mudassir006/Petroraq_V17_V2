@@ -5,6 +5,7 @@ from . import account_analytic_plan
 from . import account_analytic_account
 from . import account_move
 from . import account_move_line
+from . import res_partner
 from . import payment_receipt
 from . import transaction_payment
 from . import cash_receipt
