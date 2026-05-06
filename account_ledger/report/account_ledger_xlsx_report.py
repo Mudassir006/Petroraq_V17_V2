@@ -8,6 +8,8 @@ from odoo import models, api
 from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT
 
+from .ledger_partner_utils import get_ledger_move_lines, get_opening_balance
+
 
 class CustomDynamicLedgerReport(models.AbstractModel):
     _name = 'report.account_ledger.account_ledger_xlsx_report'
@@ -177,102 +179,40 @@ class CustomDynamicLedgerReport(models.AbstractModel):
 
         today = datetime.today()
         report_date = today.strftime("%b-%d-%Y")
-        ji_domain = [
-            ('company_id', '=', company),
-            ('date', '>=', datetime.strptime(str(date_start), DATE_FORMAT).date()),
-            ('date', '<=', datetime.strptime(str(date_end), DATE_FORMAT).date()),
-            ('move_id.state', '=', 'posted'),
-        ]
-
-        opening_balance_domain = [
-            ('company_id', '=', company),
-            ('date', '>=', datetime.strptime(str(date_start), DATE_FORMAT).date()),
-            ('date', '<=', datetime.strptime(str(date_end), DATE_FORMAT).date()),
-            ('move_id.state', '=', 'posted'),
-        ]
-
-        if account:
-            ji_domain.append(('account_id', 'in', account))
-            opening_balance_domain.append(('account_id', 'in', account))
-        else:
+        if not account:
             return {
                 'account': " ",
                 'report_date': report_date,
                 'docs': []
             }
 
-        if analytic_ids:
-            opening_balance_domain.append(('analytic_distribution', 'in', analytic_ids))
+        selected_analytic_ids = []
         if department:
-            ji_domain.append(('analytic_distribution', 'in', [int(department)]))
+            selected_analytic_ids.append(int(department))
+        if section:
+            selected_analytic_ids.append(int(section))
+        if project:
+            selected_analytic_ids.append(int(project))
+        if employee:
+            selected_analytic_ids.append(int(employee))
+        if asset:
+            selected_analytic_ids.append(int(asset))
 
-        opening_balance_ids = self.env['account.move.line'].search(opening_balance_domain, order="date asc")
-        JournalItems = self.env['account.move.line'].search(ji_domain, order="date asc")
-        JournalAccounts = account
-        TupleJournalAccounts = tuple(JournalAccounts)
-
-        if JournalItems and section:
-            JournalItems = self.env['account.move.line'].search(
-                [("id", "in", JournalItems.ids), ("analytic_distribution", "in", [int(section)])], order="date asc")
-        if JournalItems and project:
-            JournalItems = self.env['account.move.line'].search(
-                [("id", "in", JournalItems.ids), ("analytic_distribution", "in", [int(project)])], order="date asc")
-        if JournalItems and employee:
-            JournalItems = self.env['account.move.line'].search(
-                [("id", "in", JournalItems.ids), ("analytic_distribution", "in", [int(employee)])], order="date asc")
-        if JournalItems and asset:
-            JournalItems = self.env['account.move.line'].search(
-                [("id", "in", JournalItems.ids), ("analytic_distribution", "in", [int(asset)])], order="date asc")
-
-        if len(JournalAccounts) == 1:
-            where_statement = f"""
-                WHERE aml.account_id = {JournalAccounts[0]} 
-                AND 
-                aml.date < '{date_start}'
-                AND am.state = 'posted'"""
-        elif len(JournalAccounts) > 1:
-            where_statement = f"""
-                WHERE aml.account_id in {TupleJournalAccounts} 
-                AND 
-                aml.date < '{date_start}'
-                AND am.state = 'posted'"""
-        else:
-            where_statement = ""
-
-        if analytic_ids:
-            if where_statement:
-                if "WHERE" in where_statement:
-                    where_statement += f""" AND 
-                    analytic_distribution ?& array{str_analytic_ids}"""
-                else:
-                    where_statement += f""" WHERE 
-                                        analytic_distribution ?& array{str_analytic_ids}"""
-            else:
-                where_statement += f""" 
-                                WHERE analytic_distribution ?& array{str_analytic_ids}"""
-
-        # if not where_statement:
-        #     return {
-        #         'account': " ",
-        #         'report_date': report_date,
-        #         'docs': []
-        #     }
-        sql = f"""
-                    SELECT 
-                        SUM(aml.balance)
-                    FROM
-                        account_move_line aml
-                    JOIN
-                        account_move am ON aml.move_id = am.id
-                    {where_statement}
-                    GROUP BY aml.account_id
-                """
-        self.env.cr.execute(sql)
-        result = self.env.cr.fetchone()
-        if result:
-            initial_balance = result[0]
-        else:
-            initial_balance = 0
+        JournalItems = get_ledger_move_lines(
+            self.env,
+            company,
+            account,
+            date_start,
+            date_end,
+            analytic_ids=selected_analytic_ids,
+        )
+        initial_balance = get_opening_balance(
+            self.env,
+            company,
+            account,
+            date_start,
+            analytic_ids=selected_analytic_ids,
+        )
 
         if initial_balance >= 0:
             initial_debit = initial_balance
