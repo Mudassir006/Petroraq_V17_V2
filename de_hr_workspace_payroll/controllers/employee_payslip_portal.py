@@ -78,5 +78,11 @@ class EmployeePayslipPortal(CustomerPortal):
 
     @http.route(['/my/payslips/<model("hr.payslip"):payslip_id>'], type='http', auth="user", website=True)
     def portal_my_payslips_payslip_info(self, payslip_id, **kw):
-        values = {"payslip_id": payslip_id}
+        if payslip_id.employee_id.user_id != request.env.user:
+            raise MissingError(_("This payslip does not exist or you do not have access to it."))
+
+        values = {
+            "payslip_id": payslip_id.sudo(),
+            "page_name": "payslip",
+        }
         return request.render("de_hr_workspace_payroll.employee_payslip_info_portal", values)
