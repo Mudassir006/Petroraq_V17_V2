@@ -12,8 +12,6 @@
                 Create A Work Order
             </p>
         </field>
-
-
     </record>
 
     <record id="pr_sale_work_order_accounts_approval_action" model="ir.actions.act_window">
@@ -27,8 +25,6 @@
                 Create A Work Order
             </p>
         </field>
-
-
     </record>
 
     <record id="pr_sale_work_order_final_approval_action" model="ir.actions.act_window">
@@ -42,29 +38,37 @@
                 Create A Work Order
             </p>
         </field>
+    </record>
 
-
+    <record id="pr_sale_work_order_approvals_server_action" model="ir.actions.server">
+        <field name="name">Work Orders</field>
+        <field name="model_id" ref="pr_work_order.model_pr_work_order"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_my_work_order_approvals()</field>
     </record>
 
     <menuitem id="work_order_ops_approvals_view_menu"
               parent="menu_my_sales_approvals"
               name="Work Orders"
-              action="pr_sale_work_order_ops_approval_action"
+              action="pr_sale_work_order_approvals_server_action"
               sequence="5"
-              groups="pr_work_order.custom_group_work_order_operations"/>
+              groups="pr_work_order.custom_group_work_order_operations,pr_work_order.custom_group_work_order_accounts,pr_work_order.custom_group_work_order_management"/>
 
-    <menuitem id="work_order_accounts_approvals_view_menu"
-              parent="menu_my_sales_approvals"
-              name="Work Orders"
-              action="pr_sale_work_order_accounts_approval_action"
-              sequence="6"
-              groups="pr_work_order.custom_group_work_order_accounts"/>
+    <record id="work_order_accounts_approvals_view_menu" model="ir.ui.menu">
+        <field name="name">Work Orders (Accounts)</field>
+        <field name="parent_id" ref="menu_my_sales_approvals"/>
+        <field name="action" eval="'ir.actions.act_window,%d' % ref('pr_sale_work_order_accounts_approval_action')"/>
+        <field name="groups_id" eval="[(6, 0, [ref('pr_work_order.custom_group_work_order_accounts')])]"/>
+        <field name="sequence">6</field>
+        <field name="active" eval="False"/>
+    </record>
 
-    <menuitem id="work_order_approvals_view_menu"
-              parent="menu_my_sales_approvals"
-              name="Work Orders"
-              action="pr_sale_work_order_final_approval_action"
-              sequence="7"
-              groups="pr_work_order.custom_group_work_order_management"/>
-
+    <record id="work_order_approvals_view_menu" model="ir.ui.menu">
+        <field name="name">Work Orders (Final)</field>
+        <field name="parent_id" ref="menu_my_sales_approvals"/>
+        <field name="action" eval="'ir.actions.act_window,%d' % ref('pr_sale_work_order_final_approval_action')"/>
+        <field name="groups_id" eval="[(6, 0, [ref('pr_work_order.custom_group_work_order_management')])]"/>
+        <field name="sequence">7</field>
+        <field name="active" eval="False"/>
+    </record>
 </odoo>

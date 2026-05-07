@@ -146,6 +146,46 @@ class HrLeaveRequest(models.Model):
                     and rec._get_requested_days_count() > (available_days + 1e-6)
             )
 
+    def _get_request_calendar(self):
+        self.ensure_one()
+        return (
+            self.employee_id.resource_calendar_id
+            or self.company_id.resource_calendar_id
+            or self.env.company.resource_calendar_id
+        )
+
+    def _get_weekend_dates_in_period(self):
+        self.ensure_one()
+        if not self.date_from or not self.date_to or self.date_to < self.date_from:
+            return []
+
+        calendar_id = self._get_request_calendar()
+        if calendar_id and calendar_id.attendance_ids:
+            working_weekdays = {int(attendance.dayofweek) for attendance in calendar_id.attendance_ids}
+        else:
+            working_weekdays = set(range(5))
+
+        weekend_dates = []
+        current_date = self.date_from
+        while current_date <= self.date_to:
+            if current_date.weekday() not in working_weekdays:
+                weekend_dates.append(current_date)
+            current_date += timedelta(days=1)
+        return weekend_dates
+
+    def _check_leave_request_weekend_dates(self):
+        for rec in self:
+            weekend_dates = rec._get_weekend_dates_in_period()
+            if weekend_dates:
+                formatted_dates = ", ".join(date.strftime("%d/%m/%Y") for date in weekend_dates)
+                raise ValidationError(_(
+                    "You cannot request leave on weekend/non-working date(s): %(dates)s."
+                ) % {"dates": formatted_dates})
+
+    @api.constrains("employee_id", "company_id", "date_from", "date_to")
+    def _check_weekend_dates(self):
+        self._check_leave_request_weekend_dates()
+
     @api.constrains("leave_type_id", "date_from")
     def _check_annual_leave_start_date(self):
         today = fields.Date.context_today(self)
@@ -170,6 +210,21 @@ class HrLeaveRequest(models.Model):
         self.ensure_one()
         if self.employee_id.company_id:
             self.company_id = self.employee_id.company_id.id
+
+    @api.onchange("employee_id", "company_id", "date_from", "date_to")
+    def _onchange_leave_request_dates(self):
+        for rec in self:
+            weekend_dates = rec._get_weekend_dates_in_period()
+            if weekend_dates:
+                formatted_dates = ", ".join(date.strftime("%d/%m/%Y") for date in weekend_dates)
+                return {
+                    "warning": {
+                        "title": _("Weekend Date Selected"),
+                        "message": _(
+                            "You cannot request leave on weekend/non-working date(s): %(dates)s."
+                        ) % {"dates": formatted_dates},
+                    }
+                }
 
     def _send_hr_manager_cancellation_email(self):
         for rec in self:
@@ -552,6 +607,7 @@ class HrLeaveRequest(models.Model):
                 rec.hr_supervisor_ids = hr_supervisor_ids.ids
             if hr_manager_ids:
                 rec.hr_manager_ids = hr_manager_ids.ids
+            rec._check_leave_request_weekend_dates()
             rec._check_requested_days_with_allocation()
             rec.sudo()._send_manager_email()
         return records
@@ -560,6 +616,7 @@ class HrLeaveRequest(models.Model):
         res = super().write(vals)
         watched_fields = {"employee_id", "leave_type_id", "date_from", "date_to", "state"}
         if watched_fields.intersection(vals.keys()):
+            self._check_leave_request_weekend_dates()
             self._check_requested_days_with_allocation()
         return res
 

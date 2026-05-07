@@ -61,9 +61,16 @@
                                       style="color: #fff !important;background-color: #008080 !important;border-color: #008080 !important;border-radius: 8px !important;padding: 6px !important;"/>
                             </td>
                             <td>
-                                <button class="btn-info" icon="fa-eye">
-                                    <a t-attf-href="/my/payslips/#{payslip.id}">Details</a>
-                                </button>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-info" t-attf-href="/my/payslips/#{payslip.id}">
+                                        <i class="fa fa-eye"/>
+                                        Details
+                                    </a>
+                                    <a class="btn btn-secondary" t-attf-href="/my/payslips/#{payslip.id}/download">
+                                        <i class="fa fa-download"/>
+                                        Download
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -72,13 +79,31 @@
         </t>
     </template>
 
-    <template id="employee_payslip_info_portal">
-        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
-            <t t-call="portal.portal_layout">
-                <t t-set="breadcrumbs_searchbar" t-value="True"/>
-                <t t-call="portal.portal_searchbar">
-                    <t t-set="title">Payslip</t>
-                </t>
+    <template id="employee_payslip_info_portal" name="Payslip Details">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Payslip Details</t>
+            </t>
+
+            <div class="mb-3 d-flex gap-2">
+                <a class="btn btn-secondary" href="/my/payslips">
+                    <i class="fa fa-chevron-left"/>
+                    Back to Payslips
+                </a>
+                <a class="btn btn-info" t-attf-href="/my/payslips/#{payslip_id.id}/download">
+                    <i class="fa fa-download"/>
+                    Download
+                </a>
+            </div>
+
+            <t t-if="not payslip_id.line_ids_filtered">
+                <div class="alert alert-warning" role="alert">
+                    There are no payslip lines to display.
+                </div>
+            </t>
+            <t t-if="payslip_id.line_ids_filtered">
                 <t t-call="portal.portal_table">
                     <t t-set="loop_cycle_number" t-value="0"/>
                     <thead>
@@ -86,7 +111,7 @@
                             <th>Name</th>
                             <th>Category</th>
                             <th>Rule</th>
-                            <th>Amount</th>
+                            <th class="text-end">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -102,13 +127,13 @@
                             <td>
                                 <span t-field="line.salary_rule_id.name"/>
                             </td>
-                            <td>
+                            <td class="text-end">
                                 <span t-field="line.total"/>
                             </td>
                         </tr>
                     </tbody>
                 </t>
             </t>
-        </xpath>
+        </t>
     </template>
 </odoo>

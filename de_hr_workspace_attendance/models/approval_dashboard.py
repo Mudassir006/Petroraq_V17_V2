@@ -107,6 +107,33 @@ class HrApprovalDashboardService(models.AbstractModel):
         return expression.OR(role_domains)
 
     @api.model
+    def _work_order_pending_domain(self):
+        states = []
+        user = self.env.user
+        if user.has_group("pr_work_order.custom_group_work_order_operations"):
+            states.append("ops_approval")
+        if user.has_group("pr_work_order.custom_group_work_order_accounts"):
+            states.append("acc_approval")
+        if user.has_group("pr_work_order.custom_group_work_order_management"):
+            states.append("final_approval")
+        return [("state", "in", states)] if states else [("id", "=", False)]
+
+    @api.model
+    def _is_work_order_approval_menu(self, menu, action):
+        work_order_menu = self.env.ref(
+            "de_hr_workspace_sale.work_order_ops_approvals_view_menu",
+            raise_if_not_found=False,
+        )
+        work_order_action = self.env.ref(
+            "de_hr_workspace_sale.pr_sale_work_order_approvals_server_action",
+            raise_if_not_found=False,
+        )
+        return bool(
+            (work_order_menu and menu.id == work_order_menu.id)
+            or (work_order_action and action.id == work_order_action.id)
+        )
+
+    @api.model
     def _override_domain_for_menu(self, menu, action, domain):
         menu_name = (menu.name or "").lower()
         if action.res_model == "pr.hr.shortage.request" or "shortage" in menu_name:
@@ -119,9 +146,13 @@ class HrApprovalDashboardService(models.AbstractModel):
 
     @api.model
     def _count_for_action(self, menu, action):
-        if action._name != "ir.actions.act_window" or not action.res_model:
-            return 0
         try:
+            if self._is_work_order_approval_menu(menu, action):
+                if "pr.work.order" not in self.env:
+                    return 0
+                return self.env["pr.work.order"].search_count(self._work_order_pending_domain())
+            if action._name != "ir.actions.act_window" or not action.res_model:
+                return 0
             domain = self._domain_from_action(action)
             domain = self._override_domain_for_menu(menu, action, domain)
             return self.env[action.res_model].search_count(domain)
