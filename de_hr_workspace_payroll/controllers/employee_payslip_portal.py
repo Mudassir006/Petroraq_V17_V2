@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import base64
 from collections import OrderedDict
 from operator import itemgetter
 from markupsafe import Markup
@@ -40,22 +39,16 @@ class EmployeePayslipPortal(CustomerPortal):
         if payslip_id.employee_id.user_id != request.env.user:
             raise MissingError(_("This payslip does not exist or you do not have access to it."))
 
-    def _get_payslip_attachment(self, payslip_id):
-        attachment = request.env['ir.attachment'].sudo().search([
-            ('res_model', '=', 'hr.payslip'),
-            ('res_id', '=', payslip_id.id),
-            ('type', '=', 'binary'),
-            ('mimetype', 'ilike', 'pdf'),
-        ], order='create_date desc, id desc', limit=1)
-        if not attachment:
-            attachment = request.env['ir.attachment'].sudo().search([
-                ('res_model', '=', 'hr.payslip'),
-                ('res_id', '=', payslip_id.id),
-                ('type', '=', 'binary'),
-            ], order='create_date desc, id desc', limit=1)
-        if not attachment:
-            raise MissingError(_("No payslip attachment is available for download."))
-        return attachment
+    def _get_payslip_report_action(self):
+        report = request.env.ref('hr_payroll.action_report_payslip', raise_if_not_found=False)
+        if not report:
+            report = request.env['ir.actions.report'].sudo().search([
+                ('model', '=', 'hr.payslip'),
+                ('report_type', '=', 'qweb-pdf'),
+            ], limit=1)
+        if not report:
+            raise MissingError(_("No payslip report is available for download."))
+        return report.sudo()
 
     @http.route(['/my/payslips', '/my/payslips/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_payslips(self, page=1, date_begin=None, date_end=None, sortby=None, **kw):
@@ -112,11 +105,14 @@ class EmployeePayslipPortal(CustomerPortal):
     def portal_my_payslips_download(self, payslip_id, **kw):
         self._check_payslip_owner(payslip_id)
 
-        attachment = self._get_payslip_attachment(payslip_id)
-        filename = attachment.name or '%s.pdf' % (payslip_id.number or payslip_id.name or 'payslip')
-        content = base64.b64decode(attachment.datas or b'')
+        report = self._get_payslip_report_action()
+        content, _report_type = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
+            report.report_name,
+            res_ids=payslip_id.ids,
+        )
+        filename = '%s.pdf' % (payslip_id.number or payslip_id.name or 'payslip')
         return request.make_response(content, [
-            ('Content-Type', attachment.mimetype or 'application/octet-stream'),
+            ('Content-Type', 'application/pdf'),
             ('Content-Length', str(len(content))),
             ('Content-Disposition', content_disposition(filename)),
         ])
