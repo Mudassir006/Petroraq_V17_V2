@@ -61,10 +61,16 @@
                                       style="color: #fff !important;background-color: #008080 !important;border-color: #008080 !important;border-radius: 8px !important;padding: 6px !important;"/>
                             </td>
                             <td>
-                                <a class="btn btn-info" t-attf-href="/my/payslips/#{payslip.id}">
-                                    <i class="fa fa-eye"/>
-                                    Details
-                                </a>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-info" t-attf-href="/my/payslips/#{payslip.id}">
+                                        <i class="fa fa-eye"/>
+                                        Details
+                                    </a>
+                                    <a class="btn btn-secondary" t-attf-href="/my/payslips/#{payslip.id}/download">
+                                        <i class="fa fa-download"/>
+                                        Download
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -81,10 +87,14 @@
                 <t t-set="title">Payslip Details</t>
             </t>
 
-            <div class="mb-3">
+            <div class="mb-3 d-flex gap-2">
                 <a class="btn btn-secondary" href="/my/payslips">
                     <i class="fa fa-chevron-left"/>
                     Back to Payslips
+                </a>
+                <a class="btn btn-info" t-attf-href="/my/payslips/#{payslip_id.id}/download">
+                    <i class="fa fa-download"/>
+                    Download
                 </a>
             </div>
 
