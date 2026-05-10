@@ -83,6 +83,8 @@
 
                                    readonly="state in ('confirm', 'cancel', 'reject', 'expire', 'accept', 'estimation_created', 'quotation_created', 'closed')"/>
                             <field name="partner_id" required="1"
+                                   domain="[('parent_id', '=', False)]"
+                                   context="{'default_company_type': 'company'}"
                                    readonly="state in ('confirm', 'cancel', 'reject', 'expire', 'accept', 'estimation_created', 'quotation_created', 'closed')"/>
                             <!--                            <field name="company_id" readonly="1"/>-->
                             <field name="email" readonly="1"/>
@@ -94,8 +96,11 @@
 
                         </group>
                         <group>
-                            <field name="contact_person" required="1"
+                            <field name="contact_partner_id" required="1"
+                                   domain="[('parent_id', '=', partner_id)]"
+                                   context="{'default_parent_id': partner_id, 'default_type': 'contact', 'default_company_type': 'person'}"
                                    readonly="state in ('confirm', 'cancel', 'reject', 'expire', 'accept', 'estimation_created', 'quotation_created', 'closed')"/>
+                            <field name="contact_person" invisible="1"/>
                             <field name="contact_person_email" required="1"
                                    readonly="state in ('confirm', 'cancel', 'reject', 'expire', 'accept', 'estimation_created', 'quotation_created', 'closed')"/>
                             <field name="contact_person_phone" required="1"
@@ -164,7 +169,7 @@
 
                 <field name="description"/>
                 <field name="partner_id"/>
-                <field name="contact_person"/>
+                <field name="contact_partner_id"/>
                 <field name="contact_person_email"/>
                 <field name="date_order" optional="show"/>
                 <field name="deadline_submission" optional="show"/>

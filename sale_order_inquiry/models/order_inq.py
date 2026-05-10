@@ -14,11 +14,20 @@ class OrderInquiry(models.Model):
     name = fields.Char(default="New", readonly=True, copy=False, tracking=True, string="Inquiry No")
     description = fields.Char(string="Inquiry Description", required=True)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.user.company_id.id, string='Company')
-    contact_person = fields.Char(string="Contact Person", required=True)
+    contact_person = fields.Char(
+        string="Contact Person Name",
+        help="Stored display name of the selected contact person for reporting and legacy integrations.",
+    )
     designation = fields.Char(string="Designation")
     user_id = fields.Many2one('res.users', string='Inquiry By',
                               domain=lambda self: self._get_salesperson_domain(), required=True)
-    partner_id = fields.Many2one('res.partner', string='Customer', required=True, )
+    partner_id = fields.Many2one(
+        'res.partner',
+        string='Customer',
+        required=True,
+        domain=[('parent_id', '=', False)],
+        help="Select the main customer/company only; child contacts are selected in Contact Person.",
+    )
     email = fields.Char(string="Customer Email", related='partner_id.email')
     contact_person_email = fields.Char(string="Contact Person Email", required=True)
     contact_person_phone = fields.Char(string="Contact Person Phone", required=True)
@@ -97,13 +106,75 @@ class OrderInquiry(models.Model):
     )
     contact_partner_id = fields.Many2one(
         "res.partner",
-        string="Contact Partner",
-        help="Contact created/linked for this inquiry contact person."
+        string="Contact Person",
+        required=True,
+        domain="[('parent_id', '=', partner_id)]",
+        help="Contact person under the selected customer. New contacts are created below that customer.",
     )
+
+    def _prepare_contact_partner_values(self):
+        self.ensure_one()
+        values = {}
+        if self.contact_partner_id.type != "contact":
+            values["type"] = "contact"
+        if self.contact_person_email and self.contact_partner_id.email != self.contact_person_email:
+            values["email"] = self.contact_person_email
+        if self.contact_person_phone and self.contact_partner_id.phone != self.contact_person_phone:
+            values["phone"] = self.contact_person_phone
+        if self.designation:
+            if self.contact_partner_id.designation != self.designation:
+                values["designation"] = self.designation
+            if self.contact_partner_id.function != self.designation:
+                values["function"] = self.designation
+        return values
+
+    def _sync_selected_contact_partner(self):
+        for rec in self.filtered("contact_partner_id"):
+            values = rec._prepare_contact_partner_values()
+            if values:
+                rec.contact_partner_id.write(values)
+
+    def _get_contact_detail_vals(self, contact):
+        return {
+            "contact_person": contact.name or False,
+            "contact_person_email": contact.email or False,
+            "contact_person_phone": contact.phone or contact.mobile or False,
+            "designation": contact.designation or contact.function or False,
+        }
+
+    @api.onchange("partner_id")
+    def _onchange_partner_id_contact_domain(self):
+        for rec in self:
+            if rec.contact_partner_id and rec.contact_partner_id.parent_id != rec.partner_id:
+                rec.contact_partner_id = False
+                rec.contact_person = False
+                rec.contact_person_email = False
+                rec.contact_person_phone = False
+                rec.designation = False
+        return {
+            "domain": {
+                "contact_partner_id": [("parent_id", "=", self.partner_id.id)]
+                if self.partner_id
+                else [("id", "=", False)]
+            }
+        }
+
+    @api.onchange("contact_partner_id")
+    def _onchange_contact_partner_id(self):
+        for rec in self:
+            if rec.contact_partner_id:
+                for field_name, value in rec._get_contact_detail_vals(rec.contact_partner_id).items():
+                    setattr(rec, field_name, value)
+            else:
+                rec.contact_person = False
+                rec.contact_person_email = False
+                rec.contact_person_phone = False
+                rec.designation = False
 
     def _get_or_create_contact_partner(self):
         self.ensure_one()
         if self.contact_partner_id:
+            self._sync_selected_contact_partner()
             return self.contact_partner_id
 
         parent = self.partner_id
@@ -131,6 +202,7 @@ class OrderInquiry(models.Model):
                 "email": email or False,
                 "phone": phone or False,
                 "function": (self.designation or "").strip() or False,
+                "designation": (self.designation or "").strip() or False,
                 # optional:
                 # "mobile": phone or False,
             })
@@ -234,6 +306,18 @@ class OrderInquiry(models.Model):
                         _("Invalid phone number. Use digits only, minimum 9 digits, optionally starting with +")
                     )
 
+    @api.constrains("partner_id", "contact_partner_id")
+    def _check_contact_partner_parent(self):
+        for rec in self:
+            if (
+                rec.partner_id
+                and rec.contact_partner_id
+                and rec.contact_partner_id.parent_id != rec.partner_id
+            ):
+                raise ValidationError(
+                    _("Contact Person must be one of the contacts under the selected Customer.")
+                )
+
     @api.constrains('contact_person')
     def _check_contact_person_chars(self):
 
@@ -277,6 +361,20 @@ class OrderInquiry(models.Model):
                         _("Deadline of Submission cannot exceed 30 days from the Inquiry Date.")
                     )
 
+    def _apply_contact_partner_details_to_vals(self, vals):
+        contact_id = vals.get("contact_partner_id")
+        if not contact_id:
+            return vals
+
+        contact = self.env["res.partner"].browse(contact_id)
+        if not contact.exists():
+            return vals
+
+        contact_vals = self._get_contact_detail_vals(contact)
+        for field_name, value in contact_vals.items():
+            vals.setdefault(field_name, value)
+        return vals
+
     @api.depends('sale_order_ids')
     def compute_sale_count(self):
         if self.sale_order_id:
@@ -288,6 +386,9 @@ class OrderInquiry(models.Model):
         self.state = 'accept'
 
     def write(self, vals):
+        vals = dict(vals)
+        self._apply_contact_partner_details_to_vals(vals)
+
         if "inquiry_type" in vals and vals.get("inquiry_type") == "trading":
             non_trading_records = self.filtered(lambda rec: rec.inquiry_type != "trading")
             if non_trading_records:
@@ -300,6 +401,16 @@ class OrderInquiry(models.Model):
         # if attachments changed, relink them
         if "required_attachment_ids" in vals:
             self._relink_required_attachments()
+
+        contact_sync_fields = {
+            "contact_partner_id",
+            "contact_person_email",
+            "contact_person_phone",
+            "designation",
+            "partner_id",
+        }
+        if contact_sync_fields & set(vals):
+            self._sync_selected_contact_partner()
 
         return res
 
@@ -320,6 +431,8 @@ class OrderInquiry(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            self._apply_contact_partner_details_to_vals(vals)
+
             if vals.get("inquiry_type") == "trading":
                 raise UserError(
                     _("Trading inquiry type is temporarily disabled for new selections.")
@@ -333,6 +446,7 @@ class OrderInquiry(models.Model):
         records = super().create(vals_list)
 
         records._relink_required_attachments()
+        records._sync_selected_contact_partner()
         return records
 
     def button_cancel(self):
