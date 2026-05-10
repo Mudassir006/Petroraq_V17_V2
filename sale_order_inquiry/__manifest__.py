@@ -24,6 +24,7 @@
     'data': [
         'data/sequence.xml',
         'views/order_inq.xml',
+        'views/res_partner_views.xml',
         'views/order_inquiry_extend_deadline_wizard.xml',
         'views/estimation_views.xml',
         'views/order_inquiry_cron.xml',
