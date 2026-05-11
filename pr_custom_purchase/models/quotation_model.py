@@ -142,6 +142,90 @@ class PurchaseOrder(models.Model):
             else:
                 rec.linked_quotation_status = "missing"
 
+
+    def _get_requisition_allowed_product_quantities(self):
+        self.ensure_one()
+        quantities = {}
+        if not self.requisition_id:
+            return quantities
+        for req_line in self.requisition_id.line_ids.filtered("description"):
+            quantities.setdefault(req_line.description.id, 0.0)
+            quantities[req_line.description.id] += req_line.quantity or 0.0
+        return quantities
+
+    def _get_order_line_product_quantities(self):
+        self.ensure_one()
+        quantities = {}
+        for line in self.order_line.filtered("product_id"):
+            quantities.setdefault(line.product_id.id, 0.0)
+            quantities[line.product_id.id] += line.product_qty or 0.0
+        return quantities
+
+    def _check_lines_against_requisition(self):
+        po_states = ["pending", "purchase", "done"]
+        rfq_states = ["draft", "sent"]
+        for order in self.filtered("requisition_id"):
+            allowed_quantities = order._get_requisition_allowed_product_quantities()
+            order_quantities = order._get_order_line_product_quantities()
+            if not order_quantities:
+                continue
+
+            invalid_product_ids = set(order_quantities) - set(allowed_quantities)
+            if invalid_product_ids:
+                invalid_products = self.env["product.product"].browse(list(invalid_product_ids))
+                raise ValidationError(
+                    _("Product(s) %s are not part of requisition %s.")
+                    % (", ".join(sorted(invalid_products.mapped("display_name"))), order.requisition_id.name)
+                )
+
+            if order.state in rfq_states:
+                for product_id, quantity in order_quantities.items():
+                    allowed_qty = allowed_quantities.get(product_id, 0.0)
+                    if quantity > allowed_qty + 1e-6:
+                        product = self.env["product.product"].browse(product_id)
+                        raise ValidationError(
+                            _("RFQ quantity for %(product)s exceeds requisition quantity. Allowed: %(allowed).2f, RFQ: %(ordered).2f.")
+                            % {
+                                "product": product.display_name,
+                                "allowed": allowed_qty,
+                                "ordered": quantity,
+                            }
+                        )
+                continue
+
+            if order.state not in po_states:
+                continue
+
+            existing_quantities = {}
+            existing_lines = self.env["purchase.order.line"].sudo().search([
+                ("order_id.requisition_id", "=", order.requisition_id.id),
+                ("order_id.state", "in", po_states),
+                ("order_id", "!=", order.id),
+                ("product_id", "in", list(order_quantities.keys())),
+            ])
+            for line in existing_lines:
+                existing_quantities.setdefault(line.product_id.id, 0.0)
+                existing_quantities[line.product_id.id] += line.product_qty or 0.0
+
+            for product_id, quantity in order_quantities.items():
+                allowed_qty = allowed_quantities.get(product_id, 0.0)
+                total_qty = quantity + existing_quantities.get(product_id, 0.0)
+                if total_qty > allowed_qty + 1e-6:
+                    product = self.env["product.product"].browse(product_id)
+                    raise ValidationError(
+                        _("Purchase quantity for %(product)s exceeds requisition quantity. Allowed: %(allowed).2f, Already purchased/pending: %(existing).2f, Current PO: %(current).2f.")
+                        % {
+                            "product": product.display_name,
+                            "allowed": allowed_qty,
+                            "existing": existing_quantities.get(product_id, 0.0),
+                            "current": quantity,
+                        }
+                    )
+
+    @api.constrains("requisition_id", "state", "order_line")
+    def _check_requisition_product_quantities(self):
+        self._check_lines_against_requisition()
+
     def action_view_quotations(self):
         return self.action_view_rfq_quotations()
 
@@ -166,22 +250,6 @@ class PurchaseOrder(models.Model):
 
         if not self.order_line:
             raise UserError(_("This RFQ has no order lines."))
-
-        existing_po = self.env["purchase.order"].sudo().search_count([
-            ("requisition_id", "=", self.requisition_id.id),
-            ("state", "in", ["pending", "purchase", "done"]),
-        ]) if self.requisition_id else self.env["purchase.order"].sudo().search_count([
-            ("origin", "=", self.name),
-            ("state", "in", ["pending", "purchase", "done"]),
-        ])
-        if existing_po:
-            raise UserError(_("A Purchase Order already exists for RFQ %s.") % self.name)
-
-        sibling_rfqs = self.env["purchase.order"].sudo().search([
-            ("requisition_id", "=", self.requisition_id.id),
-            ("id", "!=", self.id),
-            ("state", "in", ["draft", "sent"]),
-        ]) if self.requisition_id else self.env["purchase.order"]
 
         line_amounts = {}
         for line in self.order_line:
@@ -289,11 +357,6 @@ class PurchaseOrder(models.Model):
         if self.state == "draft":
             self.write({"state": "sent"})
         self.message_post(body=_("Purchase Order %s created from this RFQ.") % new_po.name)
-
-        if sibling_rfqs:
-            sibling_rfqs.write({"state": "cancel"})
-            for sibling_rfq in sibling_rfqs:
-                sibling_rfq.message_post(body=_("Cancelled because another RFQ was selected as Purchase Order."))
 
         return {
             "type": "ir.actions.act_window",
@@ -980,6 +1043,15 @@ class PurchaseOrder(models.Model):
     def _compute_grn_ses_button_type(self):
         for order in self:
             order.grn_ses_button_type = False
+
+
+
+class PurchaseOrderLine(models.Model):
+    _inherit = "purchase.order.line"
+
+    @api.constrains("order_id", "product_id", "product_qty")
+    def _check_requisition_product_quantities(self):
+        self.mapped("order_id")._check_lines_against_requisition()
 
 
 class PurchaseOrderRejectWizard(models.TransientModel):

@@ -234,23 +234,23 @@ class PurchaseRequisition(models.Model):
             rec.rfq_count = len(rec.rfq_ids)
             rec.rfq_sent_count = len(rec.rfq_ids.filtered(lambda r: r.state == "sent"))
 
-    @api.depends("pr_type", "approval", "status", "rfq_ids", "rfq_ids.state")
+    @api.depends("pr_type", "approval", "status", "line_ids.quantity", "line_ids.description", "rfq_ids", "rfq_ids.state", "rfq_ids.order_line.product_qty")
     def _compute_button_visibility(self):
-        """Compute button visibility based on PR type, approval, status and existing PO state."""
+        """Compute button visibility from approval state and remaining purchasable quantities."""
         for rec in self:
-            has_po = bool(rec.rfq_ids.filtered(lambda r: r.state in ("pending", "purchase", "done")))
+            has_remaining_qty = rec._has_remaining_product_quantities()
             rec.show_create_rfq_button = (
                     rec.pr_type != "cash"
                     and rec.approval == "approved"
-                    and rec.status in ["pr", "rfq"]
-                    and not has_po
+                    and rec.status in ["pr", "rfq", "po"]
+                    and has_remaining_qty
             )
 
             rec.show_create_po_button = (
                     rec.pr_type == "cash"
                     and rec.approval == "approved"
-                    and rec.status in ["pr", "rfq"]
-                    and not has_po
+                    and rec.status in ["pr", "rfq", "po"]
+                    and has_remaining_qty
             )
 
     @api.depends(
@@ -530,6 +530,39 @@ class PurchaseRequisition(models.Model):
         if existing_po:
             raise UserError(_("A Purchase Order already exists for requisition %s.") % self.name)
 
+    def _get_requested_product_quantities(self):
+        self.ensure_one()
+        quantities = {}
+        for line in self.line_ids.filtered("description"):
+            quantities.setdefault(line.description.id, 0.0)
+            quantities[line.description.id] += line.quantity or 0.0
+        return quantities
+
+    def _get_purchased_product_quantities(self):
+        self.ensure_one()
+        quantities = {}
+        po_lines = self.env["purchase.order.line"].sudo().search([
+            ("order_id.requisition_id", "=", self.id),
+            ("order_id.state", "in", ["pending", "purchase", "done"]),
+            ("product_id", "!=", False),
+        ])
+        for line in po_lines:
+            quantities.setdefault(line.product_id.id, 0.0)
+            quantities[line.product_id.id] += line.product_qty or 0.0
+        return quantities
+
+    def _get_remaining_product_quantities(self):
+        self.ensure_one()
+        purchased_quantities = self._get_purchased_product_quantities()
+        return {
+            product_id: max(quantity - purchased_quantities.get(product_id, 0.0), 0.0)
+            for product_id, quantity in self._get_requested_product_quantities().items()
+        }
+
+    def _has_remaining_product_quantities(self):
+        self.ensure_one()
+        return any(quantity > 1e-6 for quantity in self._get_remaining_product_quantities().values())
+
     def action_create_rfq(self):
         """Create Custom RFQ from this PR and keep PO sequencing independent."""
         CustomRFQ = self.env["purchase.order"]
@@ -538,17 +571,22 @@ class PurchaseRequisition(models.Model):
         for pr in self:
             if pr.approval != "approved":
                 raise UserError(_("Supervisor approval is required before creating RFQ."))
-            pr._ensure_no_purchase_order_exists()
             if not pr.line_ids:
                 raise UserError(_("This PR has no line items to create an RFQ."))
+            remaining_quantities = pr._get_remaining_product_quantities()
+            if not any(quantity > 1e-6 for quantity in remaining_quantities.values()):
+                raise UserError(_("All requested products have already been fully purchased for requisition %s.") % pr.name)
 
             line_amounts = {}
             for line in pr.line_ids:
+                remaining_qty = remaining_quantities.get(line.description.id, 0.0)
+                if remaining_qty <= 1e-6:
+                    continue
                 line_cc = line.cost_center_id.sudo()
                 if not line_cc:
                     raise UserError(_("Please set a cost center on every PR line."))
                 line_amounts.setdefault(line_cc.id, {"cc": line_cc, "amount": 0.0})
-                line_amounts[line_cc.id]["amount"] += line.total_price
+                line_amounts[line_cc.id]["amount"] += remaining_qty * line.unit_price
 
             for item in line_amounts.values():
                 cc = item["cc"]
@@ -577,6 +615,9 @@ class PurchaseRequisition(models.Model):
             }
 
             for line in pr.line_ids:
+                remaining_qty = remaining_quantities.get(line.description.id, 0.0)
+                if remaining_qty <= 1e-6:
+                    continue
                 analytic_distribution = (
                     {str(line.cost_center_id.id): 100.0}
                     if line.cost_center_id
@@ -585,8 +626,8 @@ class PurchaseRequisition(models.Model):
                 rfq_vals["order_line"].append((0, 0, {
                     "name": line.description.display_name,
                     "product_id": line.description.id,
-                    "product_qty": line.quantity,
-                    "price_unit":0.0,
+                    "product_qty": remaining_qty,
+                    "price_unit": 0.0,
                     "date_planned": fields.Datetime.now(),
                     "analytic_distribution": analytic_distribution,
                 }))
@@ -620,19 +661,24 @@ class PurchaseRequisition(models.Model):
         for pr in self:
             if pr.approval != "approved":
                 raise UserError(_("Supervisor approval is required before creating Purchase Order."))
-            pr._ensure_no_purchase_order_exists()
             if not pr.line_ids:
                 raise UserError(
                     _("This PR has no line items to create a Purchase Order.")
                 )
+            remaining_quantities = pr._get_remaining_product_quantities()
+            if not any(quantity > 1e-6 for quantity in remaining_quantities.values()):
+                raise UserError(_("All requested products have already been fully purchased for requisition %s.") % pr.name)
 
             line_amounts = {}
             for line in pr.line_ids:
+                remaining_qty = remaining_quantities.get(line.description.id, 0.0)
+                if remaining_qty <= 1e-6:
+                    continue
                 line_cc = line.cost_center_id.sudo()
                 if not line_cc:
                     raise UserError(_("Please set a cost center on every PR line."))
                 line_amounts.setdefault(line_cc.id, {"cc": line_cc, "amount": 0.0})
-                line_amounts[line_cc.id]["amount"] += line.total_price
+                line_amounts[line_cc.id]["amount"] += remaining_qty * line.unit_price
 
             for item in line_amounts.values():
                 cc = item["cc"]
@@ -668,6 +714,9 @@ class PurchaseRequisition(models.Model):
             }
 
             for line in pr.line_ids:
+                remaining_qty = remaining_quantities.get(line.description.id, 0.0)
+                if remaining_qty <= 1e-6:
+                    continue
                 analytic_distribution = (
                     {str(line.cost_center_id.id): 100.0}
                     if line.cost_center_id
@@ -679,7 +728,7 @@ class PurchaseRequisition(models.Model):
                     {
                         "name": line.description.display_name,
                         "product_id": line.description.id,
-                        "product_qty": line.quantity,
+                        "product_qty": remaining_qty,
                         "product_uom": line.description.uom_po_id.id if line.description.uom_po_id else False,
                         "price_unit": line.unit_price,
                         "date_planned": fields.Datetime.now(),

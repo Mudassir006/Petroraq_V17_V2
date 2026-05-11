@@ -234,16 +234,28 @@ class HrHolidays(models.Model):
 
     # endregion [Onchange Methods]
 
-    @api.constrains('holiday_status_id', 'request_date_from')
+    def _is_request_for_current_user_employee(self):
+        self.ensure_one()
+        return bool(
+            self.employee_id
+            and self.employee_id.user_id
+            and self.employee_id.user_id == self.env.user
+        )
+
+    def _can_bypass_annual_leave_start_date(self):
+        self.ensure_one()
+        return (
+            self.env.user.has_group("pr_hr_holidays.group_leave_allocation_limit_override")
+            and not self._is_request_for_current_user_employee()
+        )
+
+    @api.constrains('holiday_status_id', 'request_date_from', 'employee_id')
     def _check_annual_leave_start_date(self):
         today = fields.Date.context_today(self)
-        has_start_date_override = self.env.user.has_group(
-            "pr_hr_holidays.group_leave_allocation_limit_override"
-        )
         for leave in self:
             if not leave.holiday_status_id or not leave.request_date_from:
                 continue
-            if has_start_date_override:
+            if leave._can_bypass_annual_leave_start_date():
                 continue
             if leave.holiday_status_id.leave_type == 'annual_leave' and leave.request_date_from <= today:
                 raise ValidationError(_("Annual Leave requests must start from tomorrow onward."))

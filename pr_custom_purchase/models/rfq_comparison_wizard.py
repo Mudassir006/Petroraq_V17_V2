@@ -103,6 +103,7 @@ class RFQComparisonWizard(models.TransientModel):
                     "rfq_id": offer["rfq_id"],
                     "unit_price": offer["unit_price"],
                     "total_amount": offer["total_amount"],
+                    "quantity": offer["quantity"],
                     "rfq_line_id": offer["rfq_line_id"],
                 }))
 
@@ -187,13 +188,6 @@ class RFQComparisonWizard(models.TransientModel):
         if not grouped_by_vendor:
             raise UserError(_("Please select at least one supplier with available quotation lines."))
 
-        existing_po = self.env["purchase.order"].sudo().search_count([
-            ("requisition_id", "=", self.requisition_id.id),
-            ("state", "in", ["pending", "purchase", "done"]),
-        ])
-        if existing_po:
-            raise UserError(_("A Purchase Order already exists for requisition %s.") % self.requisition_id.name)
-
         purchase_orders = self.env["purchase.order"]
         for vendor, vendor_lines in grouped_by_vendor.items():
             source_rfq = next((offer.rfq_id for _line, offer in vendor_lines if offer.rfq_id), False)
@@ -202,7 +196,7 @@ class RFQComparisonWizard(models.TransientModel):
                 if not line.cost_center_id:
                     continue
                 line_amounts.setdefault(line.cost_center_id.id, 0.0)
-                line_amounts[line.cost_center_id.id] += line.quantity * offer.unit_price
+                line_amounts[line.cost_center_id.id] += offer.quantity * offer.unit_price
 
             if line_amounts:
                 cost_centers = self.env["account.analytic.account"].sudo().browse(list(line_amounts.keys()))
@@ -221,7 +215,7 @@ class RFQComparisonWizard(models.TransientModel):
                 "name": self.env["ir.sequence"].sudo().next_by_code("purchase.order") or "PO0001",
                 "state": "pending",
                 "partner_id": vendor.id,
-                "origin": self.requisition_id.name,
+                "origin": source_rfq.name if source_rfq else self.requisition_id.name,
                 "requisition_id": self.requisition_id.id,
                 "pr_name": self.requisition_id.name,
                 "partner_ref": source_rfq.partner_ref if source_rfq else False,
@@ -243,7 +237,7 @@ class RFQComparisonWizard(models.TransientModel):
                     (0, 0, {
                         "product_id": line.product_id.id,
                         "name": line.description,
-                        "product_qty": line.quantity,
+                        "product_qty": offer.quantity,
                         "price_unit": offer.unit_price,
                         "date_planned": fields.Datetime.now(),
                         "product_uom": offer.rfq_line_id.product_uom.id if offer.rfq_line_id and offer.rfq_line_id.product_uom else False,
@@ -369,4 +363,5 @@ class RFQComparisonWizardQuote(models.TransientModel):
     rfq_id = fields.Many2one("purchase.order", string="RFQ", readonly=True)
     rfq_line_id = fields.Many2one("purchase.order.line", string="RFQ Line", readonly=True)
     unit_price = fields.Float(string="Cost Price", readonly=True)
+    quantity = fields.Float(string="Quoted Qty", readonly=True)
     total_amount = fields.Float(string="Total Amount", readonly=True)
