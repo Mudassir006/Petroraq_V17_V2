@@ -277,16 +277,28 @@ class HrLeaveRequest(models.Model):
     def _check_weekend_dates(self):
         self._check_leave_request_weekend_dates()
 
-    @api.constrains("leave_type_id", "date_from")
+    def _is_request_for_current_user_employee(self):
+        self.ensure_one()
+        return bool(
+            self.employee_id
+            and self.employee_id.user_id
+            and self.employee_id.user_id == self.env.user
+        )
+
+    def _can_bypass_annual_leave_start_date(self):
+        self.ensure_one()
+        return (
+            self.env.user.has_group('pr_hr_holidays.group_leave_allocation_limit_override')
+            and not self._is_request_for_current_user_employee()
+        )
+
+    @api.constrains("leave_type_id", "date_from", "employee_id")
     def _check_annual_leave_start_date(self):
         today = fields.Date.context_today(self)
-        has_start_date_override = self.env.user.has_group(
-            'pr_hr_holidays.group_leave_allocation_limit_override'
-        )
         for rec in self:
             if not rec.leave_type_id or not rec.date_from:
                 continue
-            if has_start_date_override:
+            if rec._can_bypass_annual_leave_start_date():
                 continue
 
             if rec.leave_type_id.leave_type == "annual_leave" and rec.date_from <= today:

@@ -167,20 +167,32 @@ class PurchaseOrder(models.Model):
         if not self.order_line:
             raise UserError(_("This RFQ has no order lines."))
 
-        existing_po = self.env["purchase.order"].sudo().search_count([
-            ("requisition_id", "=", self.requisition_id.id),
-            ("state", "in", ["pending", "purchase", "done"]),
-        ]) if self.requisition_id else self.env["purchase.order"].sudo().search_count([
-            ("origin", "=", self.name),
-            ("state", "in", ["pending", "purchase", "done"]),
-        ])
-        if existing_po:
-            raise UserError(_("A Purchase Order already exists for RFQ %s.") % self.name)
+        rfq_product_ids = self.order_line.filtered("product_id").mapped("product_id").ids
+        if self.requisition_id:
+            existing_po_lines = self.env["purchase.order.line"].sudo().search([
+                ("order_id.requisition_id", "=", self.requisition_id.id),
+                ("order_id.state", "in", ["pending", "purchase", "done"]),
+                ("product_id", "in", rfq_product_ids),
+            ])
+            if existing_po_lines:
+                duplicate_products = ", ".join(sorted(set(existing_po_lines.mapped("product_id.display_name"))))
+                raise UserError(
+                    _("A Purchase Order already exists for RFQ %(rfq)s product(s): %(products)s.")
+                    % {"rfq": self.name, "products": duplicate_products}
+                )
+        else:
+            existing_po = self.env["purchase.order"].sudo().search_count([
+                ("origin", "=", self.name),
+                ("state", "in", ["pending", "purchase", "done"]),
+            ])
+            if existing_po:
+                raise UserError(_("A Purchase Order already exists for RFQ %s.") % self.name)
 
         sibling_rfqs = self.env["purchase.order"].sudo().search([
             ("requisition_id", "=", self.requisition_id.id),
             ("id", "!=", self.id),
             ("state", "in", ["draft", "sent"]),
+            ("order_line.product_id", "in", rfq_product_ids),
         ]) if self.requisition_id else self.env["purchase.order"]
 
         line_amounts = {}

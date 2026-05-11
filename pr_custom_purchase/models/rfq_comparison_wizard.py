@@ -187,12 +187,23 @@ class RFQComparisonWizard(models.TransientModel):
         if not grouped_by_vendor:
             raise UserError(_("Please select at least one supplier with available quotation lines."))
 
-        existing_po = self.env["purchase.order"].sudo().search_count([
-            ("requisition_id", "=", self.requisition_id.id),
-            ("state", "in", ["pending", "purchase", "done"]),
+        selected_product_ids = set()
+        for vendor_lines in grouped_by_vendor.values():
+            selected_product_ids.update(
+                line.product_id.id for line, _offer in vendor_lines if line.product_id
+            )
+
+        existing_po_lines = self.env["purchase.order.line"].sudo().search([
+            ("order_id.requisition_id", "=", self.requisition_id.id),
+            ("order_id.state", "in", ["pending", "purchase", "done"]),
+            ("product_id", "in", list(selected_product_ids)),
         ])
-        if existing_po:
-            raise UserError(_("A Purchase Order already exists for requisition %s.") % self.requisition_id.name)
+        if existing_po_lines:
+            duplicate_products = ", ".join(sorted(set(existing_po_lines.mapped("product_id.display_name"))))
+            raise UserError(
+                _("A Purchase Order already exists for the selected product(s): %s.")
+                % duplicate_products
+            )
 
         purchase_orders = self.env["purchase.order"]
         for vendor, vendor_lines in grouped_by_vendor.items():
@@ -221,7 +232,7 @@ class RFQComparisonWizard(models.TransientModel):
                 "name": self.env["ir.sequence"].sudo().next_by_code("purchase.order") or "PO0001",
                 "state": "pending",
                 "partner_id": vendor.id,
-                "origin": self.requisition_id.name,
+                "origin": source_rfq.name if source_rfq else self.requisition_id.name,
                 "requisition_id": self.requisition_id.id,
                 "pr_name": self.requisition_id.name,
                 "partner_ref": source_rfq.partner_ref if source_rfq else False,
