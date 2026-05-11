@@ -227,8 +227,6 @@ class CustomPR(models.Model):
 
     @api.model
     def create(self, vals):
-        if not vals.get('line_ids'):
-            raise ValidationError(_("Please add at least one line."))
         if vals.get('priority'):
             vals['required_date'] = self._required_date_from_priority(vals['priority'])
         if vals.get('pr_type') == 'cash':
@@ -269,6 +267,124 @@ class CustomPR(models.Model):
             })
 
         return res
+
+    def _prepare_source_product_line_values(self):
+        """Build PR line values from the selected budget source document.
+
+        Project budgets are sourced from Work Order BOQ lines, while trading
+        budgets are sourced from Sale Order lines. Quantities are reduced by
+        quantities already requested on other non-rejected PRs for the same
+        budget/cost center/product so the generated lines are immediately
+        selectable/editable without exceeding the source document baseline.
+        """
+        self.ensure_one()
+        bucket = self.expense_bucket_id.sudo()
+        if not bucket:
+            return []
+
+        def _remaining_quantity(cost_center, product, allowed_qty):
+            if not cost_center or not product:
+                return 0.0
+            domain = [
+                ("id", "not in", self.line_ids.ids),
+                ("pr_id.expense_bucket_id", "=", bucket.id),
+                ("pr_id.approval", "!=", "rejected"),
+                ("cost_center_id", "=", cost_center.id),
+                ("description", "=", product.id),
+            ]
+            if isinstance(self.id, int):
+                domain.append(("pr_id", "!=", self.id))
+            other_lines = self.env["custom.pr.line"].sudo().search(domain)
+            remaining = (allowed_qty or 0.0) - sum(other_lines.mapped("quantity"))
+            return remaining if remaining > 0.0 else 0.0
+
+        grouped = {}
+
+        def _add_line(cost_center, product, quantity, unit, unit_price):
+            if not cost_center or not product or quantity <= 0.0:
+                return
+            key = (cost_center.id, product.id, unit.id if unit else False)
+            data = grouped.setdefault(key, {
+                "cost_center_id": cost_center.id,
+                "description": product.id,
+                "quantity": 0.0,
+                "unit": unit.id if unit else product.uom_id.id,
+                "unit_price": unit_price or product.standard_price or 0.0,
+            })
+            data["quantity"] += quantity
+            if unit_price:
+                data["unit_price"] = unit_price
+
+        work_order = bucket.work_order_id.sudo() if "work_order_id" in bucket._fields else False
+        sale_order = bucket.sale_order_id.sudo() if "sale_order_id" in bucket._fields else False
+
+        if work_order:
+            cost_centers_by_section = {
+                cc.section_name: cc.analytic_account_id
+                for cc in work_order.cost_center_ids.filtered("analytic_account_id")
+            }
+            for boq_line in work_order.boq_line_ids.sorted(key=lambda l: (l.sequence, l.id)):
+                if boq_line.display_type in ("line_section", "line_note") or not boq_line.product_id:
+                    continue
+                cost_center = cost_centers_by_section.get(boq_line.section_name)
+                remaining_qty = _remaining_quantity(cost_center, boq_line.product_id, boq_line.qty or 0.0)
+                _add_line(
+                    cost_center,
+                    boq_line.product_id,
+                    remaining_qty,
+                    boq_line.uom_id or boq_line.product_id.uom_id,
+                    boq_line.unit_cost or boq_line.product_id.standard_price,
+                )
+        elif sale_order:
+            budget_cost_centers = bucket.crossovered_budget_line.mapped("analytic_account_id")
+            default_cost_center = budget_cost_centers[:1]
+            for sale_line in sale_order.order_line.sorted(key=lambda l: (l.sequence, l.id)):
+                if sale_line.display_type or not sale_line.product_id:
+                    continue
+                distribution = sale_line.analytic_distribution or {}
+                line_cc_ids = {int(key) for key in distribution.keys() if str(key).isdigit()}
+                if line_cc_ids:
+                    cost_centers = budget_cost_centers.filtered(lambda cc: cc.id in line_cc_ids)
+                else:
+                    cost_centers = default_cost_center if len(budget_cost_centers) == 1 else self.env["account.analytic.account"]
+                for cost_center in cost_centers:
+                    remaining_qty = _remaining_quantity(cost_center, sale_line.product_id, sale_line.product_uom_qty or 0.0)
+                    unit_price = sale_line.price_unit or sale_line.product_id.standard_price
+                    if "cost_price_unit" in sale_line._fields and sale_line.cost_price_unit:
+                        unit_price = sale_line.cost_price_unit
+                    _add_line(
+                        cost_center,
+                        sale_line.product_id,
+                        remaining_qty,
+                        sale_line.product_uom or sale_line.product_id.uom_id,
+                        unit_price,
+                    )
+
+        existing_keys = {
+            (line.cost_center_id.id, line.description.id, line.unit.id if line.unit else False)
+            for line in self.line_ids
+        }
+        return [vals for key, vals in grouped.items() if key not in existing_keys and vals["quantity"] > 0.0]
+
+    def action_get_all_products(self):
+        self.ensure_one()
+        if not self.expense_bucket_id:
+            raise ValidationError(_("Please select a budget before getting products."))
+        if self.expense_bucket_id.state not in ("validate", "done"):
+            raise ValidationError(_("Only validated budgets can be used."))
+
+        line_values = self._prepare_source_product_line_values()
+        if not line_values:
+            raise ValidationError(_("No remaining source product lines were found for the selected budget."))
+
+        self.write({"line_ids": [(0, 0, vals) for vals in line_values]})
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self._name,
+            "res_id": self.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def action_create_pr(self):
         self.ensure_one()
