@@ -187,12 +187,26 @@ class RFQComparisonWizard(models.TransientModel):
         if not grouped_by_vendor:
             raise UserError(_("Please select at least one supplier with available quotation lines."))
 
-        existing_po = self.env["purchase.order"].sudo().search_count([
-            ("requisition_id", "=", self.requisition_id.id),
-            ("state", "in", ["pending", "purchase", "done"]),
-        ])
-        if existing_po:
-            raise UserError(_("A Purchase Order already exists for requisition %s.") % self.requisition_id.name)
+        selected_product_ids = set()
+        for vendor_lines in grouped_by_vendor.values():
+            selected_product_ids.update(
+                line.product_id.id for line, _offer in vendor_lines if line.product_id
+            )
+
+        if selected_product_ids:
+            related_pos = self.env["purchase.order"].sudo().search([
+                ("requisition_id", "=", self.requisition_id.id),
+                ("state", "in", ["pending", "purchase", "done"]),
+            ])
+            duplicate_lines = related_pos.order_line.filtered(
+                lambda line: line.product_id.id in selected_product_ids
+            )
+            if duplicate_lines:
+                duplicate_products = ", ".join(sorted(set(duplicate_lines.mapped("product_id.display_name"))))
+                raise UserError(
+                    _("A Purchase Order already exists for the selected product(s): %s")
+                    % duplicate_products
+                )
 
         purchase_orders = self.env["purchase.order"]
         for vendor, vendor_lines in grouped_by_vendor.items():
