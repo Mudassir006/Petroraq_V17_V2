@@ -146,20 +146,38 @@ class HrLeaveRequest(models.Model):
                     and rec._get_requested_days_count() > (available_days + 1e-6)
             )
 
-    @api.constrains("leave_type_id", "date_from")
+    def _is_current_user_employee(self, employee):
+        if not employee:
+            return False
+        user = self.env.user.sudo()
+        user_employees = getattr(user, "employee_ids", self.env["hr.employee"])
+        if not user_employees:
+            user_employee = getattr(user, "employee_id", False)
+            user_employees = user_employee if user_employee else self.env["hr.employee"]
+        return employee.id in user_employees.ids
+
+    def _can_backdate_leave_for_employee(self, employee):
+        return (
+            self.env.user.has_group('pr_hr_holidays.group_leave_backdate_other_employee')
+            and employee
+            and not self._is_current_user_employee(employee)
+        )
+
+    @api.constrains("leave_type_id", "date_from", "employee_id")
     def _check_annual_leave_start_date(self):
         today = fields.Date.context_today(self)
-        has_start_date_override = self.env.user.has_group(
-            'pr_hr_holidays.group_leave_allocation_limit_override'
-        )
         for rec in self:
             if not rec.leave_type_id or not rec.date_from:
                 continue
-            if has_start_date_override:
+            if rec.leave_type_id.leave_type != "annual_leave" or rec.date_from > today:
                 continue
-
-            if rec.leave_type_id.leave_type == "annual_leave" and rec.date_from <= today:
-                raise ValidationError(_("Annual Leave requests must start from tomorrow onward."))
+            if rec._can_backdate_leave_for_employee(rec.employee_id):
+                continue
+            if rec.env.user.has_group('pr_hr_holidays.group_leave_backdate_other_employee'):
+                raise ValidationError(
+                    _("You can only create backdated Annual Leave requests for other employees, not yourself.")
+                )
+            raise ValidationError(_("Annual Leave requests must start from tomorrow onward."))
 
     # endregion [Compute Methods]
 
@@ -481,6 +499,7 @@ class HrLeaveRequest(models.Model):
                 "mail_activity_automation_skip": True,
                 "leave_fast_create": True,
                 "leave_skip_state_check": True,
+                "pr_leave_request_backdate_validated": True,
             }
             if allocation_override:
                 leave_context["pr_leave_allocation_override"] = True

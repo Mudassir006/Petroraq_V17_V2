@@ -234,19 +234,41 @@ class HrHolidays(models.Model):
 
     # endregion [Onchange Methods]
 
-    @api.constrains('holiday_status_id', 'request_date_from')
-    def _check_annual_leave_start_date(self):
-        today = fields.Date.context_today(self)
-        has_start_date_override = self.env.user.has_group(
-            "pr_hr_holidays.group_leave_allocation_limit_override"
+    def _is_current_user_employee(self, employee):
+        if not employee:
+            return False
+        user = self.env.user.sudo()
+        user_employees = getattr(user, "employee_ids", self.env["hr.employee"])
+        if not user_employees:
+            user_employee = getattr(user, "employee_id", False)
+            user_employees = user_employee if user_employee else self.env["hr.employee"]
+        return employee.id in user_employees.ids
+
+    def _can_backdate_leave_for_employee(self, employee):
+        return (
+            self.env.user.has_group('pr_hr_holidays.group_leave_backdate_other_employee')
+            and employee
+            and not self._is_current_user_employee(employee)
         )
+
+    @api.constrains('holiday_status_id', 'request_date_from', 'employee_id')
+    def _check_annual_leave_start_date(self):
+        if self.env.context.get("pr_leave_request_backdate_validated"):
+            return
+
+        today = fields.Date.context_today(self)
         for leave in self:
             if not leave.holiday_status_id or not leave.request_date_from:
                 continue
-            if has_start_date_override:
+            if leave.holiday_status_id.leave_type != 'annual_leave' or leave.request_date_from > today:
                 continue
-            if leave.holiday_status_id.leave_type == 'annual_leave' and leave.request_date_from <= today:
-                raise ValidationError(_("Annual Leave requests must start from tomorrow onward."))
+            if leave._can_backdate_leave_for_employee(leave.employee_id):
+                continue
+            if leave.env.user.has_group('pr_hr_holidays.group_leave_backdate_other_employee'):
+                raise ValidationError(
+                    _("You can only create backdated Annual Leave requests for other employees, not yourself.")
+                )
+            raise ValidationError(_("Annual Leave requests must start from tomorrow onward."))
 
     def _check_holidays(self):
         try:

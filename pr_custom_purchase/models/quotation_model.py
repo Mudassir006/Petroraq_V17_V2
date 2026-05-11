@@ -167,21 +167,36 @@ class PurchaseOrder(models.Model):
         if not self.order_line:
             raise UserError(_("This RFQ has no order lines."))
 
+        rfq_product_ids = set(self.order_line.filtered("product_id").mapped("product_id").ids)
         existing_po = self.env["purchase.order"].sudo().search_count([
-            ("requisition_id", "=", self.requisition_id.id),
-            ("state", "in", ["pending", "purchase", "done"]),
-        ]) if self.requisition_id else self.env["purchase.order"].sudo().search_count([
             ("origin", "=", self.name),
             ("state", "in", ["pending", "purchase", "done"]),
         ])
         if existing_po:
             raise UserError(_("A Purchase Order already exists for RFQ %s.") % self.name)
 
-        sibling_rfqs = self.env["purchase.order"].sudo().search([
-            ("requisition_id", "=", self.requisition_id.id),
-            ("id", "!=", self.id),
-            ("state", "in", ["draft", "sent"]),
-        ]) if self.requisition_id else self.env["purchase.order"]
+        if self.requisition_id and rfq_product_ids:
+            related_pos = self.env["purchase.order"].sudo().search([
+                ("requisition_id", "=", self.requisition_id.id),
+                ("state", "in", ["pending", "purchase", "done"]),
+            ])
+            duplicate_lines = related_pos.order_line.filtered(lambda line: line.product_id.id in rfq_product_ids)
+            if duplicate_lines:
+                duplicate_products = ", ".join(sorted(set(duplicate_lines.mapped("product_id.display_name"))))
+                raise UserError(
+                    _("A Purchase Order already exists for the selected RFQ product(s): %s")
+                    % duplicate_products
+                )
+
+        sibling_rfqs = self.env["purchase.order"]
+        if self.requisition_id and rfq_product_ids:
+            sibling_rfqs = self.env["purchase.order"].sudo().search([
+                ("requisition_id", "=", self.requisition_id.id),
+                ("id", "!=", self.id),
+                ("state", "in", ["draft", "sent"]),
+            ]).filtered(lambda rfq: bool(rfq_product_ids.intersection(
+                set(rfq.order_line.filtered("product_id").mapped("product_id").ids)
+            )))
 
         line_amounts = {}
         for line in self.order_line:
