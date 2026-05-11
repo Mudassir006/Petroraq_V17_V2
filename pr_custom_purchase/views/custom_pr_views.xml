@@ -100,6 +100,11 @@
                                 class="btn btn-secondary"
                                 invisible="not show_request_budget_increase_button"/>
 
+                        <button name="action_get_all_products"
+                                type="object"
+                                string="Get All Products"
+                                class="btn btn-secondary"
+                                invisible="not expense_bucket_id or state == 'purchase' or state == 'cancel' or approval == 'approved'"/>
                         <button name="action_create_pr"
                                 type="object"
                                 string="Create PR"

@@ -31,11 +31,50 @@ class WorkOrderCreatePRWizard(models.TransientModel):
         # Use sudo for BOQ preload so readonly wizard lines are fully populated
         # even when the opener has limited read rights on related models.
         work_order = self.env["pr.work.order"].sudo().browse(work_order_id)
+        if not work_order.expense_bucket_id:
+            work_order._ensure_project_expense_bucket(sync_budget=True)
+            work_order.invalidate_recordset(["expense_bucket_id"])
+
+        source_lines = []
+        if work_order.expense_bucket_id:
+            scratch_pr = self.env["custom.pr"].new({
+                "expense_bucket_id": work_order.expense_bucket_id.id,
+            })
+            source_lines = scratch_pr._prepare_source_product_line_values()
+
+        if source_lines:
+            values["line_ids"] = [
+                (
+                    0,
+                    0,
+                    {
+                        "selected": False,
+                        "product_name": self.env["product.product"].browse(line["description"]).display_name,
+                        "product_id": line["description"],
+                        "cost_center_id": line["cost_center_id"],
+                        "quantity": line["quantity"],
+                        "unit_id": line["unit"],
+                        "unit_price": line["unit_price"],
+                    },
+                )
+                for line in source_lines
+            ]
+            return values
+
         lines = []
-        for boq_line in work_order.boq_line_ids.filtered(
-                lambda l: l.display_type not in ("line_section", "line_note") and l.product_id and l.qty > 0
-        ):
-            cc = work_order.cost_center_ids.filtered(lambda c: c.section_name == boq_line.section_name)[:1]
+        current_section = False
+        cost_centers_by_section = {
+            cc.section_name: cc
+            for cc in work_order.cost_center_ids.filtered("analytic_account_id")
+        }
+        for boq_line in work_order.boq_line_ids.sorted(key=lambda l: (l.sequence, l.id)):
+            if boq_line.display_type == "line_section":
+                current_section = boq_line.name or boq_line.section_name
+                continue
+            if boq_line.display_type == "line_note" or not boq_line.product_id:
+                continue
+            section_name = boq_line.section_name or current_section
+            cc = cost_centers_by_section.get(section_name)
             lines.append(
                 (
                     0,
@@ -47,8 +86,8 @@ class WorkOrderCreatePRWizard(models.TransientModel):
                         "product_id": boq_line.product_id.id,
                         "cost_center_id": cc.analytic_account_id.id if cc and cc.analytic_account_id else False,
                         "quantity": boq_line.qty,
-                        "unit_id": boq_line.uom_id.id,
-                        "unit_price": boq_line.unit_cost,
+                        "unit_id": (boq_line.uom_id or boq_line.product_id.uom_id).id,
+                        "unit_price": boq_line.unit_cost or boq_line.product_id.standard_price,
                         "boq_line_id": boq_line.id,
                     },
                 )

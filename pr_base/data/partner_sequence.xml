@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_res_partner_customer_code" model="ir.sequence">
+            <field name="name">Customer Code</field>
+            <field name="code">res.partner.customer.code</field>
+            <field name="prefix"></field>
+            <field name="padding">0</field>
+            <field name="number_next">1001</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_res_partner_vendor_code" model="ir.sequence">
+            <field name="name">Vendor Code</field>
+            <field name="code">res.partner.vendor.code</field>
+            <field name="prefix"></field>
+            <field name="padding">0</field>
+            <field name="number_next">2001</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>
