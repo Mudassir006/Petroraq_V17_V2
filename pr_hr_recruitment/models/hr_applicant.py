@@ -13,6 +13,23 @@ AVAILABLE_PRIORITIES = [
     ('3', 'Excellent')
 ]
 
+INTERVIEW_SCORE_SELECTION = [
+    ('0', 'Not Rated'),
+    ('1', '1'),
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '4'),
+    ('5', '5'),
+]
+
+INTERVIEW_RECOMMENDATION_SELECTION = [
+    ('shortlist', 'Shortlist for Next Round'),
+    ('reject', 'Reject'),
+    ('hold', 'Keep on Hold'),
+    ('hire', 'Hire'),
+]
+
+
 class HrApplicant(models.Model):
     """
     """
@@ -34,8 +51,67 @@ class HrApplicant(models.Model):
     check_first_interview_stage_sequence = fields.Boolean(compute="_compute_check_first_interview_stage_sequence")
     check_second_interview_stage_sequence = fields.Boolean(compute="_compute_check_second_interview_stage_sequence")
 
+    first_communication_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Communication Skills", default='0', tracking=True)
+    first_technical_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Technical Knowledge", default='0', tracking=True)
+    first_experience_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Relevant Experience", default='0', tracking=True)
+    first_behavior_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Attitude / Behavior", default='0', tracking=True)
+    first_overall_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Overall Rating", default='0', tracking=True)
+    first_total_score = fields.Integer(
+        string="Total Score", compute="_compute_interview_scores", store=True)
+    first_average_score = fields.Float(
+        string="Average Score", compute="_compute_interview_scores", store=True, digits=(16, 2))
+    first_interview_summary = fields.Text(string="Interview Summary", tracking=True)
+    first_strengths = fields.Text(string="Strengths", tracking=True)
+    first_recommendation = fields.Selection(
+        INTERVIEW_RECOMMENDATION_SELECTION, string="Recommendation", tracking=True)
+
+    second_communication_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Communication Skills", default='0', tracking=True)
+    second_technical_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Technical Knowledge", default='0', tracking=True)
+    second_experience_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Relevant Experience", default='0', tracking=True)
+    second_behavior_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Attitude / Behavior", default='0', tracking=True)
+    second_overall_score = fields.Selection(
+        INTERVIEW_SCORE_SELECTION, string="Overall Rating", default='0', tracking=True)
+    second_total_score = fields.Integer(
+        string="Total Score", compute="_compute_interview_scores", store=True)
+    second_average_score = fields.Float(
+        string="Average Score", compute="_compute_interview_scores", store=True, digits=(16, 2))
+    second_interview_summary = fields.Text(string="Interview Summary", tracking=True)
+    second_strengths = fields.Text(string="Strengths", tracking=True)
+    second_recommendation = fields.Selection(
+        INTERVIEW_RECOMMENDATION_SELECTION, string="Recommendation", tracking=True)
 
     # endregion [Fields]
+
+    @api.depends(
+        "first_communication_score", "first_technical_score", "first_experience_score",
+        "first_behavior_score", "first_overall_score", "second_communication_score",
+        "second_technical_score", "second_experience_score", "second_behavior_score",
+        "second_overall_score")
+    def _compute_interview_scores(self):
+        first_fields = [
+            "first_communication_score", "first_technical_score", "first_experience_score",
+            "first_behavior_score", "first_overall_score",
+        ]
+        second_fields = [
+            "second_communication_score", "second_technical_score", "second_experience_score",
+            "second_behavior_score", "second_overall_score",
+        ]
+        for rec in self:
+            first_total = sum(int(getattr(rec, field_name) or 0) for field_name in first_fields)
+            second_total = sum(int(getattr(rec, field_name) or 0) for field_name in second_fields)
+            rec.first_total_score = first_total
+            rec.first_average_score = first_total / len(first_fields)
+            rec.second_total_score = second_total
+            rec.second_average_score = second_total / len(second_fields)
 
     @api.depends("stage_id")
     def _compute_check_first_interview_stage_sequence(self):

@@ -65,6 +65,49 @@
                     <field name="salary_proposed_extra" placeholder="Extra advantages..."/>
                 </div>
             </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="1st Interview Evaluation" name="first_interview_evaluation">
+                    <group>
+                        <group string="Evaluation Scores">
+                            <field name="first_communication_score" widget="radio" options="{'horizontal': True}"/>
+                            <field name="first_technical_score" widget="radio" options="{'horizontal': True}"/>
+                            <field name="first_experience_score" widget="radio" options="{'horizontal': True}"/>
+                            <field name="first_behavior_score" widget="radio" options="{'horizontal': True}"/>
+                            <field name="first_overall_score" widget="radio" options="{'horizontal': True}"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="first_total_score" readonly="1"/>
+                            <field name="first_average_score" readonly="1"/>
+                            <field name="first_recommendation"/>
+                        </group>
+                    </group>
+                    <group string="Remarks">
+                        <field name="first_interview_summary" placeholder="Provide a brief summary of the first interview..."/>
+                        <field name="first_strengths" placeholder="Key strengths observed..."/>
+                    </group>
+                </page>
+                <page string="2nd Interview Evaluation" name="second_interview_evaluation">
+                    <group>
+                        <group string="Evaluation Scores">
+                            <field name="second_communication_score" widget="radio" options="{'horizontal': True}"/>
+                            <field name="second_technical_score" widget="radio" options="{'horizontal': True}"/>
+                            <field name="second_experience_score" widget="radio" options="{'horizontal': True}"/>
+                            <field name="second_behavior_score" widget="radio" options="{'horizontal': True}"/>
+                            <field name="second_overall_score" widget="radio" options="{'horizontal': True}"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="second_total_score" readonly="1"/>
+                            <field name="second_average_score" readonly="1"/>
+                            <field name="second_recommendation"/>
+                        </group>
+                    </group>
+                    <group string="Remarks">
+                        <field name="second_interview_summary" placeholder="Provide a brief summary of the second interview..."/>
+                        <field name="second_strengths" placeholder="Key strengths observed..."/>
+                    </group>
+                </page>
+            </xpath>
+
 
 
 
