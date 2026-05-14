@@ -240,7 +240,10 @@ class HrApplicant(models.Model):
 
     def _generate_offer_letter_attachment(self):
         self.ensure_one()
-        report = self.env.ref('pr_hr_recruitment.action_report_applicant_offer_letter')
+        report = self.env.ref('pr_hr_recruitment.action_report_applicant_offer_letter', raise_if_not_found=False)
+        if not report:
+            raise UserError(_(
+                "The offer letter report is not installed. Please upgrade the Petroraq HR Recruitment module."))
         pdf_content, _content_type = self.env['ir.actions.report']._render_qweb_pdf(report.report_name, self.ids)
         attachment = self.env['ir.attachment'].sudo().create({
             'name': self._get_offer_letter_pdf_filename(),
@@ -253,18 +256,65 @@ class HrApplicant(models.Model):
         self.offer_letter_attachment_id = attachment.id
         return attachment
 
+    def _get_offer_letter_email_template(self):
+        template = self.env.ref(
+            'pr_hr_recruitment.email_template_applicant_offer_letter', raise_if_not_found=False)
+        if template:
+            return template
+
+        model_id = self.env['ir.model']._get_id('hr.applicant')
+        return self.env['mail.template'].search([
+            ('name', '=', 'Applicant Offer Letter'),
+            ('model_id', '=', model_id),
+        ], limit=1)
+
+    def _send_offer_letter_fallback_email(self, attachment):
+        self.ensure_one()
+        body_message = f"""
+            <p>Dear {self.partner_name or self.name},</p>
+            <p>
+                Congratulations. Please find attached your offer letter for
+                <strong>{self.job_id.name or 'the offered position'}</strong>.
+            </p>
+            <p>
+                Kindly review the attached PDF, sign the acceptance section, and return the signed copy to HR.
+            </p>
+            <p>
+                Best regards,<br/>
+                <strong>Human Resources Department</strong><br/>
+                {self.company_id.name or self.env.company.name}
+            </p>
+        """
+        email_from = (
+            self.user_id.email_formatted
+            or self.company_id.email
+            or self.env.user.email_formatted
+        )
+        mail = self.env['mail.mail'].sudo().create({
+            'email_from': email_from,
+            'email_to': self._get_offer_letter_email(),
+            'subject': f"Offer Letter - {self.job_id.name or self.company_id.name or 'Petroraq'}",
+            'body_html': body_message,
+            'attachment_ids': [(4, attachment.id)],
+        })
+        mail.send()
+
     def action_send_offer_letter(self):
-        template = self.env.ref('pr_hr_recruitment.email_template_applicant_offer_letter')
+        template = self._get_offer_letter_email_template()
         for rec in self:
             email_to = rec._get_offer_letter_email()
             if not email_to:
-                raise UserError(_("Please set an email address for %s before sending the offer letter.") % rec.display_name)
+                raise UserError(_(
+                    "Please set an email address for %s before sending the offer letter.") % rec.display_name)
             attachment = rec._generate_offer_letter_attachment()
-            template.send_mail(
-                rec.id,
-                force_send=True,
-                email_values={'attachment_ids': [(4, attachment.id)]},
-            )
+            if template:
+                template.send_mail(
+                    rec.id,
+                    force_send=True,
+                    email_values={'attachment_ids': [(4, attachment.id)]},
+                )
+            else:
+                rec._send_offer_letter_fallback_email(attachment)
             rec.offer_letter_sent_date = fields.Datetime.now()
         return True
 
