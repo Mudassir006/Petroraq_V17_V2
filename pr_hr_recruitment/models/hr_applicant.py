@@ -1,3 +1,5 @@
+import base64
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 import logging
@@ -37,6 +39,11 @@ SECOND_INTERVIEW_STAGE_KEYWORDS = (
     '2nd interview',
     'second interview',
 )
+CONTRACT_PROPOSAL_STAGE_KEYWORDS = (
+    'contract proposal',
+    'offer letter',
+    'job offer',
+)
 
 
 class HrApplicant(models.Model):
@@ -65,6 +72,10 @@ class HrApplicant(models.Model):
     show_second_interview_evaluation = fields.Boolean(compute="_compute_interview_evaluation_visibility")
     readonly_first_interview_evaluation = fields.Boolean(compute="_compute_interview_evaluation_visibility")
     readonly_second_interview_evaluation = fields.Boolean(compute="_compute_interview_evaluation_visibility")
+    check_contract_proposal_stage = fields.Boolean(compute="_compute_check_contract_proposal_stage")
+    offer_letter_attachment_id = fields.Many2one(
+        "ir.attachment", string="Offer Letter PDF", readonly=True, copy=False)
+    offer_letter_sent_date = fields.Datetime(string="Offer Letter Sent On", readonly=True, copy=False)
 
     first_communication_score = fields.Selection(
         INTERVIEW_SCORE_SELECTION, string="Communication Skills", default='0', tracking=True)
@@ -161,6 +172,66 @@ class HrApplicant(models.Model):
                 raise UserError(_("There is no next recruitment stage configured for %s.") % rec.display_name)
             rec.stage_id = next_stage.id
         return True
+
+    def _get_offer_letter_email(self):
+        self.ensure_one()
+        return self.email_from or self.partner_id.email
+
+    @api.depends("stage_id")
+    def _compute_check_contract_proposal_stage(self):
+        for rec in self:
+            rec.check_contract_proposal_stage = rec._stage_matches_keywords(
+                rec.stage_id, CONTRACT_PROPOSAL_STAGE_KEYWORDS)
+
+    def _get_offer_letter_pdf_filename(self):
+        self.ensure_one()
+        candidate_name = self.partner_name or self.name or _('Applicant')
+        return f"Offer Letter - {candidate_name}.pdf"
+
+    def _generate_offer_letter_attachment(self):
+        self.ensure_one()
+        report = self.env.ref('pr_hr_recruitment.action_report_applicant_offer_letter')
+        pdf_content, _content_type = self.env['ir.actions.report']._render_qweb_pdf(report.report_name, self.ids)
+        attachment = self.env['ir.attachment'].sudo().create({
+            'name': self._get_offer_letter_pdf_filename(),
+            'type': 'binary',
+            'datas': base64.b64encode(pdf_content),
+            'res_model': self._name,
+            'res_id': self.id,
+            'mimetype': 'application/pdf',
+        })
+        self.offer_letter_attachment_id = attachment.id
+        return attachment
+
+    def action_send_offer_letter(self):
+        template = self.env.ref('pr_hr_recruitment.email_template_applicant_offer_letter')
+        for rec in self:
+            email_to = rec._get_offer_letter_email()
+            if not email_to:
+                raise UserError(_("Please set an email address for %s before sending the offer letter.") % rec.display_name)
+            attachment = rec._generate_offer_letter_attachment()
+            template.send_mail(
+                rec.id,
+                force_send=True,
+                email_values={'attachment_ids': [(4, attachment.id)]},
+            )
+            rec.offer_letter_sent_date = fields.Datetime.now()
+        return True
+
+    def _send_offer_letter_on_contract_proposal(self):
+        for rec in self:
+            if (
+                rec.stage_id
+                and not rec.offer_letter_sent_date
+                and rec._stage_matches_keywords(rec.stage_id, CONTRACT_PROPOSAL_STAGE_KEYWORDS)
+            ):
+                rec.action_send_offer_letter()
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'stage_id' in vals:
+            self._send_offer_letter_on_contract_proposal()
+        return res
 
     @api.depends(
         "first_communication_score", "first_technical_score", "first_experience_score",

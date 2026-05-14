@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_applicant_offer_letter" model="report.paperformat">
+        <field name="name">Applicant Offer Letter</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">18</field>
+        <field name="margin_bottom">18</field>
+        <field name="margin_left">16</field>
+        <field name="margin_right">16</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_applicant_offer_letter" model="ir.actions.report">
+        <field name="name">Applicant Offer Letter</field>
+        <field name="model">hr.applicant</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pr_hr_recruitment.report_applicant_offer_letter_document</field>
+        <field name="report_file">pr_hr_recruitment.report_applicant_offer_letter_document</field>
+        <field name="print_report_name">object._get_offer_letter_pdf_filename()</field>
+        <field name="binding_model_id" ref="hr_recruitment.model_hr_applicant"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="pr_hr_recruitment.paperformat_applicant_offer_letter"/>
+    </record>
+
+    <template id="report_applicant_offer_letter_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 13px; line-height: 1.55; color: #1f2933;">
+                        <h2 style="text-align: center; margin-bottom: 24px; text-transform: uppercase;">
+                            Employment Offer Letter
+                        </h2>
+
+                        <p style="text-align: right;">
+                            Date: <span t-field="o.write_date" t-options="{'widget': 'date'}"/>
+                        </p>
+
+                        <p>Dear <strong><span t-out="o.partner_name or o.name"/></strong>,</p>
+
+                        <p>
+                            We are pleased to offer you the position of
+                            <strong><span t-out="o.job_id.name or 'the offered role'"/></strong>
+                            with <strong><span t-out="o.company_id.name or user.company_id.name"/></strong>.
+                            This offer is based on the information collected during the recruitment process and is
+                            subject to successful completion of the required onboarding and documentation steps.
+                        </p>
+
+                        <table class="table table-sm o_main_table" style="width: 100%; margin: 22px 0;">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 35%;"><strong>Candidate Name</strong></td>
+                                    <td><span t-out="o.partner_name or o.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Position</strong></td>
+                                    <td><span t-out="o.job_id.name or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Department</strong></td>
+                                    <td><span t-out="o.department_id.name or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Work Location</strong></td>
+                                    <td><span t-out="o.company_id.name or user.company_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Proposed Salary</strong></td>
+                                    <td>
+                                        <span t-out="o.second_salary_proposed or o.salary_proposed or 0.0"/>
+                                        <span t-out="o.company_id.currency_id.name or user.company_id.currency_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Expected Start / Availability</strong></td>
+                                    <td>
+                                        <span t-if="o.second_availability" t-field="o.second_availability"/>
+                                        <span t-elif="o.availability" t-field="o.availability"/>
+                                        <span t-else="">To be confirmed</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p>
+                            Please review this offer letter carefully. If you accept the offer, sign in the acceptance
+                            section below and return the signed copy to the HR team.
+                        </p>
+
+                        <p>
+                            We look forward to welcoming you to our team.
+                        </p>
+
+                        <p style="margin-top: 30px;">
+                            Sincerely,<br/>
+                            <strong>Human Resources Department</strong><br/>
+                            <span t-out="o.company_id.name or user.company_id.name"/>
+                        </p>
+
+                        <div style="margin-top: 48px; padding-top: 18px; border-top: 1px solid #d8dde6;">
+                            <h4>Offer Acceptance</h4>
+                            <p>
+                                I, <strong><span t-out="o.partner_name or o.name"/></strong>, accept the employment offer
+                                described above and agree to proceed with the required onboarding formalities.
+                            </p>
+                            <table style="width: 100%; margin-top: 35px;">
+                                <tr>
+                                    <td style="width: 48%; border-top: 1px solid #000; padding-top: 8px;">
+                                        Candidate Signature
+                                    </td>
+                                    <td style="width: 4%;"></td>
+                                    <td style="width: 48%; border-top: 1px solid #000; padding-top: 8px;">
+                                        Date
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

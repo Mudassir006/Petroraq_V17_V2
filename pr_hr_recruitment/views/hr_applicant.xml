@@ -15,6 +15,14 @@
                         invisible="not active or not next_stage_id"/>
             </xpath>
 
+            <xpath expr="//button[@name='action_move_to_next_stage']" position="after">
+                <button name="action_send_offer_letter"
+                        string="Send Offer Letter"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not active or not check_contract_proposal_stage"/>
+            </xpath>
+
             <xpath expr="//field[@name='stage_id']" position="attributes">
                 <attribute name="options">{'clickable': False, 'fold_field': 'fold'}</attribute>
             </xpath>
@@ -36,10 +44,16 @@
                 <field name="check_first_interview_stage_sequence" invisible="1"/>
                 <field name="check_second_interview_stage_sequence" invisible="1"/>
                 <field name="next_stage_id" invisible="1"/>
+                <field name="check_contract_proposal_stage" invisible="1"/>
                 <field name="show_first_interview_evaluation" invisible="1"/>
                 <field name="show_second_interview_evaluation" invisible="1"/>
                 <field name="readonly_first_interview_evaluation" invisible="1"/>
                 <field name="readonly_second_interview_evaluation" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='application_status']" position="after">
+                <field name="offer_letter_sent_date" invisible="not offer_letter_sent_date"/>
+                <field name="offer_letter_attachment_id" invisible="not offer_letter_attachment_id"/>
             </xpath>
 
             <xpath expr="//field[@name='interviewer_ids']" position="attributes">

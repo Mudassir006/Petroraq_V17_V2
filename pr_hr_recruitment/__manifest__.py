@@ -27,6 +27,8 @@
         'views/website_hr_recruitment_detail.xml',
         'views/hr_job_approvals.xml',
         'views/hr_applicant_onboarding.xml',
+        'reports/applicant_offer_letter_report.xml',
+        'data/applicant_offer_letter_email.xml',
         'views/hr_applicant.xml',
         'views/hr_work_permit.xml',
         'views/hr_work_permit_approvals.xml',
