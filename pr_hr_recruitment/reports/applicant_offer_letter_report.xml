@@ -5,17 +5,17 @@
         <field name="default" eval="False"/>
         <field name="format">A4</field>
         <field name="orientation">Portrait</field>
-        <field name="margin_top">18</field>
-        <field name="margin_bottom">18</field>
-        <field name="margin_left">16</field>
-        <field name="margin_right">16</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
         <field name="header_line" eval="False"/>
-        <field name="header_spacing">10</field>
+        <field name="header_spacing">0</field>
         <field name="dpi">90</field>
     </record>
 
     <record id="action_report_applicant_offer_letter" model="ir.actions.report">
-        <field name="name">Applicant Offer Letter</field>
+        <field name="name">Offer Letter</field>
         <field name="model">hr.applicant</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">pr_hr_recruitment.report_applicant_offer_letter_document</field>
@@ -29,94 +29,82 @@
     <template id="report_applicant_offer_letter_document">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="web.external_layout">
-                    <div class="page" style="font-size: 13px; line-height: 1.55; color: #1f2933;">
-                        <h2 style="text-align: center; margin-bottom: 24px; text-transform: uppercase;">
-                            Employment Offer Letter
-                        </h2>
+                <t t-set="offer" t-value="o._get_offer_letter_values()"/>
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: Arial, sans-serif; font-size: 11px; color: #000; min-height: 1060px; position: relative; padding: 0 36px 78px 36px;">
+                        <div style="height: 125px; margin: -8px -36px 28px -36px; border-bottom: 9px solid #3b2f84; background: #f4f1f8; position: relative; overflow: hidden;">
+                            <div style="position: absolute; left: 35px; top: 18px; color: #34277f;">
+                                <div style="font-size: 32px; font-weight: 800; letter-spacing: 1px;">PETRORAQ</div>
+                                <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.7px;">ENGINEERING &amp; CONSTRUCTION</div>
+                            </div>
+                            <div style="position: absolute; right: 30px; top: 25px; text-align: right; color: #34277f; font-weight: 700;">
+                                <div style="font-size: 14px;">شركة بترواراق الهندسية المحدودة</div>
+                                <div style="font-size: 13px; margin-top: 5px;">PETRORAQ ENGINEERING CO. LTD.</div>
+                                <div style="font-size: 10px; margin-top: 6px; color: #4b5563;">CR No. 2055134735</div>
+                                <div style="font-size: 10px; color: #4b5563;">VAT No. 311428741500003</div>
+                            </div>
+                            <div style="position: absolute; left: 330px; top: -20px; width: 18px; height: 160px; background: #3b2f84; transform: skew(-18deg);"></div>
+                            <div style="position: absolute; left: 355px; top: -20px; width: 80px; height: 160px; background: #ffffff; transform: skew(-18deg);"></div>
+                        </div>
 
-                        <p style="text-align: right;">
-                            Date: <span t-field="o.write_date" t-options="{'widget': 'date'}"/>
+                        <h3 style="text-align: center; text-decoration: underline; margin: 0 0 8px 0; font-size: 16px;">Job Offer Letter</h3>
+                        <p style="text-align: right; margin: 0 0 12px 0;">Date: <strong><span t-out="offer.get('date')"/></strong></p>
+
+                        <p style="margin: 0 0 18px 0;"><strong>Subject:</strong>&#160;&#160;<u><strong>Job Offer Letter</strong></u></p>
+
+                        <p style="margin: 0 0 12px 0;"><strong>To: Mr. <span t-out="offer.get('candidate_name')"/></strong></p>
+                        <p style="margin: 0 0 36px 0;"><strong>Nationality – <span t-out="offer.get('nationality') or 'To be confirmed'"/></strong></p>
+
+                        <p style="margin: 0 0 28px 0; max-width: 620px;">
+                            This is to formally offer you employment with <strong>Petroraq Engineering Co. Ltd.</strong>,
+                            Jubail, Kingdom of Saudi Arabia. This offer is based on the following terms and conditions:
                         </p>
 
-                        <p>Dear <strong><span t-out="o.partner_name or o.name"/></strong>,</p>
-
-                        <p>
-                            We are pleased to offer you the position of
-                            <strong><span t-out="o.job_id.name or 'the offered role'"/></strong>
-                            with <strong><span t-out="o.company_id.name or user.company_id.name"/></strong>.
-                            This offer is based on the information collected during the recruitment process and is
-                            subject to successful completion of the required onboarding and documentation steps.
-                        </p>
-
-                        <table class="table table-sm o_main_table" style="width: 100%; margin: 22px 0;">
+                        <table style="border-collapse: collapse; margin-bottom: 26px; width: 100%; max-width: 640px;">
                             <tbody>
-                                <tr>
-                                    <td style="width: 35%;"><strong>Candidate Name</strong></td>
-                                    <td><span t-out="o.partner_name or o.name"/></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Position</strong></td>
-                                    <td><span t-out="o.job_id.name or ''"/></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Department</strong></td>
-                                    <td><span t-out="o.department_id.name or ''"/></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Work Location</strong></td>
-                                    <td><span t-out="o.company_id.name or user.company_id.name"/></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Proposed Salary</strong></td>
-                                    <td>
-                                        <span t-out="o.second_salary_proposed or o.salary_proposed or 0.0"/>
-                                        <span t-out="o.company_id.currency_id.name or user.company_id.currency_id.name"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Expected Start / Availability</strong></td>
-                                    <td>
-                                        <span t-if="o.second_availability" t-field="o.second_availability"/>
-                                        <span t-elif="o.availability" t-field="o.availability"/>
-                                        <span t-else="">To be confirmed</span>
-                                    </td>
-                                </tr>
+                                <tr><td style="width: 185px;"><strong>Position</strong></td><td style="width: 18px;">:</td><td><span t-out="offer.get('position')"/></td></tr>
+                                <tr><td><strong>Basic Salary</strong></td><td>:</td><td><strong><span t-out="offer.get('basic_salary')"/></strong> per month</td></tr>
+                                <tr><td><strong>Housing Allowance</strong></td><td>:</td><td><span t-out="offer.get('housing_allowance')"/></td></tr>
+                                <tr><td><strong>Transportation Allowance</strong></td><td>:</td><td><span t-out="offer.get('transportation_allowance')"/></td></tr>
+                                <tr><td><strong>Gross</strong></td><td>:</td><td><strong><span t-out="offer.get('gross_salary')"/></strong></td></tr>
+                                <tr><td><strong>Contract Status</strong></td><td>:</td><td><span t-out="offer.get('contract_status')"/></td></tr>
+                                <tr><td><strong>Medical</strong></td><td>:</td><td><span t-out="offer.get('medical')"/></td></tr>
+                                <tr><td><strong>Duration of Contract</strong></td><td>:</td><td><span t-out="offer.get('contract_duration')"/></td></tr>
+                                <tr><td><strong>Probational Period</strong></td><td>:</td><td><span t-out="offer.get('probation_period')"/></td></tr>
+                                <tr><td><strong>Vacation</strong></td><td>:</td><td><span t-out="offer.get('vacation')"/></td></tr>
+                                <tr><td><strong>Working Hours</strong></td><td>:</td><td><span t-out="offer.get('working_hours')"/></td></tr>
+                                <tr><td><strong>Validity till</strong></td><td>:</td><td><strong><span t-out="offer.get('validity_date')"/></strong></td></tr>
                             </tbody>
                         </table>
 
-                        <p>
-                            Please review this offer letter carefully. If you accept the offer, sign in the acceptance
-                            section below and return the signed copy to the HR team.
+                        <p style="margin: 0 0 16px 0; max-width: 650px;">
+                            This letter will form part of the employment contract to be signed in addition to the above
+                            agreement. All other terms and conditions as per Saudi labor law.
                         </p>
 
-                        <p>
-                            We look forward to welcoming you to our team.
-                        </p>
+                        <div style="margin-top: 18px;">
+                            <p style="margin: 0 0 12px 0;">Very truly yours,</p>
+                            <p style="margin: 0;"><strong><span t-out="offer.get('signatory_name')"/></strong></p>
+                            <p style="margin: 0;"><span t-out="offer.get('signatory_title')"/></p>
+                            <p style="margin: 0;"><strong>Petroraq Engineering Co. Ltd.</strong></p>
+                        </div>
 
-                        <p style="margin-top: 30px;">
-                            Sincerely,<br/>
-                            <strong>Human Resources Department</strong><br/>
-                            <span t-out="o.company_id.name or user.company_id.name"/>
-                        </p>
+                        <div style="margin-top: 42px; width: 260px;">
+                            <p style="margin: 0;"><strong>For Acceptance</strong></p>
+                            <p style="margin: 0;"><strong>(Signed)</strong></p>
+                            <p style="margin: 0; border-bottom: 2px solid #000;">Name:&#160;&#160;<span t-out="offer.get('candidate_name')"/></p>
+                            <p style="margin: 0; border-bottom: 2px solid #000;">Date:</p>
+                        </div>
 
-                        <div style="margin-top: 48px; padding-top: 18px; border-top: 1px solid #d8dde6;">
-                            <h4>Offer Acceptance</h4>
-                            <p>
-                                I, <strong><span t-out="o.partner_name or o.name"/></strong>, accept the employment offer
-                                described above and agree to proceed with the required onboarding formalities.
-                            </p>
-                            <table style="width: 100%; margin-top: 35px;">
-                                <tr>
-                                    <td style="width: 48%; border-top: 1px solid #000; padding-top: 8px;">
-                                        Candidate Signature
-                                    </td>
-                                    <td style="width: 4%;"></td>
-                                    <td style="width: 48%; border-top: 1px solid #000; padding-top: 8px;">
-                                        Date
-                                    </td>
-                                </tr>
-                            </table>
+                        <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 48px; background: #3b2f84; color: #fff; font-size: 8px; padding: 8px 30px;">
+                            <div style="width: 50%; float: left; text-align: left; line-height: 1.45;">
+                                inquiry@petroraq.com<br/>
+                                Office # 408, 4th Floor, Al Majd Square, King Faisal Street (West), Al-Jubail
+                            </div>
+                            <div style="width: 50%; float: right; text-align: right; line-height: 1.45;">
+                                Kingdom of Saudi Arabia, Tel: +966 13 361 4446<br/>
+                                Email: inquiry@petroraq.com
+                            </div>
                         </div>
                     </div>
                 </t>

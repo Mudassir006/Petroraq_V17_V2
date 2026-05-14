@@ -1,4 +1,5 @@
 import base64
+from datetime import timedelta
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
@@ -182,6 +183,55 @@ class HrApplicant(models.Model):
         for rec in self:
             rec.check_contract_proposal_stage = rec._stage_matches_keywords(
                 rec.stage_id, CONTRACT_PROPOSAL_STAGE_KEYWORDS)
+
+    def _format_offer_letter_date(self, date_value):
+        date_value = fields.Date.to_date(date_value)
+        day = date_value.day
+        if 10 <= day % 100 <= 20:
+            suffix = 'th'
+        else:
+            suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+        return date_value.strftime(f"{day}{suffix} %B %Y")
+
+    @staticmethod
+    def _format_offer_letter_amount(amount, currency_name='SAR'):
+        return f"{amount:,.2f} {currency_name or 'SAR'}"
+
+    def _get_offer_letter_values(self):
+        self.ensure_one()
+        offer_date = fields.Date.context_today(self)
+        validity_date = offer_date + timedelta(days=1)
+        gross_salary = self.second_salary_proposed or self.salary_proposed or 0.0
+        basic_salary = gross_salary / 1.35 if gross_salary else 0.0
+        country = self.env['res.country']
+        if 'country_id' in self._fields and self.country_id:
+            country = self.country_id
+        elif self.partner_id.country_id:
+            country = self.partner_id.country_id
+        nationality = country.name or ''
+        if country and 'nationality' in country._fields and country.nationality:
+            nationality = country.nationality
+        currency_name = (self.company_id.currency_id or self.env.company.currency_id).name or 'SAR'
+        return {
+            'date': self._format_offer_letter_date(offer_date),
+            'validity_date': self._format_offer_letter_date(validity_date),
+            'candidate_name': self.partner_name or self.name or '',
+            'nationality': nationality,
+            'position': self.job_id.name or '',
+            'basic_salary': self._format_offer_letter_amount(basic_salary, currency_name),
+            'gross_salary': self._format_offer_letter_amount(gross_salary, currency_name),
+            'housing_allowance': '25% of Basic Salary',
+            'transportation_allowance': '10% of Basic Salary',
+            'contract_status': 'Single',
+            'medical': 'Provided by company as per company policy',
+            'contract_duration': '02 (Two) Years (Renewable)',
+            'probation_period': '90 Days',
+            'vacation': '21 working days paid vacation per annum',
+            'working_hours': '48 hours per week',
+            'company_name': self.company_id.name or self.env.company.name or 'Petroraq Engineering Co. Ltd.',
+            'signatory_name': 'Mustafa Abdulrasheed',
+            'signatory_title': 'Managing Director',
+        }
 
     def _get_offer_letter_pdf_filename(self):
         self.ensure_one()
