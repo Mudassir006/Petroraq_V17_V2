@@ -18,7 +18,7 @@
     'category': 'Human Resources/Employees/Recruitment',
     'version': '17.0.1.0.0',
     # any module necessary for this one to work correctly
-    'depends': ['pr_hr_account', 'website_hr_recruitment', 'de_hr_workspace', 'mail'],
+    'depends': ['pr_hr_account', 'website_hr_recruitment', 'de_hr_workspace', 'mail', 'pr_tax_Invoice_report_custom'],
 
     # always loaded
     'data': [
@@ -27,6 +27,8 @@
         'views/website_hr_recruitment_detail.xml',
         'views/hr_job_approvals.xml',
         'views/hr_applicant_onboarding.xml',
+        'reports/applicant_offer_letter_report.xml',
+        'data/applicant_offer_letter_email.xml',
         'views/hr_applicant.xml',
         'views/hr_work_permit.xml',
         'views/hr_work_permit_approvals.xml',

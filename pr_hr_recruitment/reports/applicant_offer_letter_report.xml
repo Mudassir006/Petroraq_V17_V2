@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_applicant_offer_letter" model="ir.actions.report">
+        <field name="name">Offer Letter</field>
+        <field name="model">hr.applicant</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pr_hr_recruitment.report_applicant_offer_letter_document</field>
+        <field name="report_file">pr_hr_recruitment.report_applicant_offer_letter_document</field>
+        <field name="print_report_name">object._get_offer_letter_pdf_filename()</field>
+        <field name="binding_model_id" ref="hr_recruitment.model_hr_applicant"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="pr_tax_Invoice_report_custom.paperformat_petroraq_invoice_report_sheet"/>
+    </record>
+
+    <template id="report_applicant_offer_letter_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="offer" t-value="o._get_offer_letter_values()"/>
+                <t t-call="pr_tax_Invoice_report_custom.custom_invoice_bridge_layout">
+                    <div class="page" style="font-family: Arial, sans-serif; font-size: 12px; color: #000; padding: 0 48px !important;">
+                        <h3 style="text-align: center; text-decoration: underline; margin: 0 0 8px 0; font-size: 18px;">
+                            Job Offer Letter
+                        </h3>
+                        <p style="text-align: right; margin: 0 0 12px 0;">
+                            Date: <strong><span t-out="offer.get('date')"/></strong>
+                        </p>
+
+                        <p style="margin: 0 0 18px 0;">
+                            <strong>Subject:</strong>&#160;&#160;<u><strong>Job Offer Letter</strong></u>
+                        </p>
+
+                        <p style="margin: 0 0 12px 0;">
+                            <strong>To: Mr. <span t-out="offer.get('candidate_name')"/></strong>
+                        </p>
+                        <p style="margin: 0 0 36px 0;">
+                            <strong>Nationality – <span t-out="offer.get('nationality') or 'To be confirmed'"/></strong>
+                        </p>
+
+                        <p style="margin: 0 0 28px 0; max-width: 720px;">
+                            This is to formally offer you employment with <strong>Petroraq Engineering Co. Ltd.</strong>,
+                            Jubail, Kingdom of Saudi Arabia. This offer is based on the following terms and conditions:
+                        </p>
+
+                        <table style="border-collapse: collapse; margin-bottom: 26px; width: 100%; max-width: 720px;">
+                            <tbody>
+                                <tr><td style="width: 190px;"><strong>Position</strong></td><td style="width: 18px;">:</td><td><span t-out="offer.get('position')"/></td></tr>
+                                <tr><td><strong>Basic Salary</strong></td><td>:</td><td><strong><span t-out="offer.get('basic_salary')"/></strong> per month</td></tr>
+                                <tr><td><strong>Housing Allowance</strong></td><td>:</td><td><span t-out="offer.get('housing_allowance')"/></td></tr>
+                                <tr><td><strong>Transportation Allowance</strong></td><td>:</td><td><span t-out="offer.get('transportation_allowance')"/></td></tr>
+                                <tr><td><strong>Gross</strong></td><td>:</td><td><strong><span t-out="offer.get('gross_salary')"/></strong></td></tr>
+                                <tr><td><strong>Contract Status</strong></td><td>:</td><td><span t-out="offer.get('contract_status')"/></td></tr>
+                                <tr><td><strong>Medical</strong></td><td>:</td><td><span t-out="offer.get('medical')"/></td></tr>
+                                <tr><td><strong>Duration of Contract</strong></td><td>:</td><td><span t-out="offer.get('contract_duration')"/></td></tr>
+                                <tr><td><strong>Probational Period</strong></td><td>:</td><td><span t-out="offer.get('probation_period')"/></td></tr>
+                                <tr><td><strong>Vacation</strong></td><td>:</td><td><span t-out="offer.get('vacation')"/></td></tr>
+                                <tr><td><strong>Working Hours</strong></td><td>:</td><td><span t-out="offer.get('working_hours')"/></td></tr>
+                                <tr><td><strong>Validity till</strong></td><td>:</td><td><strong><span t-out="offer.get('validity_date')"/></strong></td></tr>
+                            </tbody>
+                        </table>
+
+                        <p style="margin: 0 0 16px 0; max-width: 720px;">
+                            This letter will form part of the employment contract to be signed in addition to the above
+                            agreement. All other terms and conditions as per Saudi labor law.
+                        </p>
+
+                        <div style="margin-top: 18px;">
+                            <p style="margin: 0 0 12px 0;">Very truly yours,</p>
+                            <p style="margin: 0;"><strong><span t-out="offer.get('signatory_name')"/></strong></p>
+                            <p style="margin: 0;"><span t-out="offer.get('signatory_title')"/></p>
+                            <p style="margin: 0;"><strong>Petroraq Engineering Co. Ltd.</strong></p>
+                        </div>
+
+                        <div style="margin-top: 42px; width: 280px;">
+                            <p style="margin: 0;"><strong>For Acceptance</strong></p>
+                            <p style="margin: 0;"><strong>(Signed)</strong></p>
+                            <p style="margin: 0; border-bottom: 2px solid #000;">Name:&#160;&#160;<span t-out="offer.get('candidate_name')"/></p>
+                            <p style="margin: 0; border-bottom: 2px solid #000;">Date:</p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

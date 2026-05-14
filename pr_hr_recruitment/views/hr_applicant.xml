@@ -7,6 +7,26 @@
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
         <field name="arch" type="xml">
 
+            <xpath expr="//button[@name='archive_applicant']" position="after">
+                <button name="action_move_to_next_stage"
+                        string="Move to Next Stage"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not active or not next_stage_id"/>
+            </xpath>
+
+            <xpath expr="//button[@name='action_move_to_next_stage']" position="after">
+                <button name="action_send_offer_letter"
+                        string="Send Offer Letter"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not active or not check_contract_proposal_stage"/>
+            </xpath>
+
+            <xpath expr="//field[@name='stage_id']" position="attributes">
+                <attribute name="options">{'clickable': False, 'fold_field': 'fold'}</attribute>
+            </xpath>
+
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="applicant_onboarding_id" invisible="1"/>
                 <button
@@ -23,6 +43,17 @@
             <xpath expr="//field[@name='application_status']" position="after">
                 <field name="check_first_interview_stage_sequence" invisible="1"/>
                 <field name="check_second_interview_stage_sequence" invisible="1"/>
+                <field name="next_stage_id" invisible="1"/>
+                <field name="check_contract_proposal_stage" invisible="1"/>
+                <field name="show_first_interview_evaluation" invisible="1"/>
+                <field name="show_second_interview_evaluation" invisible="1"/>
+                <field name="readonly_first_interview_evaluation" invisible="1"/>
+                <field name="readonly_second_interview_evaluation" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='application_status']" position="after">
+                <field name="offer_letter_sent_date" invisible="not offer_letter_sent_date"/>
+                <field name="offer_letter_attachment_id" invisible="not offer_letter_attachment_id"/>
             </xpath>
 
             <xpath expr="//field[@name='interviewer_ids']" position="attributes">
@@ -65,6 +96,49 @@
                     <field name="salary_proposed_extra" placeholder="Extra advantages..."/>
                 </div>
             </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="1st Interview Evaluation" name="first_interview_evaluation" invisible="not show_first_interview_evaluation">
+                    <group>
+                        <group string="Evaluation Scores">
+                            <field name="first_communication_score" widget="radio" options="{'horizontal': True}" readonly="readonly_first_interview_evaluation"/>
+                            <field name="first_technical_score" widget="radio" options="{'horizontal': True}" readonly="readonly_first_interview_evaluation"/>
+                            <field name="first_experience_score" widget="radio" options="{'horizontal': True}" readonly="readonly_first_interview_evaluation"/>
+                            <field name="first_behavior_score" widget="radio" options="{'horizontal': True}" readonly="readonly_first_interview_evaluation"/>
+                            <field name="first_overall_score" widget="radio" options="{'horizontal': True}" readonly="readonly_first_interview_evaluation"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="first_total_score" readonly="1"/>
+                            <field name="first_average_score" readonly="1"/>
+                            <field name="first_recommendation" readonly="readonly_first_interview_evaluation"/>
+                        </group>
+                    </group>
+                    <group string="Remarks">
+                        <field name="first_interview_summary" placeholder="Provide a brief summary of the first interview..." readonly="readonly_first_interview_evaluation"/>
+                        <field name="first_strengths" placeholder="Key strengths observed..." readonly="readonly_first_interview_evaluation"/>
+                    </group>
+                </page>
+                <page string="2nd Interview Evaluation" name="second_interview_evaluation" invisible="not show_second_interview_evaluation">
+                    <group>
+                        <group string="Evaluation Scores">
+                            <field name="second_communication_score" widget="radio" options="{'horizontal': True}" readonly="readonly_second_interview_evaluation"/>
+                            <field name="second_technical_score" widget="radio" options="{'horizontal': True}" readonly="readonly_second_interview_evaluation"/>
+                            <field name="second_experience_score" widget="radio" options="{'horizontal': True}" readonly="readonly_second_interview_evaluation"/>
+                            <field name="second_behavior_score" widget="radio" options="{'horizontal': True}" readonly="readonly_second_interview_evaluation"/>
+                            <field name="second_overall_score" widget="radio" options="{'horizontal': True}" readonly="readonly_second_interview_evaluation"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="second_total_score" readonly="1"/>
+                            <field name="second_average_score" readonly="1"/>
+                            <field name="second_recommendation" readonly="readonly_second_interview_evaluation"/>
+                        </group>
+                    </group>
+                    <group string="Remarks">
+                        <field name="second_interview_summary" placeholder="Provide a brief summary of the second interview..." readonly="readonly_second_interview_evaluation"/>
+                        <field name="second_strengths" placeholder="Key strengths observed..." readonly="readonly_second_interview_evaluation"/>
+                    </group>
+                </page>
+            </xpath>
+
 
 
 
