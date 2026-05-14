@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 import logging
 import random
 import string
@@ -50,6 +50,8 @@ class HrApplicant(models.Model):
                                    tracking=True, groups="hr_recruitment.group_hr_recruitment_user")
     check_first_interview_stage_sequence = fields.Boolean(compute="_compute_check_first_interview_stage_sequence")
     check_second_interview_stage_sequence = fields.Boolean(compute="_compute_check_second_interview_stage_sequence")
+    next_stage_id = fields.Many2one(
+        "hr.recruitment.stage", string="Next Stage", compute="_compute_next_stage_id")
 
     first_communication_score = fields.Selection(
         INTERVIEW_SCORE_SELECTION, string="Communication Skills", default='0', tracking=True)
@@ -90,6 +92,30 @@ class HrApplicant(models.Model):
         INTERVIEW_RECOMMENDATION_SELECTION, string="Recommendation", tracking=True)
 
     # endregion [Fields]
+
+    def _get_next_recruitment_stage(self, from_stage=False):
+        self.ensure_one()
+        stage = from_stage or self.stage_id
+        if not stage:
+            return self.env["hr.recruitment.stage"]
+
+        domain = [("sequence", ">", stage.sequence)]
+        if self.job_id:
+            domain += ["|", ("job_ids", "=", False), ("job_ids", "in", self.job_id.ids)]
+        return self.env["hr.recruitment.stage"].search(domain, order="sequence, id", limit=1)
+
+    @api.depends("stage_id", "job_id")
+    def _compute_next_stage_id(self):
+        for rec in self:
+            rec.next_stage_id = rec._get_next_recruitment_stage()
+
+    def action_move_to_next_stage(self):
+        for rec in self:
+            next_stage = rec.next_stage_id
+            if not next_stage:
+                raise UserError(_("There is no next recruitment stage configured for %s.") % rec.display_name)
+            rec.stage_id = next_stage.id
+        return True
 
     @api.depends(
         "first_communication_score", "first_technical_score", "first_experience_score",
@@ -135,10 +161,12 @@ class HrApplicant(models.Model):
 
             # Check Next Stage
 
-            old_sequence = rec.last_stage_id.sequence
-            new_sequence = rec.stage_id.sequence
-            if new_sequence != 0 and (old_sequence + 1) != new_sequence:
-                raise ValidationError("You can not go to this step directly, please forward the rules")
+            old_stage = rec.last_stage_id
+            new_stage = rec.stage_id
+            if old_stage and new_stage and new_stage.sequence != 0:
+                next_stage = rec._get_next_recruitment_stage(from_stage=old_stage)
+                if new_stage != next_stage:
+                    raise ValidationError("You can not go to this step directly, please forward the rules")
 
             if rec.stage_id and rec.stage_id.hired_stage and not rec.applicant_onboarding_id:
                 employee_id = self.env["hr.employee"].sudo().create({
