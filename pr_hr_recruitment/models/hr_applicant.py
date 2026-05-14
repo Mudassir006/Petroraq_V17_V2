@@ -29,6 +29,15 @@ INTERVIEW_RECOMMENDATION_SELECTION = [
     ('hire', 'Hire'),
 ]
 
+FIRST_INTERVIEW_STAGE_KEYWORDS = (
+    '1st interview',
+    'first interview',
+)
+SECOND_INTERVIEW_STAGE_KEYWORDS = (
+    '2nd interview',
+    'second interview',
+)
+
 
 class HrApplicant(models.Model):
     """
@@ -52,6 +61,10 @@ class HrApplicant(models.Model):
     check_second_interview_stage_sequence = fields.Boolean(compute="_compute_check_second_interview_stage_sequence")
     next_stage_id = fields.Many2one(
         "hr.recruitment.stage", string="Next Stage", compute="_compute_next_stage_id")
+    show_first_interview_evaluation = fields.Boolean(compute="_compute_interview_evaluation_visibility")
+    show_second_interview_evaluation = fields.Boolean(compute="_compute_interview_evaluation_visibility")
+    readonly_first_interview_evaluation = fields.Boolean(compute="_compute_interview_evaluation_visibility")
+    readonly_second_interview_evaluation = fields.Boolean(compute="_compute_interview_evaluation_visibility")
 
     first_communication_score = fields.Selection(
         INTERVIEW_SCORE_SELECTION, string="Communication Skills", default='0', tracking=True)
@@ -93,6 +106,21 @@ class HrApplicant(models.Model):
 
     # endregion [Fields]
 
+    @staticmethod
+    def _stage_matches_keywords(stage, keywords):
+        if not stage:
+            return False
+        stage_name = (stage.name or '').casefold()
+        return any(keyword in stage_name for keyword in keywords)
+
+    def _get_interview_stage(self, keywords):
+        self.ensure_one()
+        domain = []
+        if self.job_id:
+            domain = ["|", ("job_ids", "=", False), ("job_ids", "in", self.job_id.ids)]
+        stages = self.env["hr.recruitment.stage"].search(domain, order="sequence, id")
+        return stages.filtered(lambda stage: self._stage_matches_keywords(stage, keywords))[:1]
+
     def _get_next_recruitment_stage(self, from_stage=False):
         self.ensure_one()
         stage = from_stage or self.stage_id
@@ -108,6 +136,23 @@ class HrApplicant(models.Model):
     def _compute_next_stage_id(self):
         for rec in self:
             rec.next_stage_id = rec._get_next_recruitment_stage()
+
+    @api.depends("stage_id", "job_id")
+    def _compute_interview_evaluation_visibility(self):
+        for rec in self:
+            stage = rec.stage_id
+            first_stage = rec._get_interview_stage(FIRST_INTERVIEW_STAGE_KEYWORDS)
+            second_stage = rec._get_interview_stage(SECOND_INTERVIEW_STAGE_KEYWORDS)
+            is_first_stage = rec._stage_matches_keywords(stage, FIRST_INTERVIEW_STAGE_KEYWORDS)
+            is_second_stage = rec._stage_matches_keywords(stage, SECOND_INTERVIEW_STAGE_KEYWORDS)
+
+            after_first_stage = bool(first_stage and stage and stage.sequence > first_stage.sequence)
+            after_second_stage = bool(second_stage and stage and stage.sequence > second_stage.sequence)
+
+            rec.show_first_interview_evaluation = is_first_stage or after_first_stage
+            rec.show_second_interview_evaluation = is_second_stage or after_second_stage
+            rec.readonly_first_interview_evaluation = not is_first_stage
+            rec.readonly_second_interview_evaluation = not is_second_stage
 
     def action_move_to_next_stage(self):
         for rec in self:
@@ -142,18 +187,14 @@ class HrApplicant(models.Model):
     @api.depends("stage_id")
     def _compute_check_first_interview_stage_sequence(self):
         for rec in self:
-            if rec.stage_id and rec.stage_id.sequence == 1:
-                rec.check_first_interview_stage_sequence = True
-            else:
-                rec.check_first_interview_stage_sequence = False
+            rec.check_first_interview_stage_sequence = rec._stage_matches_keywords(
+                rec.stage_id, FIRST_INTERVIEW_STAGE_KEYWORDS)
 
     @api.depends("stage_id")
     def _compute_check_second_interview_stage_sequence(self):
         for rec in self:
-            if rec.stage_id and rec.stage_id.sequence == 2:
-                rec.check_second_interview_stage_sequence = True
-            else:
-                rec.check_second_interview_stage_sequence = False
+            rec.check_second_interview_stage_sequence = rec._stage_matches_keywords(
+                rec.stage_id, SECOND_INTERVIEW_STAGE_KEYWORDS)
 
     @api.constrains("stage_id")
     def _check_stage_to_generate_onboarding(self):
