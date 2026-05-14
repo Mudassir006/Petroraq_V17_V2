@@ -284,7 +284,24 @@ class HrApplicant(models.Model):
 
     def _send_offer_letter_fallback_email(self, attachment):
         self.ensure_one()
-        body_message = f"""
+        body_message = self._get_offer_letter_mail_body()
+        email_from = (
+            self.user_id.email_formatted
+            or self.company_id.email
+            or self.env.user.email_formatted
+        )
+        mail = self.env['mail.mail'].sudo().create({
+            'email_from': email_from,
+            'email_to': self._get_offer_letter_email(),
+            'subject': self._get_offer_letter_mail_subject(),
+            'body_html': body_message,
+            'attachment_ids': [(4, attachment.id)],
+        })
+        mail.send()
+
+    def _get_offer_letter_mail_body(self):
+        self.ensure_one()
+        return f"""
             <p>Dear {self.partner_name or self.name},</p>
             <p>
                 Congratulations. Please find attached your offer letter for
@@ -299,21 +316,12 @@ class HrApplicant(models.Model):
                 {self.company_id.name or self.env.company.name}
             </p>
         """
-        email_from = (
-            self.user_id.email_formatted
-            or self.company_id.email
-            or self.env.user.email_formatted
-        )
-        mail = self.env['mail.mail'].sudo().create({
-            'email_from': email_from,
-            'email_to': self._get_offer_letter_email(),
-            'subject': f"Offer Letter - {self.job_id.name or self.company_id.name or 'Petroraq'}",
-            'body_html': body_message,
-            'attachment_ids': [(4, attachment.id)],
-        })
-        mail.send()
 
-    def action_send_offer_letter(self):
+    def _get_offer_letter_mail_subject(self):
+        self.ensure_one()
+        return f"Offer Letter - {self.job_id.name or self.company_id.name or 'Petroraq'}"
+
+    def _send_offer_letter_direct(self):
         template = self._get_offer_letter_email_template()
         for rec in self:
             email_to = rec._get_offer_letter_email()
@@ -332,6 +340,43 @@ class HrApplicant(models.Model):
             rec.offer_letter_sent_date = fields.Datetime.now()
         return True
 
+    def action_send_offer_letter(self):
+        self.ensure_one()
+        email_to = self._get_offer_letter_email()
+        if not email_to:
+            raise UserError(_(
+                "Please set an email address for %s before sending the offer letter.") % self.display_name)
+
+        attachment = self._generate_offer_letter_attachment()
+        template = self._get_offer_letter_email_template()
+        context = {
+            'default_model': self._name,
+            'default_res_ids': self.ids,
+            'default_composition_mode': 'comment',
+            'default_email_layout_xmlid': 'mail.mail_notification_layout_with_responsible_signature',
+            'force_email': True,
+            'default_attachment_ids': [(4, attachment.id)],
+            'default_subject': self._get_offer_letter_mail_subject(),
+            'default_body': self._get_offer_letter_mail_body(),
+            'default_email_to': email_to,
+            'default_partner_ids': [self.partner_id.id] if self.partner_id else [],
+        }
+        if template:
+            context.update({
+                'default_template_id': template.id,
+                'default_use_template': True,
+            })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Send Offer Letter'),
+            'res_model': 'mail.compose.message',
+            'view_mode': 'form',
+            'views': [(False, 'form')],
+            'target': 'new',
+            'context': context,
+        }
+
     def _send_offer_letter_on_contract_proposal(self):
         for rec in self:
             if (
@@ -339,7 +384,7 @@ class HrApplicant(models.Model):
                 and not rec.offer_letter_sent_date
                 and rec._stage_matches_keywords(rec.stage_id, CONTRACT_PROPOSAL_STAGE_KEYWORDS)
             ):
-                rec.action_send_offer_letter()
+                rec._send_offer_letter_direct()
 
     def write(self, vals):
         res = super().write(vals)
