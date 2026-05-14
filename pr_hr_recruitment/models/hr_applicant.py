@@ -238,12 +238,26 @@ class HrApplicant(models.Model):
         candidate_name = self.partner_name or self.name or _('Applicant')
         return f"Offer Letter - {candidate_name}.pdf"
 
+    def _get_offer_letter_report(self):
+        report = self.env.ref(
+            'pr_hr_recruitment.action_report_applicant_offer_letter', raise_if_not_found=False)
+        if report:
+            return report
+
+        return self.env['ir.actions.report'].search([
+            ('model', '=', 'hr.applicant'),
+            ('report_name', '=', 'pr_hr_recruitment.report_applicant_offer_letter_document'),
+            ('report_type', '=', 'qweb-pdf'),
+        ], limit=1)
+
     def _generate_offer_letter_attachment(self):
         self.ensure_one()
-        report = self.env.ref('pr_hr_recruitment.action_report_applicant_offer_letter', raise_if_not_found=False)
+        report = self._get_offer_letter_report()
         if not report:
             raise UserError(_(
-                "The offer letter report is not installed. Please upgrade the Petroraq HR Recruitment module."))
+                "The offer letter report is not loaded in the database yet. "
+                "Please upgrade the Petroraq HR Recruitment module so Odoo imports "
+                "reports/applicant_offer_letter_report.xml."))
         pdf_content, _content_type = self.env['ir.actions.report']._render_qweb_pdf(report.report_name, self.ids)
         attachment = self.env['ir.attachment'].sudo().create({
             'name': self._get_offer_letter_pdf_filename(),
